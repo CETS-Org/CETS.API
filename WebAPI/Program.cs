@@ -1,5 +1,7 @@
 
+using MassTransit;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using System.Text;
 
 namespace WebAPI
@@ -18,6 +20,8 @@ namespace WebAPI
             builder.Services.AddSwaggerGen();
 
 
+
+
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthentication("Bearer")
@@ -34,6 +38,30 @@ namespace WebAPI
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]))
                };
            });
+            var rabbitMqSettings = builder.Configuration.GetSection("RabbitMq");
+
+            builder.Services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(
+                        rabbitMqSettings["Host"],
+                        rabbitMqSettings["VirtualHost"],
+                        h =>
+                        {
+                            h.Username(rabbitMqSettings["Username"]);
+                            h.Password(rabbitMqSettings["Password"]);
+                        });
+                });
+            });
+
+
+            builder.Services.AddSingleton<IMongoClient>(sp =>
+            {
+                var mongoConnection = builder.Configuration.GetConnectionString("MongoDb");
+                var settings = MongoClientSettings.FromConnectionString(mongoConnection);
+                return new MongoClient(settings);
+            });
 
 
             // Register AutoMapper
