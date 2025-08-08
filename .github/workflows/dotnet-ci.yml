@@ -1,9 +1,8 @@
-name: .NET CI - CETS.API + CETS.Core
+name: .NET CI - CETS.API
 
 on:
   push:
     branches: [ develop, staging, main ]
-    paths: [ '**/*.cs', '**/*.csproj', '**/*.sln', '.github/workflows/dotnet-ci.yml' ]
   pull_request:
     branches: [ develop, staging, main ]
 
@@ -12,30 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout CETS.API repo
+      # Checkout CETS.API repo into the current directory
       - name: Checkout API repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          path: main-repo 
 
-      - name: Checkout CETS.Core (same branch)
-        id: core_branch
-        continue-on-error: true
+      # Checkout CETS.Core repo into another subdirectory
+      - name: Checkout CETS.Core repo
         uses: actions/checkout@v4
         with:
           repository: CETS-Org/CETS.Core
-          ref: ${{ github.ref_name }}
-          path: CETS.Core
-          token: ${{ secrets.GH_PAT }}
-
-      # Fallback if branch doesn't exist in CETS.Core
-      - name: Checkout CETS.Core (fallback to main)
-        if: steps.core_branch.outcome == 'failure'
-        uses: actions/checkout@v4
-        with:
-          repository: CETS-Org/CETS.Core
-          ref: main
-          path: CETS.Core
+          path: core-repo
           token: ${{ secrets.GH_PAT }}
 
       - name: Setup .NET
@@ -43,23 +30,40 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # (Debug) Print solution layout to debug paths
-      - name: Show workspace
+           # === THE IMPROVED, DYNAMIC FIX ===
+      - name: Dynamically Update Solution File Paths
+        working-directory: ./main-repo
         run: |
-          pwd
-          ls -la
-          find . -maxdepth 2 -type f -name "*.sln" -print
+          CORE_PROJECT_PATHS=$(find ../core-repo -name '*.csproj')
 
+          if [ -z "$CORE_PROJECT_PATHS" ]; then
+            echo "No .csproj files found in core-repo. Skipping update."
+            exit 0
+          fi
           
+          echo "Found Core Projects to add:"
+          echo "$CORE_PROJECT_PATHS"
 
-      # Restore dependencies
-      - name: Restore
+          # Remove existing core project references first.
+          for project_path in $CORE_PROJECT_PATHS; do
+              project_file=$(basename "$project_path")
+              project_name="${project_file%.*}"
+              
+              echo "Attempting to remove $project_name from solution..."
+              dotnet sln CETS.API.sln remove "$project_name" || true
+          done
+
+          echo "Adding all discovered projects to solution..."
+          dotnet sln CETS.API.sln add $CORE_PROJECT_PATHS
+
+      - name: Restore dependencies
+        working-directory: ./main-repo
         run: dotnet restore CETS.API.sln
 
-      # Build
       - name: Build
+        working-directory: ./main-repo
         run: dotnet build CETS.API.sln -c Release --no-restore
 
-      # Run tests (if test projects are in the solution)
       - name: Test
-        run: dotnet test  CETS.API.sln --no-build
+        working-directory: ./main-repo
+        run: dotnet test CETS.API.sln --no-build --verbosity normal
