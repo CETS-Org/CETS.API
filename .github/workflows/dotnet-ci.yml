@@ -3,6 +3,7 @@ name: .NET CI (CETS.Api.Web + external CETS.Core)
 on:
   push:
     branches: [ develop, staging, main ]
+    paths: [ '**/*.cs', '**/*.csproj', '**/*.sln', '.github/workflows/dotnet-ci.yml' ]
   pull_request:
     branches: [ develop, staging, main ]
 
