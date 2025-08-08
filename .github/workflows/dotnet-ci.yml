@@ -43,21 +43,23 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # (Optional) Print solution layout to debug paths
-      - name: Debug repo layout
+      # (Debug) Print solution layout to debug paths
+      - name: Show workspace
         run: |
           pwd
-          find . -type d -maxdepth 3
-          dotnet sln CETS.API/CETS.API.sln list
+          ls -la
+          find . -maxdepth 2 -type f -name "*.sln" -print
+
+          
 
       # Restore dependencies
       - name: Restore
-        run: dotnet restore CETS.API/CETS.API.sln
+        run: dotnet restore CETS.API.sln
 
       # Build
       - name: Build
-        run: dotnet build CETS.API/CETS.API.sln --configuration Release --no-restore
+        run: dotnet build CETS.API.sln -c Release --no-restore
 
       # Run tests (if test projects are in the solution)
       - name: Test
-        run: dotnet test CETS.API/CETS.API.sln --no-build --verbosity normal
+        run: dotnet test  CETS.API.sln --no-build
