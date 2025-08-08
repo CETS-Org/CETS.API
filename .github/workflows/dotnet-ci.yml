@@ -1,8 +1,9 @@
-name: .NET CI - Build and Test CETS.API
+name: .NET CI - CETS.API + CETS.Core
 
 on:
   push:
     branches: [ develop, staging, main ]
+    paths: [ '**/*.cs', '**/*.csproj', '**/*.sln', '.github/workflows/dotnet-ci.yml' ]
   pull_request:
     branches: [ develop, staging, main ]
 
@@ -11,11 +12,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the main API repository into a 'main-repo' directory
+      # Checkout CETS.API repo
       - name: Checkout API repo
         uses: actions/checkout@v4
         with:
-          path: main-repo
+          fetch-depth: 0
+
+      - name: Checkout CETS.Core (same branch)
+        id: core_branch
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: CETS-Org/CETS.Core
+          ref: ${{ github.ref_name }}
+          path: CETS.Core
+          token: ${{ secrets.GH_PAT }}
+
+      # Fallback if branch doesn't exist in CETS.Core
+      - name: Checkout CETS.Core (fallback to main)
+        if: steps.core_branch.outcome == 'failure'
+        uses: actions/checkout@v4
+        with:
+          repository: CETS-Org/CETS.Core
+          ref: main
+          path: CETS.Core
+          token: ${{ secrets.GH_PAT }}
 
       # Step 2: Checkout the Core repository into a 'core-repo' directory
       - name: Checkout CETS.Core repo
@@ -77,3 +98,21 @@ jobs:
       - name: Test
         working-directory: ./main-repo
         run: dotnet test CETS.API.sln --no-build --verbosity normal
+      # (Optional) Print solution layout to debug paths
+      - name: Debug repo layout
+        run: |
+          pwd
+          find . -type d -maxdepth 3
+          dotnet sln CETS.API/CETS.API.sln list
+
+      # Restore dependencies
+      - name: Restore
+        run: dotnet restore CETS.API/CETS.API.sln
+
+      # Build
+      - name: Build
+        run: dotnet build CETS.API/CETS.API.sln --configuration Release --no-restore
+
+      # Run tests (if test projects are in the solution)
+      - name: Test
+        run: dotnet test CETS.API/CETS.API.sln --no-build --verbosity normal
