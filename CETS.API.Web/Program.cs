@@ -244,7 +244,7 @@ namespace WebAPI
 
             builder.Services.AddScoped<IdGenerator>();
 
-
+            builder.Services.AddScoped<IMessageService, MessageService>();
 
             // Configure CORS
             var allowedOrigins = builder.Configuration
