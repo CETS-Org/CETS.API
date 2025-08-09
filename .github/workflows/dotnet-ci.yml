@@ -97,4 +97,6 @@ jobs:
         run: dotnet build CETS.API.sln -c Release --no-restore
 
       # Step 9: Run tests
+      - name: Test
+        working-directory: ./main-repo
         run: dotnet test CETS.API.sln --no-build --verbosity normal
