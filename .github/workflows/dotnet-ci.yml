@@ -66,13 +66,19 @@ jobs:
           echo "Updating project references in .csproj files..."
 
           for file in $CSPROJ_FILES; do
-            # Replace Windows-style paths
+            echo "Processing $file..."
+            echo "Before changes:"
+            grep -n "CETS\.Core" "$file" || echo "No CETS.Core references found"
+            
+            # Replace the specific pattern: ..\..\CETS.Core\ with ../core-repo/
             sed -i 's|\.\.\\\.\.\\CETS\.Core\\|../core-repo/|g' "$file"
-            # Replace Unix-style paths  
+            
+            # Also handle forward slash version in case it exists
             sed -i 's|\.\./\.\./CETS\.Core/|../core-repo/|g' "$file"
-            # Replace any remaining CETS.Core references
-            sed -i 's|CETS\.Core/|core-repo/|g' "$file"
-            echo "Patched $file"
+            
+            echo "After changes:"
+            grep -n "core-repo" "$file" || echo "No core-repo references found"
+            echo "---"
           done
 
       # Step 7: Restore dependencies
