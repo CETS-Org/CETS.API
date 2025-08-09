@@ -2,6 +2,8 @@
 using MassTransit;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using Services.Implementations;
+using Services.Interfaces;
 using System.Text;
 
 namespace WebAPI
@@ -19,7 +21,7 @@ namespace WebAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-
+            builder.Services.AddScoped<IMessageService, MessageService>();
 
 
             builder.Services.AddHttpContextAccessor();
