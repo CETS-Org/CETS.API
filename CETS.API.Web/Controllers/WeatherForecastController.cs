@@ -1,4 +1,7 @@
+using DTOs;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
 
 namespace WebAPI.Controllers
 {
@@ -11,11 +14,14 @@ namespace WebAPI.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
+        private readonly IPublishEndpoint _publishEndpoint;
+
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IPublishEndpoint publishEndpoint)
         {
             _logger = logger;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -28,6 +34,13 @@ namespace WebAPI.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpPost("SendMessage")]
+        public async Task<IActionResult> SendEmail([FromBody] Message message)
+        {
+            await _publishEndpoint.Publish(message);
+            return Ok("Message queued!");
         }
     }
 }
