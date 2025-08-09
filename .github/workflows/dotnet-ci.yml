@@ -11,92 +11,94 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the main API repository into a 'main-repo' directory
+      # 1) Checkout API repo into ./main-repo
       - name: Checkout API repo
         uses: actions/checkout@v4
         with:
           path: main-repo
 
-      # Step 2: Checkout the Core repository into a 'core-repo' directory
+      # 2) Checkout Core repo into ./main-repo/core-repo  
       - name: Checkout CETS.Core repo
         uses: actions/checkout@v4
         with:
-          repository: CETS-Org/CETS.Core 
-          path: core-repo
+          repository: CETS-Org/CETS.Core
+          path: main-repo/core-repo
           token: ${{ secrets.GH_PAT }}
 
-      # Step 3: Setup the .NET SDK
+      # 3) .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # Step 4: Remove old Core project references from solution
-      - name: Remove Old Core References from Solution
-        working-directory: ./main-repo
+      # 4) Debug: show layout & current solution projects
+      - name: Debug layout
         run: |
-          dotnet sln CETS.API.sln remove $(dotnet sln CETS.API.sln list | grep "CETS\.Core" | tr -d '\r') || true
-          echo "Removed old Core project references from solution"
+          echo "PWD: $(pwd)"
+          echo "Top:"
+          ls -la
+          echo "main-repo:"
+          ls -la main-repo
+          echo "main-repo/core-repo:"
+          ls -la main-repo/core-repo
+          echo "Solutions found:"
+          find main-repo -maxdepth 2 -name "*.sln" -print || true
 
-      # Step 5: Add Core projects with correct paths
-      - name: Add Core Projects to Solution
+      # 5) Remove any old Core entries from solution
+      - name: Clean old Core refs in solution
         working-directory: ./main-repo
         run: |
-          CORE_PROJECT_PATHS=$(find ../core-repo -maxdepth 2 -name '*.csproj')
-          if [ -n "$CORE_PROJECT_PATHS" ]; then
-            echo "Adding Core projects to CETS.API.sln: $CORE_PROJECT_PATHS"
-            # Remove any existing references first to avoid duplicates
-            for project in $CORE_PROJECT_PATHS; do
-              dotnet sln CETS.API.sln remove "$project" 2>/dev/null || true
-            done
-            # Add the projects
-            dotnet sln CETS.API.sln add $CORE_PROJECT_PATHS
-            echo "Solution file updated. Current projects:"
-            dotnet sln CETS.API.sln list
-          else
-            echo "No Core projects found to add."
+          dotnet sln CETS.API.sln list || true
+          OLD=$(dotnet sln CETS.API.sln list | grep -E "CETS\.Core|core-repo" || true)
+          if [ -n "$OLD" ]; then
+            echo "Removing old entries:"
+            echo "$OLD"
+            # Remove line-by-line (ignore errors)
+            while IFS= read -r p; do dotnet sln CETS.API.sln remove "$p" || true; done <<< "$OLD"
           fi
 
-      # Step 6: Update ProjectReference paths inside .csproj files
-      - name: Update Project Reference Paths in .csproj files
+      # 6) Add Core projects from ./core-repo into the solution
+      - name: Add Core projects to solution
         working-directory: ./main-repo
         run: |
-          CSPROJ_FILES=$(find . -type f -name "*.csproj" ! -path "./.git/*")
-          
-          echo "Updating project references in .csproj files..."
+          CORE_PROJECTS=$(find ./core-repo -maxdepth 2 -name '*.csproj')
+          if [ -z "$CORE_PROJECTS" ]; then
+            echo "No Core projects found under ./core-repo"; exit 1
+          fi
+          echo "Adding projects:"
+          echo "$CORE_PROJECTS"
+          dotnet sln CETS.API.sln add $CORE_PROJECTS
+          echo "Solution content after add:"
+          dotnet sln CETS.API.sln list
 
-          for file in $CSPROJ_FILES; do
-            echo "Processing $file..."
-            echo "Before changes:"
-            grep -n "CETS\.Core" "$file" || echo "No CETS.Core references found"
-            
-            # Replace the entire pattern: ..\..\CETS.Core\ProjectName\ProjectName.csproj
-            # with: ../core-repo/ProjectName/ProjectName.csproj
+      # 7) Normalize ProjectReference paths to ../core-repo/*
+      - name: Update ProjectReference paths in .csproj
+        working-directory: ./main-repo
+        run: |
+          set -e
+          for file in $(find . -type f -name "*.csproj" ! -path "./.git/*"); do
+            echo "Processing $file"
+            # Replace Windows-style ..\..\CETS.Core\... with ../core-repo/...
             sed -i 's|\.\.\\\.\.\\CETS\.Core\\|../core-repo/|g' "$file"
-            
-            # Convert remaining backslashes to forward slashes in the project references
-            sed -i 's|Include="../core-repo/\([^"]*\)\\|Include="../core-repo/\1/|g' "$file"
-            sed -i 's|\\|/|g' "$file"
-            
-            # Also handle forward slash version in case it exists
+            # Replace Unix-style ../../CETS.Core/... with ../core-repo/...
             sed -i 's|\.\./\.\./CETS\.Core/|../core-repo/|g' "$file"
-            
-            echo "After changes:"
-            grep -n "core-repo" "$file" || echo "No core-repo references found"
-            echo "---"
+            # Normalize any backslashes that remain
+            sed -i 's|\\|/|g' "$file"
           done
+          echo "Preview references that point to core-repo:"
+          grep -R "\"../core-repo/" -n || true
 
-      # Step 7: Restore dependencies
+      # 8) Restore
       - name: Restore
         working-directory: ./main-repo
         run: dotnet restore CETS.API.sln
 
-      # Step 8: Build the solution
+      # 9) Build
       - name: Build
         working-directory: ./main-repo
         run: dotnet build CETS.API.sln -c Release --no-restore
 
-      # Step 9: Run tests
+      # 10) Test (if tests exist in the solution)
       - name: Test
         working-directory: ./main-repo
         run: dotnet test CETS.API.sln --no-build --verbosity normal
