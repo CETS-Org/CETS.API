@@ -2,9 +2,9 @@ name: .NET CI (CETS.Api.Web + external CETS.Core)
 
 on:
   push:
-    branches: [ develop, staging, main ]
+    branches: [ develop, staging, main, dev_minhdq ]
   pull_request:
-    branches: [ develop, staging, main ]
+    branches: [ develop, staging, main, dev_minhdq ]
 
 permissions:
   contents: read
