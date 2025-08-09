@@ -17,7 +17,7 @@ jobs:
         with:
           path: main-repo
 
-      # 2) Checkout Core repo into ./main-repo/core-repo  
+      # 2) Checkout Core repo into ./main-repo/core-repo
       - name: Checkout CETS.Core repo
         uses: actions/checkout@v4
         with:
@@ -31,74 +31,73 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # 4) Debug: show layout & current solution projects
+      # 4) Debug layout
       - name: Debug layout
         run: |
           echo "PWD: $(pwd)"
-          echo "Top:"
           ls -la
-          echo "main-repo:"
           ls -la main-repo
-          echo "main-repo/core-repo:"
           ls -la main-repo/core-repo
-          echo "Solutions found:"
           find main-repo -maxdepth 2 -name "*.sln" -print || true
 
-      # 5) Remove any old Core entries from solution
+      # 5) Clean solution entries for Core (best effort)
       - name: Clean old Core refs in solution
         working-directory: ./main-repo
         run: |
           dotnet sln CETS.API.sln list || true
           OLD=$(dotnet sln CETS.API.sln list | grep -E "CETS\.Core|core-repo" || true)
           if [ -n "$OLD" ]; then
-            echo "Removing old entries:"
-            echo "$OLD"
-            # Remove line-by-line (ignore errors)
             while IFS= read -r p; do dotnet sln CETS.API.sln remove "$p" || true; done <<< "$OLD"
           fi
 
-      # 6) Add Core projects from ./core-repo into the solution
+      # 6) Add Core projects to solution (so they build)
       - name: Add Core projects to solution
         working-directory: ./main-repo
         run: |
           CORE_PROJECTS=$(find ./core-repo -maxdepth 2 -name '*.csproj')
-          if [ -z "$CORE_PROJECTS" ]; then
-            echo "No Core projects found under ./core-repo"; exit 1
-          fi
-          echo "Adding projects:"
-          echo "$CORE_PROJECTS"
+          [ -z "$CORE_PROJECTS" ] && { echo "No Core projects found"; exit 1; }
           dotnet sln CETS.API.sln add $CORE_PROJECTS
-          echo "Solution content after add:"
           dotnet sln CETS.API.sln list
 
-      # 7) Normalize ProjectReference paths to ../core-repo/*
-      - name: Update ProjectReference paths in .csproj
+      # 7) Ensure CETS.API.Web has project references to DTOs/Services/Utils
+      - name: Force Web project references to Core
         working-directory: ./main-repo
         run: |
-          set -e
+          WEB=./CETS.API.Web/CETS.API.Web.csproj
+          dotnet remove "$WEB" reference ../core-repo/DTOs/DTOs.csproj 2>/dev/null || true
+          dotnet remove "$WEB" reference ../core-repo/Services/Services.csproj 2>/dev/null || true
+          dotnet remove "$WEB" reference ../core-repo/Utils/Utils.csproj 2>/dev/null || true
+          dotnet add "$WEB" reference ../core-repo/DTOs/DTOs.csproj
+          dotnet add "$WEB" reference ../core-repo/Services/Services.csproj
+          dotnet add "$WEB" reference ../core-repo/Utils/Utils.csproj
+          echo "Current Web project references:"
+          dotnet list "$WEB" reference
+
+      # 8) (Optional) Normalize any lingering paths in csproj files
+      - name: Normalize ProjectReference paths
+        working-directory: ./main-repo
+        run: |
           for file in $(find . -type f -name "*.csproj" ! -path "./.git/*"); do
-            echo "Processing $file"
-            # Replace Windows-style ..\..\CETS.Core\... with ../core-repo/...
             sed -i 's|\.\.\\\.\.\\CETS\.Core\\|../core-repo/|g' "$file"
-            # Replace Unix-style ../../CETS.Core/... with ../core-repo/...
             sed -i 's|\.\./\.\./CETS\.Core/|../core-repo/|g' "$file"
-            # Normalize any backslashes that remain
             sed -i 's|\\|/|g' "$file"
           done
-          echo "Preview references that point to core-repo:"
           grep -R "\"../core-repo/" -n || true
 
-      # 8) Restore
+      # 9) Clean/Restore/Build/Test
+      - name: Clean bin/obj
+        working-directory: ./main-repo
+        run: |
+          find . -type d -name bin -o -name obj | xargs rm -rf || true
+
       - name: Restore
         working-directory: ./main-repo
         run: dotnet restore CETS.API.sln
 
-      # 9) Build
       - name: Build
         working-directory: ./main-repo
         run: dotnet build CETS.API.sln -c Release --no-restore
 
-      # 10) Test (if tests exist in the solution)
       - name: Test
         working-directory: ./main-repo
         run: dotnet test CETS.API.sln --no-build --verbosity normal
