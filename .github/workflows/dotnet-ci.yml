@@ -31,49 +31,61 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # Step 4: Update the .sln file
-      - name: Update Solution File Paths
+      # Step 4: Remove old Core project references from solution
+      - name: Remove Old Core References from Solution
+        working-directory: ./main-repo
+        run: |
+          dotnet sln CETS.API.sln remove $(dotnet sln CETS.API.sln list | grep "CETS\.Core" | tr -d '\r') || true
+          echo "Removed old Core project references from solution"
+
+      # Step 5: Add Core projects with correct paths
+      - name: Add Core Projects to Solution
         working-directory: ./main-repo
         run: |
           CORE_PROJECT_PATHS=$(find ../core-repo -maxdepth 2 -name '*.csproj')
           if [ -n "$CORE_PROJECT_PATHS" ]; then
             echo "Adding Core projects to CETS.API.sln: $CORE_PROJECT_PATHS"
+            # Remove any existing references first to avoid duplicates
+            for project in $CORE_PROJECT_PATHS; do
+              dotnet sln CETS.API.sln remove "$project" 2>/dev/null || true
+            done
+            # Add the projects
             dotnet sln CETS.API.sln add $CORE_PROJECT_PATHS
+            echo "Solution file updated. Current projects:"
+            dotnet sln CETS.API.sln list
           else
             echo "No Core projects found to add."
           fi
 
-      # Step 5: Update ProjectReference paths inside .csproj files
+      # Step 6: Update ProjectReference paths inside .csproj files
       - name: Update Project Reference Paths in .csproj files
         working-directory: ./main-repo
         run: |
-          # Find all .csproj files within the main-repo
           CSPROJ_FILES=$(find . -type f -name "*.csproj" ! -path "./.git/*")
           
-          INCORRECT_PATH="..\\\\..\\\\CETS.Core\\\\" # This matches '..\..\CETS.Core\'
-
-          # The correct path pattern to replace it with
-          CORRECT_PATH="../core-repo/"
-          
-          echo "Searching for pattern: $INCORRECT_PATH"
-          echo "Replacing with: $CORRECT_PATH"
+          echo "Updating project references in .csproj files..."
 
           for file in $CSPROJ_FILES; do
-            sed -i "s|$INCORRECT_PATH|$CORRECT_PATH|g" "$file"
+            # Replace Windows-style paths
+            sed -i 's|\.\.\\\.\.\\CETS\.Core\\|../core-repo/|g' "$file"
+            # Replace Unix-style paths  
+            sed -i 's|\.\./\.\./CETS\.Core/|../core-repo/|g' "$file"
+            # Replace any remaining CETS.Core references
+            sed -i 's|CETS\.Core/|core-repo/|g' "$file"
             echo "Patched $file"
           done
 
-      # Step 6: Restore dependencies
+      # Step 7: Restore dependencies
       - name: Restore
         working-directory: ./main-repo
         run: dotnet restore CETS.API.sln
 
-      # Step 7: Build the solution
+      # Step 8: Build the solution
       - name: Build
         working-directory: ./main-repo
         run: dotnet build CETS.API.sln -c Release --no-restore
 
-      # Step 8: Run tests
+      # Step 9: Run tests
       - name: Test
         working-directory: ./main-repo
         run: dotnet test CETS.API.sln --no-build --verbosity normal
