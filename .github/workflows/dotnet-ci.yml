@@ -70,8 +70,13 @@ jobs:
             echo "Before changes:"
             grep -n "CETS\.Core" "$file" || echo "No CETS.Core references found"
             
-            # Replace the specific pattern: ..\..\CETS.Core\ with ../core-repo/
+            # Replace the entire pattern: ..\..\CETS.Core\ProjectName\ProjectName.csproj
+            # with: ../core-repo/ProjectName/ProjectName.csproj
             sed -i 's|\.\.\\\.\.\\CETS\.Core\\|../core-repo/|g' "$file"
+            
+            # Convert remaining backslashes to forward slashes in the project references
+            sed -i 's|Include="../core-repo/\([^"]*\)\\|Include="../core-repo/\1/|g' "$file"
+            sed -i 's|\\|/|g' "$file"
             
             # Also handle forward slash version in case it exists
             sed -i 's|\.\./\.\./CETS\.Core/|../core-repo/|g' "$file"
@@ -92,6 +97,4 @@ jobs:
         run: dotnet build CETS.API.sln -c Release --no-restore
 
       # Step 9: Run tests
-      - name: Test
-        working-directory: ./main-repo
         run: dotnet test CETS.API.sln --no-build --verbosity normal
