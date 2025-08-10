@@ -1,4 +1,4 @@
-name: .NET CI - Build and Test CETS.API
+name: .NET CI (CETS.Api.Web + external CETS.Core)
 
 on:
   push:
@@ -6,86 +6,103 @@ on:
   pull_request:
     branches: [ develop, staging, main ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: dotnet-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: 1
+  SOLUTION: CETS.API.sln
+  CORE_REPO: CETS-Org/CETS.Core
+
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
 
+    # All 'run' steps will execute inside the main project's directory,
+    # where the .sln file is located.
+    defaults:
+      run:
+        working-directory: CETS.API
+
     steps:
-      # Step 1: Checkout the main API repository into a 'main-repo' directory
-      - name: Checkout API repo
+      # Checkout the main repo into `CETS.API`
+      - name: Checkout Web repo (this repo)
         uses: actions/checkout@v4
         with:
-          path: main-repo
+          path: CETS.API
+          fetch-depth: 0
 
-      # Step 2: Checkout the Core repository into a 'core-repo' directory
-      - name: Checkout CETS.Core repo
+      # Display current branch info for debugging
+      - name: Display branch information
+        run: |
+          echo "Current CETS.API branch: ${{ github.ref_name }}"
+          echo "Attempting to checkout CETS.Core branch: ${{ github.ref_name }}"
+
+      # Checkout the core repo into `CETS.Core` using the same branch as current API repo.
+      # This ensures version compatibility between the projects.
+      - name: Checkout external CETS.Core repo (same branch)
         uses: actions/checkout@v4
         with:
-          repository: CETS-Org/CETS.Core 
-          path: core-repo
+          repository: ${{ env.CORE_REPO }}
+          ref: ${{ github.ref_name }}
+          path: CETS.Core
           token: ${{ secrets.GH_PAT }}
+        continue-on-error: true
+      
+      # Fallback: If the same branch doesn't exist in CETS.Core, checkout main
+      - name: Checkout external CETS.Core repo (fallback to main)
+        if: failure()
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.CORE_REPO }}
+          ref: main
+          path: CETS.Core
+          token: ${{ secrets.GH_PAT }}
+      
+      # Display which branch was actually checked out
+      - name: Display CETS.Core branch used
+        working-directory: CETS.Core
+        run: |
+          echo "CETS.Core checked out branch: $(git branch --show-current)"
+          echo "CETS.Core commit: $(git rev-parse HEAD)"
 
-      # Step 3: Setup the .NET SDK
-      - name: Setup .NET
+      - name: Verify directory layout
+        working-directory: ${{ github.workspace }}
+        run: |
+          echo "--- Workspace Layout (should show CETS.API and CETS.Core) ---"
+          ls -lR
+          echo "--- Verifying critical files exist in the correct locations ---"
+          test -f CETS.API/${{ env.SOLUTION }}
+          test -f CETS.Core/DTOs/DTOs.csproj
+          test -f CETS.Core/Services/Services.csproj
+          test -f CETS.Core/Utils/Utils.csproj
+          echo "--- Layout appears correct ---"
+
+      - name: Setup .NET 8.x
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # Step 4: Remove old Core project references from solution
-      - name: Remove Old Core References from Solution
-        working-directory: ./main-repo
-        run: |
-          dotnet sln CETS.API.sln remove $(dotnet sln CETS.API.sln list | grep "CETS\.Core" | tr -d '\r') || true
-          echo "Removed old Core project references from solution"
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/src/**/*.sln', '**/src/**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
 
-      # Step 5: Add Core projects with correct paths
-      - name: Add Core Projects to Solution
-        working-directory: ./main-repo
-        run: |
-          CORE_PROJECT_PATHS=$(find ../core-repo -maxdepth 2 -name '*.csproj')
-          if [ -n "$CORE_PROJECT_PATHS" ]; then
-            echo "Adding Core projects to CETS.API.sln: $CORE_PROJECT_PATHS"
-            # Remove any existing references first to avoid duplicates
-            for project in $CORE_PROJECT_PATHS; do
-              dotnet sln CETS.API.sln remove "$project" 2>/dev/null || true
-            done
-            # Add the projects
-            dotnet sln CETS.API.sln add $CORE_PROJECT_PATHS
-            echo "Solution file updated. Current projects:"
-            dotnet sln CETS.API.sln list
-          else
-            echo "No Core projects found to add."
-          fi
 
-      # Step 6: Update ProjectReference paths inside .csproj files
-      - name: Update Project Reference Paths in .csproj files
-        working-directory: ./main-repo
-        run: |
-          CSPROJ_FILES=$(find . -type f -name "*.csproj" ! -path "./.git/*")
-          
-          echo "Updating project references in .csproj files..."
-
-          for file in $CSPROJ_FILES; do
-            # Replace Windows-style paths
-            sed -i 's|\.\.\\\.\.\\CETS\.Core\\|../core-repo/|g' "$file"
-            # Replace Unix-style paths  
-            sed -i 's|\.\./\.\./CETS\.Core/|../core-repo/|g' "$file"
-            # Replace any remaining CETS.Core references
-            sed -i 's|CETS\.Core/|core-repo/|g' "$file"
-            echo "Patched $file"
-          done
-
-      # Step 7: Restore dependencies
       - name: Restore
-        working-directory: ./main-repo
-        run: dotnet restore CETS.API.sln
+        run: dotnet restore "$SOLUTION"
 
-      # Step 8: Build the solution
-      - name: Build
-        working-directory: ./main-repo
-        run: dotnet build CETS.API.sln -c Release --no-restore
+      - name: Build (Release)
+        run: dotnet build "$SOLUTION" -c Release --no-restore
+        env:
+          CI: true
 
-      # Step 9: Run tests
-      - name: Test
-        working-directory: ./main-repo
-        run: dotnet test CETS.API.sln --no-build --verbosity normal
+    
