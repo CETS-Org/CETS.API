@@ -1,4 +1,5 @@
 using DTOs;
+using DTOs.Message.Requests;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
@@ -37,7 +38,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("SendMessage")]
-        public async Task<IActionResult> SendEmail([FromBody] Message message)
+        public async Task<IActionResult> SendEmail([FromBody] CreateMessageRequest message)
         {
             await _publishEndpoint.Publish(message);
             return Ok("Message queued!");
