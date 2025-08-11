@@ -5,7 +5,13 @@ VisualStudioVersion = 17.14.36202.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOs", "..\CETS.Core\DTOs\DTOs.csproj", "{3E70B586-92C1-151F-6580-CD803A701874}"
 EndProject
+<<<<<<< HEAD
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CETS.Core.Web", "CETS.Core.Web", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+=======
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CETS.Core.API", "CETS.Core.API", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "..\CETS.Core\Repositories\Repositories.csproj", "{ED2715DE-9145-240C-5CAA-1C73FB60605C}"
+>>>>>>> 0e18617 (refactor: rename Core solution folder)
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "..\CETS.Core\Utils\Utils.csproj", "{3085AB4A-10F6-2B4A-C3F3-D37C8A3AE533}"
 EndProject
@@ -19,12 +25,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CETS.API.Web", "CETS.API.We
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CETS.Core.Shared", "CETS.Core.Shared", "{3BEF4C3E-C3FC-4481-9598-D799461B0608}"
 EndProject
+<<<<<<< HEAD
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "..\CETS.Core\Infrastructure\Infrastructure.csproj", "{B7531B49-50CD-7619-AA70-4EECF49F91FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "..\CETS.Core\Application\Application.csproj", "{B61335A5-1773-AF19-0D3E-DE96C9DA12B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "..\CETS.Core\Domain\Domain.csproj", "{A42AA047-79EC-0EAE-9E9C-CF0860D5B2AE}"
 EndProject
+=======
+>>>>>>> 0e18617 (refactor: rename Core solution folder)
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
