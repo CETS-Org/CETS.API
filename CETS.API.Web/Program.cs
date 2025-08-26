@@ -1,9 +1,8 @@
-
+using Application.Implementations;
 using MassTransit;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
-using Services.Implementations;
-using Services.Interfaces;
+
 using System.Text;
 
 namespace WebAPI
