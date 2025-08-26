@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -17,9 +17,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="../../CETS.Core/DTOs/DTOs.csproj" />
-		<ProjectReference Include="../../CETS.Core/Services/Services.csproj" />
-		<ProjectReference Include="../../CETS.Core/Utils/Utils.csproj" />
+		<ProjectReference Include="..\..\CETS.Core\DTOs\DTOs.csproj" />
+		<ProjectReference Include="..\..\CETS.Core\Utils\Utils.csproj" />
+		<ProjectReference Include="..\..\CETS.Core\Application\Application.csproj" />
 	</ItemGroup>
 
 
