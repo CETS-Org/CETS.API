@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="MassTransit" Version="8.5.1" />
@@ -18,6 +22,7 @@
   </ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\CETS.Core\DTOs\DTOs.csproj" />
+		<ProjectReference Include="..\..\CETS.Core\Infrastructure\Infrastructure.csproj" />
 		<ProjectReference Include="..\..\CETS.Core\Utils\Utils.csproj" />
 		<ProjectReference Include="..\..\CETS.Core\Application\Application.csproj" />
 	</ItemGroup>
@@ -25,6 +30,11 @@
 
 	<ItemGroup>
 	  <Folder Include="Mappers\" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <None Include="appsettings.Development.json" />
 	</ItemGroup>
 
 </Project>
