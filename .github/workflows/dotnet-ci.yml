@@ -79,7 +79,7 @@ jobs:
           echo "--- Verifying critical files exist in the correct locations ---"
           test -f CETS.API/${{ env.SOLUTION }}
           test -f CETS.Core/DTOs/DTOs.csproj
-          test -f CETS.Core/Services/Services.csproj
+          test -f CETS.Core/Application/Application.csproj
           test -f CETS.Core/Utils/Utils.csproj
           echo "--- Layout appears correct ---"
 
