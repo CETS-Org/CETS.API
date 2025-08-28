@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
@@ -50,6 +54,11 @@
 	  <None Update="EmailTemplates\Templates\RefundConfirmation.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <None Include="appsettings.Development.json" />
 	</ItemGroup>
 
 </Project>
