@@ -1,9 +1,17 @@
-
+using Application.Implementations;
+using Application.Interfaces;
+using Domain.Data;
+using Domain.Interfaces;
+using Domain.Interfaces.CORE;
+using Domain.Interfaces.IDN;
+using Infrastructure.Repositories;
+using Infrastructure.Repositories.CORE;
+using Infrastructure.Repositories.IDN;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
-using Services.Implementations;
-using Services.Interfaces;
+
 using System.Text;
 
 namespace WebAPI
@@ -17,11 +25,17 @@ namespace WebAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddDbContext<AppDbContext>(opts =>
+                opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDb")));
 
             builder.Services.AddScoped<IMessageService, MessageService>();
+            builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
+            builder.Services.AddScoped<ICORE_LookUpRepository, CORE_LookUpRepository>();
 
 
             builder.Services.AddHttpContextAccessor();
@@ -42,32 +56,36 @@ namespace WebAPI
            });
             var rabbitMqSettings = builder.Configuration.GetSection("RabbitMq");
 
-            builder.Services.AddMassTransit(x =>
+            if (builder.Configuration.GetValue("Features:UseRabbitMq", false))
             {
-                x.UsingRabbitMq((context, cfg) =>
+                builder.Services.AddMassTransit(x =>
                 {
-                    cfg.Host(
-                        rabbitMqSettings["Host"],
-                        rabbitMqSettings["VirtualHost"],
-                        h =>
-                        {
-                            h.Username(rabbitMqSettings["Username"]);
-                            h.Password(rabbitMqSettings["Password"]);
-                        });
+                    x.UsingRabbitMq((context, cfg) =>
+                    {
+                        cfg.Host(
+                            rabbitMqSettings["Host"],
+                            rabbitMqSettings["VirtualHost"],
+                            h =>
+                            {
+                                h.Username(rabbitMqSettings["Username"]);
+                                h.Password(rabbitMqSettings["Password"]);
+                            });
+                    });
                 });
-            });
+            }
 
-
-            builder.Services.AddSingleton<IMongoClient>(sp =>
+            if (builder.Configuration.GetValue("Features:UseMongo", false))
             {
-                var mongoConnection = builder.Configuration.GetConnectionString("MongoDb");
-                var settings = MongoClientSettings.FromConnectionString(mongoConnection);
-                return new MongoClient(settings);
-            });
-
+                builder.Services.AddSingleton<IMongoClient>(sp =>
+                {
+                    var mongoConnection = builder.Configuration.GetConnectionString("MongoDb");
+                    var settings = MongoClientSettings.FromConnectionString(mongoConnection);
+                    return new MongoClient(settings);
+                });
+            }
 
             // Register AutoMapper
-            builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAutoMapper(typeof(Application.Mappers.CORE_LookUpProfile));
 
             var app = builder.Build();
 
