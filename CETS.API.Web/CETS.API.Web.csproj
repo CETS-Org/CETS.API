@@ -29,7 +29,14 @@
 
 
 	<ItemGroup>
-	  <Folder Include="Mappers\" />
+	  <Folder Include="Controllers\ACAD\" />
+	  <Folder Include="Controllers\COM\" />
+	  <Folder Include="Controllers\CORE\" />
+	  <Folder Include="Controllers\EVT\" />
+	  <Folder Include="Controllers\FAC\" />
+	  <Folder Include="Controllers\FIN\" />
+	  <Folder Include="Controllers\HR\" />
+	  <Folder Include="Controllers\RPT\" />
 	</ItemGroup>
 
 
