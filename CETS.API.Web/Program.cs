@@ -113,11 +113,13 @@ namespace WebAPI
             builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
+            builder.Services.AddScoped<IIDN_TeacherService, IDN_TeacherService>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
             builder.Services.AddScoped<IIDN_StudentRepository, IDN_StudentRepository>();
+            builder.Services.AddScoped<IIDN_TeacherRepository, IDN_TeacherRepository>();
             builder.Services.AddScoped<ICORE_LookUpRepository, CORE_LookUpRepository>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
