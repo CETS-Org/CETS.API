@@ -3,6 +3,7 @@ using DTOs.Message.Requests;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
+using Utils.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -15,14 +16,16 @@ namespace WebAPI.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly IPublishEndpoint _publishEndpoint;
+        //private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IdGenerator _idGenerator;
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IPublishEndpoint publishEndpoint)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, /*IPublishEndpoint publishEndpoint,*/ IdGenerator idGenerator)
         {
             _logger = logger;
-            _publishEndpoint = publishEndpoint;
+            //_publishEndpoint = publishEndpoint;
+            _idGenerator = idGenerator;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -37,11 +40,18 @@ namespace WebAPI.Controllers
             .ToArray();
         }
 
-        [HttpPost("SendMessage")]
-        public async Task<IActionResult> SendEmail([FromBody] CreateMessageRequest message)
+        //[HttpPost("SendMessage")]
+        //public async Task<IActionResult> SendEmail([FromBody] CreateMessageRequest message)
+        //{
+        //    await _publishEndpoint.Publish(message);
+        //    return Ok("Message queued!");
+        //}
+
+        [HttpGet("GenerateId")]
+        public IActionResult GenerateId()
         {
-            await _publishEndpoint.Publish(message);
-            return Ok("Message queued!");
+            var id = _idGenerator.GenerateId();
+            return Ok(new { Id = id });
         }
     }
 }
