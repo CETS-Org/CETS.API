@@ -1,5 +1,7 @@
 using Application.Implementations;
+using Application.Implementations.IDN;
 using Application.Interfaces;
+using Application.Interfaces.IDN;
 using Domain.Data;
 using Domain.Interfaces;
 using Domain.Interfaces.CORE;
@@ -32,9 +34,12 @@ namespace WebAPI
 
             builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
+            builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
+            builder.Services.AddScoped<IIDN_StudentRepository, IDN_StudentRepository>();
             builder.Services.AddScoped<ICORE_LookUpRepository, CORE_LookUpRepository>();
 
 
