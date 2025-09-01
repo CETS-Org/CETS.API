@@ -39,14 +39,14 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(student);
         }
 
-        [HttpPost("students")]
+        [HttpPost]
         public async Task<IActionResult> CreateStudentAsync([FromBody] CreateStudentRequest dto)
         {
             var createdStudent = await _studentService.CreateStudentAsync(dto);
             return Created("New student created", createdStudent);
         }
 
-        [HttpPut("students/{id:guid}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateStudentAsync(Guid id, [FromBody] UpdateStudentRequest dto)
         {
             var updatedStudent = await _studentService.UpdateStudentAsync(id, dto);
