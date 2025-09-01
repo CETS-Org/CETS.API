@@ -46,6 +46,13 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(student);
         }
 
+        [HttpPost("students")]
+        public async Task<IActionResult> CreateStudentAsync([FromBody] CreateStudentRequest dto)
+        {
+            var createdStudent = await _studentService.CreateStudentAsync(dto);
+            return Created("New student created", createdStudent);
+        }
+
         [HttpPut("students/{id:guid}")]
         public async Task<IActionResult> UpdateStudentAsync(Guid id, [FromBody] UpdateStudentRequest dto)
         {
@@ -57,12 +64,13 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedStudent);
         }
 
-        [HttpPost("students")]
-        public async Task<IActionResult> CreateStudentAsync([FromBody] CreateStudentRequest dto)
+        [HttpPatch("students/activate/{id:guid}")]
+        public async Task<IActionResult> ActivateStudentAsync(Guid id)
         {
-            var createdStudent = await _studentService.CreateStudentAsync(dto);
-            return Created("New student created", createdStudent);
+            await _studentService.ActivateStudentAsync(id);
+            return NoContent();
         }
+
 
         [HttpDelete("students/{id:guid}")]
         public async Task<IActionResult> SoftDeleteStudentAsync(Guid id)
