@@ -17,14 +17,14 @@ namespace CETS.API.Web.Controllers.IDN
             _studentService = studentService;
         }
 
-        [HttpGet("students")]
+        [HttpGet]
         public async Task<IActionResult> GetAllStudentsAsync()
         {
             var students = await _studentService.GetAllStudentsAsync();
             return Ok(students);
         }
 
-        [HttpGet("students/{id:guid}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetStudentByIdAsync(Guid id)
         {
             var student = await _studentService.GetStudentByIdAsync(id);
@@ -35,7 +35,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(student);
         }
 
-        [HttpGet("students/code/{code}")]
+        [HttpGet("{code}")]
         public async Task<IActionResult> GetStudentByCodeAsync(string code)
         {
             var student = await _studentService.GetStudentByCodeAsync(code);
@@ -46,14 +46,14 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(student);
         }
 
-        [HttpPost("students")]
+        [HttpPost]
         public async Task<IActionResult> CreateStudentAsync([FromBody] CreateStudentRequest dto)
         {
             var createdStudent = await _studentService.CreateStudentAsync(dto);
             return Created("New student created", createdStudent);
         }
 
-        [HttpPut("students/{id:guid}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateStudentAsync(Guid id, [FromBody] UpdateStudentRequest dto)
         {
             var updatedStudent = await _studentService.UpdateStudentAsync(id, dto);
@@ -64,7 +64,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedStudent);
         }
 
-        [HttpPatch("students/activate/{id:guid}")]
+        [HttpPatch("activate/{id:guid}")]
         public async Task<IActionResult> ActivateStudentAsync(Guid id)
         {
             await _studentService.ActivateStudentAsync(id);
@@ -72,7 +72,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
 
-        [HttpDelete("students/{id:guid}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> SoftDeleteStudentAsync(Guid id)
         {
             var deletedStudent = await _studentService.SoftDeleteStudentAsync(id);
@@ -82,10 +82,6 @@ namespace CETS.API.Web.Controllers.IDN
             }
             return Ok(deletedStudent);
         }
-
-
-
-
 
     }
 }

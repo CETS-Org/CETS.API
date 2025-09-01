@@ -15,14 +15,14 @@ namespace CETS.API.Web.Controllers.IDN
             _teacherCredentialService = teacherCredentialService;
         }
 
-        [HttpGet("credentials/{teacherId:guid}")]
+        [HttpGet("{teacherId:guid}")]
         public async Task<IActionResult> GetCredentialsByTeacherId(Guid teacherId)
         {
             var credentials = await _teacherCredentialService.GetCredentialsByTeacherIdAsync(teacherId);
             return Ok(credentials);
         }
 
-        [HttpGet("credentials/code/{teacherCode}")]
+        [HttpGet("code/{teacherCode}")]
         public async Task<IActionResult> GetCredentialsByTeacherCode(string teacherCode)
         {
             var credentials = await _teacherCredentialService.GetCredentialsByTeacherCodeAsync(teacherCode);
@@ -36,7 +36,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(credentialTypes);
         }
 
-        [HttpPost("credentials")]
+        [HttpPost]
         public async Task<IActionResult> CreateCredential([FromBody] CreateTeacherCredentialRequest credential)
         {
             if (credential == null)
@@ -47,7 +47,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Created("New credential created", createdCredential);
         }
 
-        [HttpPut("credentials/{credentialId:guid}")]
+        [HttpPut("{credentId:guid}")]
         public async Task<IActionResult> UpdateCredential(Guid credentialId, [FromBody] UpdateTeacherCredentialRequest credential)
         {
             var updatedCredential = await _teacherCredentialService.UpdateAsync(credentialId, credential);
@@ -58,7 +58,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedCredential);
         }
 
-        [HttpDelete("credentials/{credentialId:guid}")]
+        [HttpDelete("{credentialId:guid}")]
         public async Task<IActionResult> DeleteCredential(Guid credentialId)
         {
             await _teacherCredentialService.DeleteAsync(credentialId);
