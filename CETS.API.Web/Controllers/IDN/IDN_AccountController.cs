@@ -75,7 +75,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(deactivatedAccount);
         }
 
-        [HttpPut("accounts/{id:guid}/activate")]
+        [HttpPatch("accounts/{id:guid}/activate")]
         public async Task<IActionResult> ActivateAccountAsync(Guid id)
         {
             var activatedAccount = await _accountService.ActivateAccountAsync(id);
