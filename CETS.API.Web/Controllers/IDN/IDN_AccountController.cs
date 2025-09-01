@@ -25,14 +25,14 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(statuses);
         }
 
-        [HttpGet("accounts")]
+        [HttpGet]
         public async Task<IActionResult> GetAllAccountsAsync()
         {
             var accounts = await _accountService.GetAllAccountsAsync();
             return Ok(accounts);
         }
 
-        [HttpGet("accounts/{id:guid}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetAccountByIdAsync(Guid id)
         {
             var account = await _accountService.GetAccountByIdAsync(id);
@@ -43,7 +43,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(account);
         }
 
-        [HttpGet("accounts/email")]
+        [HttpGet("email")]
         public async Task<IActionResult> GetAccountByEmailAsync([FromQuery] string email)
         {
             var account = await _accountService.GetAccountByEmailAsync(email);
@@ -53,7 +53,7 @@ namespace CETS.API.Web.Controllers.IDN
             }
             return Ok(account);
         }
-        [HttpPut("accounts/{id:guid}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAccountAsync(Guid id, [FromBody] UpdateAccountRequest dto)
         {
             var updatedAccount = await _accountService.UpdateAccountAsync(id, dto);
@@ -64,7 +64,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedAccount);
         }
 
-        [HttpPut("accounts/{id:guid}/deactivate")]
+        [HttpPut("deactivate/{id:guid}")]
         public async Task<IActionResult> DeactivateAccountAsync(Guid id)
         {
             var deactivatedAccount = await _accountService.DeactivateAccountAsync(id);
@@ -75,7 +75,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(deactivatedAccount);
         }
 
-        [HttpPatch("accounts/{id:guid}/activate")]
+        [HttpPatch("activate/{id:guid}")]
         public async Task<IActionResult> ActivateAccountAsync(Guid id)
         {
             var activatedAccount = await _accountService.ActivateAccountAsync(id);
@@ -86,7 +86,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(activatedAccount);
         }
 
-        [HttpDelete("accounts/{id:guid}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAccountAsync(Guid id)
         {
             var result = await _accountService.SoftDeleteAccountAsync(id);
