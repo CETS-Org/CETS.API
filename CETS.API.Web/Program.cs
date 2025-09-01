@@ -115,6 +115,8 @@ namespace WebAPI
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
             builder.Services.AddScoped<IIDN_TeacherService, IDN_TeacherService>();
             builder.Services.AddScoped<IIDN_TeacherCredentialService, IDN_TeacherCredentialService>();
+            builder.Services.AddScoped<IIDN_RoleService, IDN_RoleService>();
+            builder.Services.AddScoped<IIDN_AccountRoleService, IDN_AccountRoleService>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -122,6 +124,8 @@ namespace WebAPI
             builder.Services.AddScoped<IIDN_StudentRepository, IDN_StudentRepository>();
             builder.Services.AddScoped<IIDN_TeacherRepository, IDN_TeacherRepository>();
             builder.Services.AddScoped<IIDN_TeacherCredentialRepository, IDN_TeacherCredentialRepository>();
+            builder.Services.AddScoped<IIDN_RoleRepository, IDN_RoleRepository>();
+            builder.Services.AddScoped<IIDN_AccountRoleRepository, IDN_AccountRoleRepository>();
             builder.Services.AddScoped<ICORE_LookUpRepository, CORE_LookUpRepository>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
