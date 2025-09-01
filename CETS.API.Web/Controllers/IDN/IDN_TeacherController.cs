@@ -101,7 +101,7 @@ namespace CETS.API.Web.Controllers.IDN
             Guid id,
             [FromBody] UpdateTeacherProfileRequest dto)
         {
-            string role = "AcademicStaff";
+            string role = "Teacher";
 
             bool isTeacherSelf = true; 
             bool isStaff = role == "AcademicStaff" || role == "Admin";
