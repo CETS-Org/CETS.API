@@ -18,14 +18,14 @@ namespace CETS.API.Web.Controllers.IDN
             _teacherService = teacherService;
         }
 
-        [HttpGet("teachers")]
+        [HttpGet]
         public async Task<IActionResult> GetAllTeachersAsync()
         {
             var teachers = await _teacherService.GetAllTeachersAsync();
             return Ok(teachers);
         }
 
-        [HttpGet("teachers/{id:guid}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetTeacherByIdAsync(Guid id)
         {
             var teacher = await _teacherService.GetTeacherByIdAsync(id);
@@ -36,7 +36,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(teacher);
         }
 
-        [HttpGet("teachers/details/{id:guid}")]
+        [HttpGet("details/{id:guid}")]
         public async Task<IActionResult> GetTeacherDetailsAsync(Guid id)
         {
             var teacher = await _teacherService.GetTeacherDetailsAsync(id);
@@ -49,7 +49,7 @@ namespace CETS.API.Web.Controllers.IDN
 
 
 
-        [HttpGet("teachers/code/{code}")]
+        [HttpGet("code/{code}")]
         public async Task<IActionResult> GetTeacherByCodeAsync(string code)
         {
             var teacher = await _teacherService.GetTeacherByCodeAsync(code);
@@ -60,7 +60,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(teacher);
         }
 
-        [HttpGet("teachers/email/{email}")]
+        [HttpGet("email/{email}")]
         public async Task<IActionResult> GetTeacherByEmailAsync(string email)
         {
             var teacher = await _teacherService.GetTeacherByEmailAsync(email);
@@ -71,14 +71,14 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(teacher);
         }
 
-        [HttpPost("teachers")]
+        [HttpPost]
         public async Task<IActionResult> CreateTeacherAsync([FromBody] CreateTeacherRequest dto)
         {
             var createdTeacher = await _teacherService.CreateTeacherAsync(dto);
             return Created("New teacher created", createdTeacher);
         }
 
-        [HttpPut("teachers/{id:guid}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateTeacherAsync(Guid id, [FromBody] UpdateTeacherRequest dto)
         {
             var updatedTeacher = await _teacherService.UpdateTeacherAsync(id, dto);
@@ -89,14 +89,14 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedTeacher);
         }
 
-        [HttpPatch("teachers/activate/{id:guid}")]
+        [HttpPatch("activate/{id:guid}")]
         public async Task<IActionResult> ActivateTeacherAsync(Guid id)
         {
             await _teacherService.ActivateTeacherAsync(id);
             return NoContent();
         }
 
-        [HttpDelete("teachers/{id:guid}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> SoftDeleteTeacherAsync(Guid id)
         {
             await _teacherService.SoftDeleteTeacherAsync(id);
