@@ -64,7 +64,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedAccount);
         }
 
-        [HttpPut("deactivate/{id:guid}")]
+        [HttpPatch("deactivate/{id:guid}")]
         public async Task<IActionResult> DeactivateAccountAsync(Guid id)
         {
             var deactivatedAccount = await _accountService.DeactivateAccountAsync(id);
@@ -95,6 +95,17 @@ namespace CETS.API.Web.Controllers.IDN
                 return NotFound();
             }
             return Ok(result);
+        }
+
+        [HttpPatch("restore/{id:guid}")]
+        public async Task<IActionResult> RestoreAccountAsync(Guid id)
+        {
+            var restoredAccount = await _accountService.RestoreAccountAsync(id);
+            if (restoredAccount == null)
+            {
+                return NotFound();
+            }
+            return Ok(restoredAccount);
         }
     }
 }

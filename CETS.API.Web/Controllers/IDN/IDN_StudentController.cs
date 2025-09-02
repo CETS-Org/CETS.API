@@ -64,11 +64,11 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedStudent);
         }
 
-        [HttpPatch("activate/{id:guid}")]
-        public async Task<IActionResult> ActivateStudentAsync(Guid id)
+        [HttpPatch("restore/{id:guid}")]
+        public async Task<IActionResult> RestoreStudentAsync(Guid id)
         {
-            await _studentService.ActivateStudentAsync(id);
-            return NoContent();
+            var student = await _studentService.RestoreStudentAsync(id);
+            return Ok(student);
         }
 
 
