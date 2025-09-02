@@ -118,6 +118,8 @@ namespace WebAPI
             builder.Services.AddScoped<IIDN_RoleService, IDN_RoleService>();
             builder.Services.AddScoped<IIDN_AccountRoleService, IDN_AccountRoleService>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped<ICORE_LookUpService, CORE_LookUpService>();
+            builder.Services.AddScoped<ICORE_LookUpTypeService, CORE_LookUpTypeService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
@@ -127,6 +129,7 @@ namespace WebAPI
             builder.Services.AddScoped<IIDN_RoleRepository, IDN_RoleRepository>();
             builder.Services.AddScoped<IIDN_AccountRoleRepository, IDN_AccountRoleRepository>();
             builder.Services.AddScoped<ICORE_LookUpRepository, CORE_LookUpRepository>();
+            builder.Services.AddScoped<ICORE_LookUpTypeRepository, CORE_LookUpTypeRepository>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
