@@ -89,18 +89,26 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedTeacher);
         }
 
-        [HttpPatch("activate/{id:guid}")]
-        public async Task<IActionResult> ActivateTeacherAsync(Guid id)
+        [HttpPatch("restore/{id:guid}")]
+        public async Task<IActionResult> RestoreTeacherAsync(Guid id)
         {
-            await _teacherService.ActivateTeacherAsync(id);
-            return NoContent();
+            var restored = await _teacherService.RestoreTeacherAsync(id);
+            if (restored == null)
+            {
+                return NotFound();
+            }
+            return Ok(restored);
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> SoftDeleteTeacherAsync(Guid id)
         {
-            await _teacherService.SoftDeleteTeacherAsync(id);
-            return NoContent();
+            var deleted = await _teacherService.SoftDeleteTeacherAsync(id);
+            if (deleted == null)
+            {
+                return NotFound();
+            }
+            return Ok(deleted);
         }
 
     }

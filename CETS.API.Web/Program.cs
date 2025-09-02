@@ -1,6 +1,8 @@
 using Application.Implementations;
+using Application.Implementations.CORE;
 using Application.Implementations.IDN;
 using Application.Interfaces;
+using Application.Interfaces.CORE;
 using Application.Interfaces.IDN;
 using Domain.Data;
 using Domain.Interfaces;
@@ -41,6 +43,8 @@ namespace WebAPI
             builder.Services.AddScoped<IIDN_RoleService, IDN_RoleService>();
             builder.Services.AddScoped<IIDN_AccountRoleService, IDN_AccountRoleService>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped<ICORE_LookUpService, CORE_LookUpService>();
+            builder.Services.AddScoped<ICORE_LookUpTypeService, CORE_LookUpTypeService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
@@ -50,6 +54,7 @@ namespace WebAPI
             builder.Services.AddScoped<IIDN_RoleRepository, IDN_RoleRepository>();
             builder.Services.AddScoped<IIDN_AccountRoleRepository, IDN_AccountRoleRepository>();
             builder.Services.AddScoped<ICORE_LookUpRepository, CORE_LookUpRepository>();
+            builder.Services.AddScoped<ICORE_LookUpTypeRepository, CORE_LookUpTypeRepository>();
 
             builder.Services.AddScoped<IdGenerator>();
 
