@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces.IDN;
-using DTOs.IDN_TeacherCredential.Requests;
+using DTOs.IDN.IDN_TeacherCredential.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,5 @@
 using Application.Interfaces.COM;
-using DTOs.COM_Feedback.Requests;
+using DTOs.COM.COM_Feedback.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CETS.API.Web.Controllers.COM

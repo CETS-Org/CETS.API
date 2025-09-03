@@ -1,5 +1,5 @@
 using Application.Interfaces.COM;
-using DTOs.COM_Notification.Requests;
+using DTOs.COM.COM_Notification.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CETS.API.Web.Controllers.COM
