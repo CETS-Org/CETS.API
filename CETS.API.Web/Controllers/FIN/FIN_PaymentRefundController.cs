@@ -1,5 +1,5 @@
 using Application.Interfaces.FIN;
-using DTOs.FIN_PaymentRefund.Requests;
+using DTOs.FIN.FIN_PaymentRefund.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CETS.API.Web.Controllers.FIN
