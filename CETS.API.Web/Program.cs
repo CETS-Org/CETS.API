@@ -136,7 +136,7 @@ namespace WebAPI
             }
 
             // Register AutoMapper
-            builder.Services.AddAutoMapper(typeof(Application.Mappers.CORE_LookUpProfile));
+            builder.Services.AddAutoMapper(typeof(Application.Mappers.CORE.CORE_LookUpProfile));
 
             var app = builder.Build();
 

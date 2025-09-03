@@ -1,5 +1,5 @@
 using Application.Interfaces.COM;
-using DTOs.COM_Conversation.Requests;
+using DTOs.COM.COM_Conversation.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CETS.API.Web.Controllers.COM

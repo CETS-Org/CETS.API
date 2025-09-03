@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces.IDN;
-using DTOs.IDN_Student.Requests;
+using DTOs.IDN.IDN_Student.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

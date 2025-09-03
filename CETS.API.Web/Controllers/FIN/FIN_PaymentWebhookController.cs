@@ -1,5 +1,5 @@
 using Application.Interfaces.FIN;
-using DTOs.FIN_PaymentWebhook.Requests;
+using DTOs.FIN.FIN_PaymentWebhook.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CETS.API.Web.Controllers.FIN
