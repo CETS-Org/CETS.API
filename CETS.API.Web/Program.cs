@@ -126,6 +126,13 @@ namespace WebAPI
             builder.Services.AddScoped<IFIN_PaymentRefundService, FIN_PaymentRefundService>();
             builder.Services.AddScoped<IFIN_PaymentWebhookService, FIN_PaymentWebhookService>();
             builder.Services.AddScoped<IFIN_PromotionService, FIN_PromotionService>();
+            builder.Services.AddScoped<IEVT_EventService, EVT_EventService>();
+            builder.Services.AddScoped<IEVT_EventFeedbackService, EVT_EventFeedbackService>();
+            builder.Services.AddScoped<IEVT_EventRegistrationService, EVT_EventRegistrationService>();
+            builder.Services.AddScoped<IFAC_RoomService, FAC_RoomService>();
+            builder.Services.AddScoped<IHR_ContractService, HR_ContractService>();
+            builder.Services.AddScoped<IHR_TeacherAvailabilityService, HR_TeacherAvailabilityService>();
+            builder.Services.AddScoped<IRPT_ReportService, RPT_ReportService>();
             builder.Services.AddScoped<ICOM_NotificationService, COM_NotificationService>();
             builder.Services.AddScoped<ICOM_FeedbackService, COM_FeedbackService>();
             builder.Services.AddScoped<ICOM_FeedbackRecordService, COM_FeedbackRecordService>();
@@ -146,6 +153,13 @@ namespace WebAPI
             builder.Services.AddScoped<IFIN_PaymentRefundRepository, FIN_PaymentRefundRepository>();
             builder.Services.AddScoped<IFIN_PaymentWebhookRepository, FIN_PaymentWebhookRepository>();
             builder.Services.AddScoped<IFIN_PromotionRepository, FIN_PromotionRepository>();
+            builder.Services.AddScoped<IEVT_EventRepository, EVT_EventRepository>();
+            builder.Services.AddScoped<IEVT_EventFeedbackRepository, EVT_EventFeedbackRepository>();
+            builder.Services.AddScoped<IEVT_EventRegistrationRepository, EVT_EventRegistrationRepository>();
+            builder.Services.AddScoped<IFAC_RoomRepository, FAC_RoomRepository>();
+            builder.Services.AddScoped<IHR_ContractRepository, HR_ContractRepository>();
+            builder.Services.AddScoped<IHR_TeacherAvailabilityRepository, HR_TeacherAvailabilityRepository>();
+            builder.Services.AddScoped<IRPT_ReportRepository, RPT_ReportRepository>();
             builder.Services.AddScoped<ICOM_NotificationRepository, COM_NotificationRepository>();
             builder.Services.AddScoped<ICOM_FeedbackRepository, COM_FeedbackRepository>();
             builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
