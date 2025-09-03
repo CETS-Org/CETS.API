@@ -120,6 +120,16 @@ namespace WebAPI
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped<ICORE_LookUpService, CORE_LookUpService>();
             builder.Services.AddScoped<ICORE_LookUpTypeService, CORE_LookUpTypeService>();
+            builder.Services.AddScoped<IFIN_InvoiceService, FIN_InvoiceService>();
+            builder.Services.AddScoped<IFIN_InvoiceItemService, FIN_InvoiceItemService>();
+            builder.Services.AddScoped<IFIN_PaymentService, FIN_PaymentService>();
+            builder.Services.AddScoped<IFIN_PaymentRefundService, FIN_PaymentRefundService>();
+            builder.Services.AddScoped<IFIN_PaymentWebhookService, FIN_PaymentWebhookService>();
+            builder.Services.AddScoped<IFIN_PromotionService, FIN_PromotionService>();
+            builder.Services.AddScoped<ICOM_NotificationService, COM_NotificationService>();
+            builder.Services.AddScoped<ICOM_FeedbackService, COM_FeedbackService>();
+            builder.Services.AddScoped<ICOM_FeedbackRecordService, COM_FeedbackRecordService>();
+            builder.Services.AddScoped<ICOM_ConversationService, COM_ConversationService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
@@ -130,6 +140,16 @@ namespace WebAPI
             builder.Services.AddScoped<IIDN_AccountRoleRepository, IDN_AccountRoleRepository>();
             builder.Services.AddScoped<ICORE_LookUpRepository, CORE_LookUpRepository>();
             builder.Services.AddScoped<ICORE_LookUpTypeRepository, CORE_LookUpTypeRepository>();
+            builder.Services.AddScoped<IFIN_InvoiceRepository, FIN_InvoiceRepository>();
+            builder.Services.AddScoped<IFIN_InvoiceItemRepository, FIN_InvoiceItemRepository>();
+            builder.Services.AddScoped<IFIN_PaymentRepository, FIN_PaymentRepository>();
+            builder.Services.AddScoped<IFIN_PaymentRefundRepository, FIN_PaymentRefundRepository>();
+            builder.Services.AddScoped<IFIN_PaymentWebhookRepository, FIN_PaymentWebhookRepository>();
+            builder.Services.AddScoped<IFIN_PromotionRepository, FIN_PromotionRepository>();
+            builder.Services.AddScoped<ICOM_NotificationRepository, COM_NotificationRepository>();
+            builder.Services.AddScoped<ICOM_FeedbackRepository, COM_FeedbackRepository>();
+            builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
+            builder.Services.AddScoped<ICOM_ConversationRepository, COM_ConversationRepository>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
