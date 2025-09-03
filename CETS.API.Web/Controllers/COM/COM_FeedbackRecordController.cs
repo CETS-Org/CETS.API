@@ -50,7 +50,14 @@ namespace CETS.API.Web.Controllers.COM
 			var deleted = await _service.SoftDeleteAsync(id);
 			return Ok(deleted);
 		}
-	}
+
+        [HttpPatch("restore/{id:guid}")]
+        public async Task<IActionResult> RestoreAsync(Guid id)
+        {
+            var restored = await _service.RestoreAsync(id);
+            return Ok(restored);
+        }
+    }
 }
 
 
