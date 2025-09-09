@@ -29,7 +29,6 @@
 
 
 	<ItemGroup>
-	  <Folder Include="Controllers\ACAD\" />
 	  <Folder Include="Controllers\COM\" />
 	  <Folder Include="Controllers\CORE\" />
 	  <Folder Include="Controllers\EVT\" />
