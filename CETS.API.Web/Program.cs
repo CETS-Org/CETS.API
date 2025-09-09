@@ -42,6 +42,10 @@ using MongoDB.Driver;
 
 using System.Text;
 using Utils.Helpers;
+using Application.Interfaces.ACAD;
+using Application.Implementations.ACAD;
+using Infrastructure.Repositories.ACAD;
+using Domain.Interfaces.ACAD;
 
 namespace WebAPI
 {
@@ -86,6 +90,8 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_FeedbackService, COM_FeedbackService>();
             builder.Services.AddScoped<ICOM_FeedbackRecordService, COM_FeedbackRecordService>();
             builder.Services.AddScoped<ICOM_ConversationService, COM_ConversationService>();
+            builder.Services.AddScoped<IACAD_CourseService, ACAD_CourseService>();
+
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
@@ -113,9 +119,23 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_FeedbackRepository, COM_FeedbackRepository>();
             builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
             builder.Services.AddScoped<ICOM_ConversationRepository, COM_ConversationRepository>();
+            builder.Services.AddScoped<IACAD_CourseRepository, ACAD_CourseRepository>();
 
             builder.Services.AddScoped<IdGenerator>();
 
+
+            var allowedOrigins = builder.Configuration
+              .GetSection("AllowedCorsOrigins")
+              .Get<string[]>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("DevCors", p => p
+                    .WithOrigins(allowedOrigins!)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+            });
 
 
 
@@ -176,7 +196,7 @@ namespace WebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCors("DevCors");
             app.UseHttpsRedirection();
             app.UseAuthorization();
 
