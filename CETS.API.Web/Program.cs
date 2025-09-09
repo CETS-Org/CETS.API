@@ -137,6 +137,8 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_FeedbackService, COM_FeedbackService>();
             builder.Services.AddScoped<ICOM_FeedbackRecordService, COM_FeedbackRecordService>();
             builder.Services.AddScoped<ICOM_ConversationService, COM_ConversationService>();
+            builder.Services.AddScoped<IACAD_CourseService, ACAD_CourseService>();
+
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
@@ -164,6 +166,7 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_FeedbackRepository, COM_FeedbackRepository>();
             builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
             builder.Services.AddScoped<ICOM_ConversationRepository, COM_ConversationRepository>();
+            builder.Services.AddScoped<IACAD_CourseRepository, ACAD_CourseRepository>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
@@ -307,6 +310,19 @@ namespace WebAPI
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("ApiCors", p => p
+                    .WithOrigins(allowedOrigins!)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+            });
+
+            var allowedOrigins = builder.Configuration
+              .GetSection("AllowedCorsOrigins")
+              .Get<string[]>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("DevCors", p => p
                     .WithOrigins(allowedOrigins!)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
