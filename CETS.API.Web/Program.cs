@@ -1,51 +1,55 @@
 using Application.Implementations;
-using Application.Implementations.CORE;
-using Application.Implementations.FIN;
-using Application.Implementations.EVT;
-using Application.Implementations.IDN;
+using Application.Implementations.ACAD;
 using Application.Implementations.COM;
+using Application.Implementations.CORE;
+using Application.Implementations.EVT;
 using Application.Implementations.FAC;
+using Application.Implementations.FIN;
 using Application.Implementations.HR;
+using Application.Implementations.IDN;
 using Application.Implementations.RPT;
 using Application.Interfaces;
-using Application.Interfaces.CORE;
-using Application.Interfaces.FIN;
-using Application.Interfaces.EVT;
-using Application.Interfaces.IDN;
+using Application.Interfaces.ACAD;
 using Application.Interfaces.COM;
+using Application.Interfaces.CORE;
+using Application.Interfaces.EVT;
 using Application.Interfaces.FAC;
+using Application.Interfaces.FIN;
 using Application.Interfaces.HR;
+using Application.Interfaces.IDN;
 using Application.Interfaces.RPT;
 using Domain.Data;
+using Domain.Entities;
 using Domain.Interfaces;
-using Domain.Interfaces.CORE;
-using Domain.Interfaces.FIN;
-using Domain.Interfaces.EVT;
-using Domain.Interfaces.IDN;
+using Domain.Interfaces.ACAD;
 using Domain.Interfaces.COM;
+using Domain.Interfaces.CORE;
+using Domain.Interfaces.EVT;
 using Domain.Interfaces.FAC;
+using Domain.Interfaces.FIN;
 using Domain.Interfaces.HR;
+using Domain.Interfaces.IDN;
 using Domain.Interfaces.RPT;
 using Infrastructure.Repositories;
-using Infrastructure.Repositories.CORE;
-using Infrastructure.Repositories.FIN;
-using Infrastructure.Repositories.EVT;
-using Infrastructure.Repositories.IDN;
+using Infrastructure.Repositories.ACAD;
 using Infrastructure.Repositories.COM;
+using Infrastructure.Repositories.CORE;
+using Infrastructure.Repositories.EVT;
 using Infrastructure.Repositories.FAC;
+using Infrastructure.Repositories.FIN;
 using Infrastructure.Repositories.HR;
+using Infrastructure.Repositories.IDN;
 using Infrastructure.Repositories.RPT;
 using MassTransit;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.ModelBuilder;
 using MongoDB.Driver;
-
+using System.Diagnostics;
+using System.Net;
 using System.Text;
 using Utils.Helpers;
-using Application.Interfaces.ACAD;
-using Application.Implementations.ACAD;
-using Infrastructure.Repositories.ACAD;
-using Domain.Interfaces.ACAD;
 
 namespace WebAPI
 {
@@ -56,8 +60,14 @@ namespace WebAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            var modelbuilder = new ODataConventionModelBuilder();
+            modelbuilder.EntitySet<ACAD_Course>("ACAD_Course");
+            modelbuilder.EntitySet<IDN_Account>("IDN_Accounts");
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddOData(opt =>
+                opt.AddRouteComponents("odata", modelbuilder.GetEdmModel())
+                    .Select().Filter().Expand().Count().OrderBy().SetMaxTop(100));
+            ;
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<AppDbContext>(opts =>

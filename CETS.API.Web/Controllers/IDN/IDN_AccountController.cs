@@ -2,12 +2,14 @@
 using DTOs.IDN.IDN_Account.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace CETS.API.Web.Controllers.IDN
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IDN_AccountController : ControllerBase
+    public class IDN_AccountController : ODataController
     {
         private readonly ILogger<IDN_AccountController> _logger;
         private readonly IIDN_AccountService _accountService;
@@ -25,6 +27,7 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(statuses);
         }
 
+        [EnableQuery]
         [HttpGet]
         public async Task<IActionResult> GetAllAccountsAsync()
         {
