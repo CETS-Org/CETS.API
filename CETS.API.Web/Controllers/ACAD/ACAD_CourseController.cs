@@ -28,6 +28,17 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(courses);
         }
 
-      
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCourseDetailAsync(Guid id)
+        {
+            var course = await _courseService.GetCourseDetailAsync(id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+            return Ok(course);
+        }
+
+
     }
 }
