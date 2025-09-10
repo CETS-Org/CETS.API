@@ -29,9 +29,9 @@ namespace CETS.API.Web.Controllers.IDN
 
         [EnableQuery]
         [HttpGet]
-        public async Task<IActionResult> GetAllAccountsAsync()
+        public async Task<IActionResult> GetAllAccountsAsync([FromQuery] AccountFilterRequest filter)
         {
-            var accounts = await _accountService.GetAllAccountsAsync();
+            var accounts = await _accountService.GetAllAccountsAsync(filter);
             return Ok(accounts);
         }
 
