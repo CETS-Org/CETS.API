@@ -138,6 +138,8 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_FeedbackRecordService, COM_FeedbackRecordService>();
             builder.Services.AddScoped<ICOM_ConversationService, COM_ConversationService>();
             builder.Services.AddScoped<IACAD_CourseService, ACAD_CourseService>();
+            builder.Services.AddScoped<IACAD_CourseBenefitService, ACAD_CourseBenefitService>();
+            builder.Services.AddScoped<IACAD_CourseRequirementService, ACAD_CourseRequirementService>();
 
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -167,6 +169,8 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
             builder.Services.AddScoped<ICOM_ConversationRepository, COM_ConversationRepository>();
             builder.Services.AddScoped<IACAD_CourseRepository, ACAD_CourseRepository>();
+            builder.Services.AddScoped<IACAD_CourseBenefitRepository, ACAD_CourseBenefitRepository>();
+            builder.Services.AddScoped<IACAD_CourseRequirementRepository, ACAD_CourseRequirementRepository>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
