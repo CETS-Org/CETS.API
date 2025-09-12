@@ -1,5 +1,7 @@
-﻿using Application.Interfaces.IDN;
+﻿using Application.Implementations.IDN;
+using Application.Interfaces.IDN;
 using DTOs.IDN.IDN_Account.Requests;
+using MassTransit.JobService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -13,11 +15,13 @@ namespace CETS.API.Web.Controllers.IDN
     {
         private readonly ILogger<IDN_AccountController> _logger;
         private readonly IIDN_AccountService _accountService;
+        private readonly IIDN_JwtService _jwtService;
 
-        public IDN_AccountController(ILogger<IDN_AccountController> logger, IIDN_AccountService accountService)
+        public IDN_AccountController(ILogger<IDN_AccountController> logger, IIDN_AccountService accountService, IIDN_JwtService jwtService)
         {
             _logger = logger;
             _accountService = accountService;
+            _jwtService = jwtService;
         }
 
         [HttpGet("statuses")]
@@ -110,5 +114,75 @@ namespace CETS.API.Web.Controllers.IDN
             }
             return Ok(restoredAccount);
         }
+
+        #region Login
+        [HttpPost("login/student")]
+        public async Task<IActionResult> StudentLogin([FromBody] LoginRequest dto)
+        {
+            var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
+            if (account == null || account.RoleNames.All(r => r != "Student"))
+            {
+                return Unauthorized("Invalid credentials or not a student account.");
+            }
+            var token = _jwtService.GenerateJwtToken(account);
+            return Ok(new
+            {
+                message = "Login successful",
+                token,
+                account = account
+            });
+        }
+
+        [HttpPost("login/teacher")]
+        public async Task<IActionResult> TeacherLogin([FromBody] LoginRequest dto)
+        {
+            var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
+            if (account == null || account.RoleNames.All(r => r != "Teacher"))
+            {
+                return Unauthorized("Invalid credentials or not a teacher account.");
+            }
+            var token = _jwtService.GenerateJwtToken(account);
+            return Ok(new
+            {
+                message = "Login successful",
+                token,
+                account = account
+            });
+        }
+
+        [HttpPost("login/academicStaff")]
+        public async Task<IActionResult> AcademicStaff([FromBody] LoginRequest dto)
+        {
+            var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
+            if (account == null || account.RoleNames.All(r => r != "AcademicStaff"))
+            {
+                return Unauthorized("Invalid credentials or not a Academic Staff account.");
+            }
+            var token = _jwtService.GenerateJwtToken(account);
+            return Ok(new
+            {
+                message = "Login successful",
+                token,
+                account = account
+            });
+        }
+
+        [HttpPost("login/accountantStaff")]
+        public async Task<IActionResult> AccountantStaff([FromBody] LoginRequest dto)
+        {
+            var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
+            if (account == null || account.RoleNames.All(r => r != "AccountantStaff"))
+            {
+                return Unauthorized("Invalid credentials or not a Accountant Staff account.");
+            }
+            var token = _jwtService.GenerateJwtToken(account);
+            return Ok(new
+            {
+                message = "Login successful",
+                token,
+                account = account
+            });
+        }
+        #endregion
     }
 }
