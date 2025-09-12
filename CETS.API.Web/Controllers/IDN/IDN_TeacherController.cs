@@ -89,6 +89,39 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(updatedTeacher);
         }
 
+        [HttpPatch("updateprofile/{id:guid}")]
+        public async Task<IActionResult> PatchTeacherProfileAsync(
+            Guid id,
+            [FromBody] UpdateTeacherProfileRequest dto)
+        {
+            string role = "Teacher";
+
+            bool isTeacherSelf = true; 
+            bool isStaff = role == "AcademicStaff" || role == "Admin";
+
+            if (role == "Teacher" && isTeacherSelf)
+            {
+                if (dto.TeacherCode != null ||
+                    dto.CID != null )
+                {
+                    return BadRequest("Teacher không được phép cập nhật TeacherCode, CID");
+                }
+            }
+
+            if (role != "Teacher" && !isStaff)
+            {
+                return Forbid();
+            }
+
+            var updated = await _teacherService.UpdateTeacherProfileAsync(id, dto, User);
+            if (updated == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updated);
+        }
+
         [HttpPatch("restore/{id:guid}")]
         public async Task<IActionResult> RestoreTeacherAsync(Guid id)
         {

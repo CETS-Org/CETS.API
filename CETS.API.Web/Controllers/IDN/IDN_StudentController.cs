@@ -2,6 +2,7 @@
 using DTOs.IDN.IDN_Student.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CETS.API.Web.Controllers.IDN
 {
@@ -22,17 +23,6 @@ namespace CETS.API.Web.Controllers.IDN
         {
             var students = await _studentService.GetAllStudentsAsync();
             return Ok(students);
-        }
-
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetStudentByIdAsync(Guid id)
-        {
-            var student = await _studentService.GetStudentByIdAsync(id);
-            if (student == null)
-            {
-                return NotFound();
-            }
-            return Ok(student);
         }
 
         [HttpGet("{code}")]
@@ -63,6 +53,27 @@ namespace CETS.API.Web.Controllers.IDN
             }
             return Ok(updatedStudent);
         }
+
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> PatchStudentProfile(
+       Guid id,
+       [FromBody] UpdateStudentProfileRequest dto,
+       [FromHeader(Name = "x-role")] string role = "Student")
+        {
+            // giả lập user role bằng header (sau này thay JWT)
+            var fakeUser = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Role, role)
+            }, "FakeAuth"));
+
+            var result = await _studentService.UpdateStudentProfileAsync(id, dto, fakeUser);
+
+            if (result == null)
+                return NotFound(new { error = $"Student with AccountId {id} not found" });
+
+            return Ok(result);
+        }
+
 
         [HttpPatch("restore/{id:guid}")]
         public async Task<IActionResult> RestoreStudentAsync(Guid id)
