@@ -101,19 +101,19 @@ namespace CETS.API.Web.Controllers.IDN
             Guid id,
             [FromBody] UpdateTeacherProfileRequest dto)
         {
-            string role = "AcademicStaff";
+            string role = "Teacher";
 
             bool isTeacherSelf = true; 
             bool isStaff = role == "AcademicStaff" || role == "Admin";
 
-            /*if (role == "Teacher" && isTeacherSelf)
+            if (role == "Teacher" && isTeacherSelf)
             {
                 if (dto.TeacherCode != null ||
                     dto.CID != null )
                 {
                     return BadRequest("Teacher không được phép cập nhật TeacherCode, CID");
                 }
-            }*/
+            }
 
             if (role != "Teacher" && !isStaff)
             {
