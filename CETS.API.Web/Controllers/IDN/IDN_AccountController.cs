@@ -45,7 +45,7 @@ namespace CETS.API.Web.Controllers.IDN
             var account = await _accountService.GetAccountByIdAsync(id);
             if (account == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Không tìm thấy account với id = {id}" });
             }
             return Ok(account);
         }
