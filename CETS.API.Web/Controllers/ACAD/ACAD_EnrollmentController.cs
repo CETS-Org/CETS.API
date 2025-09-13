@@ -19,7 +19,7 @@ namespace CETS.API.Web.Controllers.ACAD
             _enrollmentService = enrollmentService;
         }
 
-        [HttpGet("student/{studentId}/courses")]
+        [HttpGet("CoursesByStudent/{studentId}")]
         public async Task<IActionResult> GetStudentCoursesEnrollment(Guid studentId)
         {
             var courses = await _enrollmentService.GetStudentCoursesEnrollmentAsync(studentId);
