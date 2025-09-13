@@ -171,6 +171,8 @@ namespace WebAPI
             // Analytics Services
             builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
+            builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
+            builder.Services.AddScoped<IACAD_SubmissionService, ACAD_SubmissionService>();
 
 
 
