@@ -328,7 +328,7 @@ namespace WebAPI
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("DevCors", p => p
+                options.AddPolicy("ApiCors", p => p
                     .WithOrigins(allowedOrigins!)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
