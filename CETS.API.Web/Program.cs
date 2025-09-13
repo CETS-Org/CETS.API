@@ -111,6 +111,7 @@ namespace WebAPI
 
 
             builder.Services.AddScoped<IMessageService, MessageService>();
+
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
             builder.Services.AddScoped<IIDN_TeacherService, IDN_TeacherService>();
@@ -142,6 +143,9 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseRequirementService, ACAD_CourseRequirementService>();
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();  
             builder.Services.AddScoped<IIDN_JwtService, IDN_JwtService>();
+            builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
+            builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
+
 
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -173,6 +177,9 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseRepository, ACAD_CourseRepository>();
             builder.Services.AddScoped<IACAD_CourseBenefitRepository, ACAD_CourseBenefitRepository>();
             builder.Services.AddScoped<IACAD_CourseRequirementRepository, ACAD_CourseRequirementRepository>();
+            builder.Services.AddScoped<IACAD_EnrollmentRepository, ACAD_EnrollmentRepository>();
+            builder.Services.AddScoped<IACAD_CourseTeacherAssignmentRepository, ACAD_CourseTeacherAssignmentRepository>();
+
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
