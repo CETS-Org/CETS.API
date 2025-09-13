@@ -148,3 +148,4 @@ docker-compose.override.yml
 *.psess
 *.vspx
 *.vsmdi
+CETS.API.Web/appsettings.json
