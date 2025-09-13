@@ -169,7 +169,8 @@ namespace WebAPI
             builder.Services.AddSingleton<EmailTemplateBuilder>();
 
             // Analytics Services
-
+            builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
+            builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
 
 
 
