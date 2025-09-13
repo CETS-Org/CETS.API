@@ -149,3 +149,4 @@ docker-compose.override.yml
 *.vspx
 *.vsmdi
 CETS.API.Web/appsettings.json
+/CETS.API.Gateway
