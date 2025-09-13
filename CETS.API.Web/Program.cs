@@ -146,7 +146,7 @@ namespace WebAPI
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("DevCors", p => p
+                options.AddPolicy("ApiCors", p => p
                     .WithOrigins(allowedOrigins!)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
@@ -212,7 +212,7 @@ namespace WebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors("DevCors");
+            app.UseCors("ApiCors");
             app.UseHttpsRedirection();
             app.UseAuthorization();
 
