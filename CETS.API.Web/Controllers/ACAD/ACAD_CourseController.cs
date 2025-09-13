@@ -58,6 +58,13 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
+        [HttpGet("search-basic")]
+        public async Task<IActionResult> SearchBasicAsync([FromQuery] CourseSearchQuery query, CancellationToken ct)
+        {
+            var result = await _courseService.SearchBasicAsync(query, ct);
+            return Ok(result);
+        }
+
 
         /// <summary>
         /// Get all courses with detailed information
