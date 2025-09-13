@@ -108,6 +108,8 @@ namespace WebAPI
             builder.Services.AddScoped<IIDN_JwtService, IDN_JwtService>();
             builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
+            builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
+            builder.Services.AddScoped<IACAD_SubmissionService, ACAD_SubmissionService>();
 
 
 
@@ -142,6 +144,9 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseRequirementRepository, ACAD_CourseRequirementRepository>();
             builder.Services.AddScoped<IACAD_EnrollmentRepository, ACAD_EnrollmentRepository>();
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentRepository, ACAD_CourseTeacherAssignmentRepository>();
+            builder.Services.AddScoped<IACAD_AttendanceRepository, ACAD_AttendanceRepository>();
+            builder.Services.AddScoped<IACAD_SubmissionRepository, ACAD_SubmissionRepository>();
+
 
 
             builder.Services.AddScoped<IdGenerator>();
