@@ -19,13 +19,16 @@ namespace CETS.API.Web.Controllers.ACAD
             _enrollmentService = enrollmentService;
         }
 
-        //// GET api/enrollment/student/{accountId}/courses
-        //[HttpGet("student/{accountId}/courses")]
-        //public async Task<IActionResult> GetStudentCourses(Guid accountId)
-        //{
-        //    var courses = await _enrollmentService.Ge(accountId);
-        //    return Ok(courses);
-        //}
+        [HttpGet("student/{studentId}/courses")]
+        public async Task<IActionResult> GetStudentCoursesEnrollment(Guid studentId)
+        {
+            var courses = await _enrollmentService.GetStudentCoursesEnrollmentAsync(studentId);
+
+            if (courses == null || !courses.Any())
+                return NotFound(new { message = "Student chưa enroll khóa học nào." });
+
+            return Ok(courses);
+        }
 
 
     }

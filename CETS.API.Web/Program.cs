@@ -74,6 +74,7 @@ namespace WebAPI
                 opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDb")));
 
             builder.Services.AddScoped<IMessageService, MessageService>();
+
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
             builder.Services.AddScoped<IIDN_TeacherService, IDN_TeacherService>();
@@ -101,6 +102,9 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_FeedbackRecordService, COM_FeedbackRecordService>();
             builder.Services.AddScoped<ICOM_ConversationService, COM_ConversationService>();
             builder.Services.AddScoped<IACAD_CourseService, ACAD_CourseService>();
+            builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
+            builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
+
 
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -130,6 +134,9 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
             builder.Services.AddScoped<ICOM_ConversationRepository, COM_ConversationRepository>();
             builder.Services.AddScoped<IACAD_CourseRepository, ACAD_CourseRepository>();
+            builder.Services.AddScoped<IACAD_EnrollmentRepository, ACAD_EnrollmentRepository>();
+            builder.Services.AddScoped<IACAD_CourseTeacherAssignmentRepository, ACAD_CourseTeacherAssignmentRepository>();
+
 
             builder.Services.AddScoped<IdGenerator>();
 
