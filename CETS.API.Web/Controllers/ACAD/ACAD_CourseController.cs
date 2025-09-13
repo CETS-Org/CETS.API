@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces.ACAD;
+using DTOs.ACAD.ACAD_Course.Requests;
 using DTOs.ACAD.ACAD_Course.Responses;
+using DTOs.ACAD.ACAD_Course.Search;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -37,6 +39,13 @@ namespace CETS.API.Web.Controllers.ACAD
                 return NotFound();
             }
             return Ok(course);
+        }
+
+        [HttpGet("search-basic")]
+        public async Task<IActionResult> SearchBasicAsync([FromQuery] CourseSearchQuery query, CancellationToken ct)
+        {
+            var result = await _courseService.SearchBasicAsync(query, ct);
+            return Ok(result);
         }
 
 
