@@ -151,7 +151,6 @@ namespace WebAPI
 
             builder.Services.AddScoped<IdGenerator>();
 
-
             var allowedOrigins = builder.Configuration
               .GetSection("AllowedCorsOrigins")
               .Get<string[]>();
