@@ -45,7 +45,7 @@ namespace CETS.API.Web.Controllers.IDN
             var account = await _accountService.GetAccountByIdAsync(id);
             if (account == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Không tìm thấy account với id = {id}" });
             }
             return Ok(account);
         }
@@ -70,6 +70,21 @@ namespace CETS.API.Web.Controllers.IDN
             }
             return Ok(updatedAccount);
         }
+
+        [HttpPatch("{id:guid}/profile")]
+        public async Task<IActionResult> PatchAccountProfileAsync(
+        Guid id,
+        [FromBody] UpdateAccountProfileRequest dto)
+        {
+            var account = await _accountService.UpdateAccountProfileAsync(id, dto, User);
+
+            if (account == null)
+                return NotFound();
+
+            return Ok(account);
+        }
+
+
 
         [HttpPatch("deactivate/{id:guid}")]
         public async Task<IActionResult> DeactivateAccountAsync(Guid id)
