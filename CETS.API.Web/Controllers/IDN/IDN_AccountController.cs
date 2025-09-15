@@ -166,7 +166,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPost("login/academicStaff")]
-        public async Task<IActionResult> AcademicStaff([FromBody] LoginRequest dto)
+        public async Task<IActionResult> AcademicStaffLogin([FromBody] LoginRequest dto)
         {
             var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
             if (account == null || account.RoleNames.All(r => r != "AcademicStaff"))
@@ -183,10 +183,26 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPost("login/accountantStaff")]
-        public async Task<IActionResult> AccountantStaff([FromBody] LoginRequest dto)
+        public async Task<IActionResult> AccountantStaffLogin([FromBody] LoginRequest dto)
         {
             var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
             if (account == null || account.RoleNames.All(r => r != "AccountantStaff"))
+            {
+                return Unauthorized("Invalid credentials or not a Accountant Staff account.");
+            }
+            var token = _jwtService.GenerateJwtToken(account);
+            return Ok(new
+            {
+                message = "Login successful",
+                token,
+                account = account
+            });
+        }
+        [HttpPost("login/admin")]
+        public async Task<IActionResult> AdminLogin([FromBody] LoginRequest dto)
+        {
+            var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
+            if (account == null || account.RoleNames.All(r => r != "Admin"))
             {
                 return Unauthorized("Invalid credentials or not a Accountant Staff account.");
             }
