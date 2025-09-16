@@ -63,6 +63,21 @@ namespace CETS.API.Web.Controllers.IDN
             }
             return Ok(account);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest dto)
+        {
+            try
+            {
+                var account = await _accountService.CreateAccountAsync(dto);
+                return Ok(account);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAccountAsync(Guid id, [FromBody] UpdateAccountRequest dto)
         {

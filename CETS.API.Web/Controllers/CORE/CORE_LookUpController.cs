@@ -1,4 +1,5 @@
 using Application.Interfaces.CORE;
+using Domain.Constants;
 using DTOs.CORE.LookUp.Requests;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -43,6 +44,19 @@ namespace CETS.API.Web.Controllers.CORE
             var items = await _service.GetByTypeCodeAsync(typeCode);
             return Ok(items);
         }
+
+        [HttpGet("credential-types")]
+        public async Task<IActionResult> GetCredentialTypes()
+        {
+            var list = await _service.GetByTypeCodeAsync(LookUpTypes.CredentialType);
+            return Ok(list.Select(x => new {
+                x.LookUpId,
+                x.Code,
+                x.Name,
+                x.IsActive
+            }));
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateLookUpRequest dto)
