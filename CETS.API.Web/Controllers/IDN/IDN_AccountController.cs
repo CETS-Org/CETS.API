@@ -1,4 +1,5 @@
 ﻿using Application.Implementations.IDN;
+using Application.Interfaces;
 using Application.Interfaces.IDN;
 using DTOs.IDN.IDN_Account.Requests;
 using MassTransit.JobService;
@@ -16,12 +17,14 @@ namespace CETS.API.Web.Controllers.IDN
         private readonly ILogger<IDN_AccountController> _logger;
         private readonly IIDN_AccountService _accountService;
         private readonly IIDN_JwtService _jwtService;
+        private readonly IMailService _mailService;
 
-        public IDN_AccountController(ILogger<IDN_AccountController> logger, IIDN_AccountService accountService, IIDN_JwtService jwtService)
+        public IDN_AccountController(ILogger<IDN_AccountController> logger, IIDN_AccountService accountService, IIDN_JwtService jwtService, IMailService mailService)
         {
             _logger = logger;
             _accountService = accountService;
             _jwtService = jwtService;
+            _mailService = mailService;
         }
 
         [HttpGet("statuses")]
@@ -205,6 +208,22 @@ namespace CETS.API.Web.Controllers.IDN
             if (account == null || account.RoleNames.All(r => r != "Admin"))
             {
                 return Unauthorized("Invalid credentials or not a Accountant Staff account.");
+            }
+            var token = _jwtService.GenerateJwtToken(account);
+            return Ok(new
+            {
+                message = "Login successful",
+                token,
+                account = account
+            });
+        }
+        [HttpPost("googleLogin")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest dto)
+        {
+            var account = await _accountService.ValidateGoogleAccountAsync(dto);
+            if (account == null)
+            {
+                return Unauthorized("Invalid Google token.");
             }
             var token = _jwtService.GenerateJwtToken(account);
             return Ok(new
