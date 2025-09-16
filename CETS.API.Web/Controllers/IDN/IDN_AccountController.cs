@@ -83,7 +83,6 @@ namespace CETS.API.Web.Controllers.IDN
             }
         }
 
-
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAccountAsync(Guid id, [FromBody] UpdateAccountRequest dto)
         {
