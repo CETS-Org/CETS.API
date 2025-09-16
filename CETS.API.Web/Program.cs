@@ -147,6 +147,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
             builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
             builder.Services.AddScoped<IACAD_SubmissionService, ACAD_SubmissionService>();
+            builder.Services.AddScoped<IMailService, MailService>();
 
 
 
