@@ -74,8 +74,15 @@ namespace CETS.API.Web.Controllers.IDN
         [HttpPost]
         public async Task<IActionResult> CreateTeacherAsync([FromBody] CreateTeacherRequest dto)
         {
-            var createdTeacher = await _teacherService.CreateTeacherAsync(dto);
-            return Created("New teacher created", createdTeacher);
+            try
+            {
+                var teacher = await _teacherService.CreateTeacherWithAccountAsync(dto);
+                return Ok(teacher);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id:guid}")]
