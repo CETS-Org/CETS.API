@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Application.Interfaces.IDN;
 using DTOs.IDN.IDN_Account.Requests;
 using MassTransit.JobService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -81,24 +82,7 @@ namespace CETS.API.Web.Controllers.IDN
             }
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest dto)
-        {
-            try
-            {
-                var account = await _accountService.RegisterAsync(dto);
-                return Ok(new 
-                { 
-                    message = "Account created successfully! Please check your email for verification.", 
-                    account = account 
-                });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
+        
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAccountAsync(Guid id, [FromBody] UpdateAccountRequest dto)
         {
@@ -268,6 +252,26 @@ namespace CETS.API.Web.Controllers.IDN
                 token,
                 account = account
             });
+        }
+        #endregion
+
+        #region register
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest dto)
+        {
+            try
+            {
+                var account = await _accountService.RegisterAsync(dto);
+                return Ok(new
+                {
+                    message = "Account created successfully! Please check your email for verification.",
+                    account = account
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         #endregion
 
@@ -504,6 +508,36 @@ namespace CETS.API.Web.Controllers.IDN
             }
         }
 
+        #endregion
+
+        #region change password
+        [HttpPost("change-password")]
+        [Authorize]       
+        
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            try
+            {
+                var account = await _accountService.GetAccountByEmailAsync(request.Email);
+                if (account == null)
+                {
+                    return NotFound(new { message = "Account not found." });
+                }
+                // Validate current password
+                var validCredentials = await _accountService.ValidateUserCredentialsAsync(request.Email, request.OldPassword);
+                if (validCredentials == null)
+                {
+                    return BadRequest(new { message = "Current password is incorrect." });
+                }
+                // Change to new password
+                var updatedAccount = await _accountService.ChangePassword(request.NewPassword, request.Email);
+                return Ok(new { message = "Password changed successfully.", account = updatedAccount });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Failed to change password." });
+            }
+        }
         #endregion
     }
 }
