@@ -436,5 +436,74 @@ namespace CETS.API.Web.Controllers.IDN
             }
         }
         #endregion
+
+        #region forgot password
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        {
+            try
+            {
+                var result = await _accountService.GetOTP(email);
+                if (result == null)
+                {
+                    return BadRequest(new  { message = "Failed to send OTP." });
+                }
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpPost("verify-otp")]
+        public IActionResult VerifyOtp([FromBody] VerifyOtpRequest request)
+        {
+            var isValid = _accountService.VerifyOTP(request);
+
+            if (!isValid)
+                return BadRequest("Invalid or expired OTP.");
+
+            // Generate JWT token for password reset
+            var token = _jwtService.GenerateOtpJwt(request.Email, request.Otp);
+
+            return Ok(new 
+            { 
+                message = "OTP verified successfully.",
+                token = token,
+                email = request.Email
+            });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            try
+            {
+                // Validate JWT token first
+                if (string.IsNullOrEmpty(request.Token))
+                {
+                    return BadRequest(new { message = "Token is required for password reset." });
+                }
+
+                // Validate the password reset JWT token
+                if (!_jwtService.ValidatePasswordResetToken(request.Token, request.Email))
+                {
+                    return BadRequest(new { message = "Invalid or expired token." });
+                }
+
+                var updatedAccount = await _accountService.ChangePassword(request.NewPassword, request.Email);
+                return Ok(new { message = "Password has been reset successfully.", account = updatedAccount });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Reset password fail!" });
+            }
+        }
+
+        #endregion
     }
 }
