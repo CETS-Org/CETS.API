@@ -83,24 +83,7 @@ namespace CETS.API.Web.Controllers.IDN
             }
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest dto)
-        {
-            try
-            {
-                var account = await _accountService.RegisterAsync(dto);
-                return Ok(new 
-                { 
-                    message = "Account created successfully! Please check your email for verification.", 
-                    account = account 
-                });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
+        
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAccountAsync(Guid id, [FromBody] UpdateAccountRequest dto)
         {
