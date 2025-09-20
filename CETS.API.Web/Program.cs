@@ -142,7 +142,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseBenefitService, ACAD_CourseBenefitService>();
             builder.Services.AddScoped<IACAD_CourseRequirementService, ACAD_CourseRequirementService>();
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();  
-            builder.Services.AddScoped<IIDN_JwtService, IDN_JwtService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
             builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
