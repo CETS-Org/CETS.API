@@ -1,5 +1,6 @@
 ﻿using Application.Implementations.IDN;
-using Application.Interfaces;
+using Application.Interfaces.ExternalServices.Email;
+using Application.Interfaces.ExternalServices.Security;
 using Application.Interfaces.IDN;
 using DTOs.IDN.IDN_Account.Requests;
 using MassTransit.JobService;
@@ -18,11 +19,11 @@ namespace CETS.API.Web.Controllers.IDN
     {
         private readonly ILogger<IDN_AccountController> _logger;
         private readonly IIDN_AccountService _accountService;
-        private readonly IIDN_JwtService _jwtService;
+        private readonly IJwtService _jwtService;
         private readonly IMailService _mailService;
         private readonly IConfiguration _configuration;
 
-        public IDN_AccountController(ILogger<IDN_AccountController> logger, IIDN_AccountService accountService, IIDN_JwtService jwtService, IMailService mailService, IConfiguration configuration)
+        public IDN_AccountController(ILogger<IDN_AccountController> logger, IIDN_AccountService accountService, IJwtService jwtService, IMailService mailService, IConfiguration configuration)
         {
             _logger = logger;
             _accountService = accountService;
