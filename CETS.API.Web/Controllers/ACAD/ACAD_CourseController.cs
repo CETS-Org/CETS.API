@@ -48,6 +48,6 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(result);
         }
 
-
+        
     }
 }

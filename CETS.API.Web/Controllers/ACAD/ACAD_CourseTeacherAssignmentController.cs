@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.ACAD;
+using DTOs.ACAD.ACAD_CourseTeacherAssignment.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,30 @@ namespace CETS.API.Web.Controllers.ACAD
             _courseAssignmentService = courseAssignmentService;
         }
 
+        /// <summary>
+        /// Lấy danh sách các khóa học mà giáo viên đang dạy
+        /// </summary>
+        /// <param name="teacherId">ID của giáo viên</param>
+        /// <returns>Danh sách TeachingClassResponse</returns>
+        [HttpGet("teaching-classes/{teacherId:guid}")]
+        public async Task<IActionResult> GetTeachingClassesByTeacher(Guid teacherId)
+        {
+            try
+            {
+                var teachingClasses = await _courseAssignmentService.GetTeachingClassesByTeacherIdAsync(teacherId);
+
+                if (!teachingClasses.Any())
+                    return NotFound(new { Message = "Giáo viên này chưa được phân công dạy khóa học nào." });
+
+                return Ok(teachingClasses);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting teaching classes for teacher {TeacherId}", teacherId);
+                return StatusCode(500, new { Message = "Có lỗi xảy ra khi lấy danh sách khóa học của giáo viên." });
+            }
+        }
+
         [HttpGet("CoursesByTeacher/{teacherId:guid}")]
         public async Task<IActionResult> GetCoursesByTeacher(Guid teacherId)
         {
@@ -28,6 +53,24 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(courses);
         }
 
+        #region view teaching courses
+        [HttpGet("teaching-courses/{teacherId:guid}")]
+        public async Task<IActionResult> GetTeachingCoursesByTeacher(Guid teacherId)
+        {
+            try
+            {
+                var teachingCourses = await _courseAssignmentService.GetAllTeachingCourses(teacherId);
+                if (!teachingCourses.Any())
+                    return NotFound(new { Message = "Giáo viên này chưa được phân công dạy khóa học nào." });
+                return Ok(teachingCourses);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting teaching courses for teacher {TeacherId}", teacherId);
+                return StatusCode(500, new { Message = "Có lỗi xảy ra khi lấy danh sách khóa học của giáo viên." });
+            }
+        }
+        #endregion
     }
 
 
