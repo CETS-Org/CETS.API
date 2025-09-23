@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 ﻿using Application.Implementations.HR;
 using Application.Interfaces.ACAD;
 using DTOs.ACAD.ACAD_CourseTeacherAssignment.Requests;
 using DTOs.ACAD.ACAD_CourseTeacherAssignment.Responses;
 using DTOs.IDN.IDN_Teacher.Responses;
+=======
+﻿using Application.Interfaces.ACAD;
+using DTOs.ACAD.ACAD_CourseTeacherAssignment.Responses;
+>>>>>>> cdcce77 (feat: add get teaching course api)
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
