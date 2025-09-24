@@ -33,6 +33,17 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(role);
         }
 
+        [HttpGet("staff")]
+        public async Task<IActionResult> GetStaffRoles()
+        {
+            var roles = await _roleService.SearchRolesByKeywordAsync("Staff");
+            return Ok(roles.Select(r => new
+            {
+                r.Id,
+                r.RoleName
+            }));
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateRoleRequest request)
         {
