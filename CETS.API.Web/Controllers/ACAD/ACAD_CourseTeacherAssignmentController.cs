@@ -23,25 +23,8 @@ namespace CETS.API.Web.Controllers.ACAD
         /// </summary>
         /// <param name="teacherId">ID của giáo viên</param>
         /// <returns>Danh sách TeachingClassResponse</returns>
-        [HttpGet("teaching-classes/{teacherId:guid}")]
-        public async Task<IActionResult> GetTeachingClassesByTeacher(Guid teacherId)
-        {
-            try
-            {
-                var teachingClasses = await _courseAssignmentService.GetTeachingClassesByTeacherIdAsync(teacherId);
-
-                if (!teachingClasses.Any())
-                    return NotFound(new { Message = "Giáo viên này chưa được phân công dạy khóa học nào." });
-
-                return Ok(teachingClasses);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting teaching classes for teacher {TeacherId}", teacherId);
-                return StatusCode(500, new { Message = "Có lỗi xảy ra khi lấy danh sách khóa học của giáo viên." });
-            }
-        }
-
+        /// 
+        
         [HttpGet("CoursesByTeacher/{teacherId:guid}")]
         public async Task<IActionResult> GetCoursesByTeacher(Guid teacherId)
         {
@@ -69,6 +52,18 @@ namespace CETS.API.Web.Controllers.ACAD
                 _logger.LogError(ex, "Error getting teaching courses for teacher {TeacherId}", teacherId);
                 return StatusCode(500, new { Message = "Có lỗi xảy ra khi lấy danh sách khóa học của giáo viên." });
             }
+        }
+        #endregion
+
+        #region view teaching classes
+        [HttpGet("teaching-classes/{teacherId:guid}/{courseId:guid}")]
+        public async Task<IActionResult> GetTeachingClassesByTeacher(Guid teacherId, Guid courseId)
+        {
+            var teachingClasses = await _courseAssignmentService.GetTeachingClassesByTeacherIdAndCourseIdAsync(teacherId, courseId);
+            if (teachingClasses == null)
+                return NotFound(new { Message = "No courses assigned for this teacher." });
+
+            return Ok(teachingClasses);
         }
         #endregion
     }
