@@ -110,6 +110,10 @@ namespace WebAPI
             });
 
 
+            // Configure R2 File Storage
+            builder.Services.Configure<CloudflareR2Settings>(builder.Configuration.GetSection("CloudflareR2"));
+
+
             builder.Services.AddScoped<IMessageService, MessageService>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
@@ -147,6 +151,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
             builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
             builder.Services.AddScoped<IACAD_SubmissionService, ACAD_SubmissionService>();
+            builder.Services.AddScoped<IACAD_LearningMaterialService, ACAD_LearningMaterialService>();
             builder.Services.AddScoped<IMailService, MailService>();
             
 
@@ -185,6 +190,8 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentRepository, ACAD_CourseTeacherAssignmentRepository>();
             builder.Services.AddScoped<IACAD_AttendanceRepository, ACAD_AttendanceRepository>();
             builder.Services.AddScoped<IACAD_SubmissionRepository, ACAD_SubmissionRepository>();
+            builder.Services.AddScoped<IACAD_LearningMaterialRepository, ACAD_LearningMaterialRepository>();
+            builder.Services.AddScoped<IFileStorageService, R2FileStorageService>();
             builder.Services.AddScoped<IACAD_ClassMeetingRepository, ACAD_ClassMeetingRepository>();
 
 
