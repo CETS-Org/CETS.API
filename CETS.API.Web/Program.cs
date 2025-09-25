@@ -1,3 +1,4 @@
+using Amazon.S3;
 using Application.Implementations;
 using Application.Implementations.ACAD;
 using Application.Implementations.COM;
@@ -11,6 +12,7 @@ using Application.Implementations.RPT;
 using Application.Interfaces;
 using Application.Interfaces.ACAD;
 using Application.Interfaces.COM;
+using Application.Interfaces.Common.Storage;
 using Application.Interfaces.CORE;
 using Application.Interfaces.EVT;
 using Application.Interfaces.ExternalServices.Email;
@@ -32,6 +34,7 @@ using Domain.Interfaces.FIN;
 using Domain.Interfaces.HR;
 using Domain.Interfaces.IDN;
 using Domain.Interfaces.RPT;
+using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
 using Infrastructure.Implementations.Repositories.ACAD;
 using Infrastructure.Implementations.Repositories.COM;
@@ -77,6 +80,10 @@ namespace WebAPI
             builder.Services.AddDbContext<AppDbContext>(opts =>
                 opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDb")));
 
+            // Configure R2 File Storage
+            builder.Services.Configure<CloudflareR2Settings>(builder.Configuration.GetSection("CloudflareR2"));
+
+
             builder.Services.AddScoped<IMessageService, MessageService>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
@@ -114,6 +121,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
             builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
             builder.Services.AddScoped<IACAD_SubmissionService, ACAD_SubmissionService>();
+            builder.Services.AddScoped<IACAD_LearningMaterialService, ACAD_LearningMaterialService>();
             builder.Services.AddScoped<IMailService, MailService>();
             
 
@@ -152,6 +160,8 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentRepository, ACAD_CourseTeacherAssignmentRepository>();
             builder.Services.AddScoped<IACAD_AttendanceRepository, ACAD_AttendanceRepository>();
             builder.Services.AddScoped<IACAD_SubmissionRepository, ACAD_SubmissionRepository>();
+            builder.Services.AddScoped<IACAD_LearningMaterialRepository, ACAD_LearningMaterialRepository>();
+            builder.Services.AddScoped<IFileStorageService, R2FileStorageService>();
             builder.Services.AddScoped<IACAD_ClassMeetingRepository, ACAD_ClassMeetingRepository>();
 
 
@@ -159,6 +169,8 @@ namespace WebAPI
             builder.Services.AddScoped<IdGenerator>();
 
 
+
+            // Configure CORS
             var allowedOrigins = builder.Configuration
               .GetSection("AllowedCorsOrigins")
               .Get<string[]>();
@@ -174,6 +186,7 @@ namespace WebAPI
 
 
 
+            // Configure Authentication
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthentication("Bearer")
@@ -190,6 +203,8 @@ namespace WebAPI
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]))
                };
            });
+
+            // Configure RabbitMQ with MassTransit
             var rabbitMqSettings = builder.Configuration.GetSection("RabbitMq");
 
             if (builder.Configuration.GetValue("Features:UseRabbitMq", false))
@@ -222,6 +237,8 @@ namespace WebAPI
 
             // Register AutoMapper
             builder.Services.AddAutoMapper(typeof(Application.Mappers.CORE.CORE_LookUpProfile));
+
+          
 
             var app = builder.Build();
 
