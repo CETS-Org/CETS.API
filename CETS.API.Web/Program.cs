@@ -231,6 +231,8 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseWishlistRepository, ACAD_CourseWishlistRepository>();
             builder.Services.AddScoped<IWeeklyFeedbackRepository, WeeklyFeedbackRepository>();
             builder.Services.AddScoped<IWeeklyFeedbackService, WeeklyFeedbackService>();
+            builder.Services.AddScoped<IACAD_CourseScheduleRepository, ACAD_CourseScheduleRepository>();
+
 
             
             // Dashboard Analytics Service
