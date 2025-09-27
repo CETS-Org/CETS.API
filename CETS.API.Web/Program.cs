@@ -159,6 +159,9 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_ClassReservationService, ACAD_ClassReservationService>();
             builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
             
+            builder.Services.AddScoped<IACAD_ClassMeetingsService, ACAD_ClassMeetingsService>();
+
+
 
 
 
