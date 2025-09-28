@@ -1,6 +1,7 @@
 using Application.Interfaces.ACAD;
 using DTOs.ACAD.ACAD_CoursePackage.Requests;
 using DTOs.ACAD.ACAD_CoursePackage.Responses;
+using DTOs.ACAD.ACAD_CoursePackage.Search;
 using DTOs.ACAD.ACAD_CoursePackageItem.Requests;
 using DTOs.ACAD.ACAD_CoursePackageItem.Responses;
 using Microsoft.AspNetCore.Http;
@@ -240,7 +241,7 @@ namespace CETS.API.Web.Controllers.ACAD
         {
             try
             {
-                await _coursePackageService.AddCourseToPackageAsync(request);
+                await _coursePackageService.AddCourseToPackageAsync(id, request);
                 return Ok(request);
             }
             catch (Exception ex)
@@ -298,6 +299,24 @@ namespace CETS.API.Web.Controllers.ACAD
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating package item sequence with ID {ItemId}", itemId);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Advanced search with basic query parameters for course packages
+        /// </summary>
+        [HttpGet("search-basic")]
+        public async Task<ActionResult<CoursePackageSearchResult>> SearchBasicAsync([FromQuery] CoursePackageSearchQuery query, CancellationToken ct)
+        {
+            try
+            {
+                var result = await _coursePackageService.SearchBasicAsync(query, ct);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error performing basic search for course packages");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
