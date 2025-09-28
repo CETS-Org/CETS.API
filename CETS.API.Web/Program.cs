@@ -69,6 +69,8 @@ namespace WebAPI
             // Add services to the container.
             var modelbuilder = new ODataConventionModelBuilder();
             modelbuilder.EntitySet<ACAD_Course>("ACAD_Course");
+            modelbuilder.EntitySet<ACAD_CoursePackage>("ACAD_CoursePackage");
+            modelbuilder.EntitySet<ACAD_CoursePackageItem>("ACAD_CoursePackageItem");
             modelbuilder.EntitySet<IDN_Account>("IDN_Accounts");
 
             builder.Services.AddControllers().AddOData(opt =>
