@@ -58,11 +58,23 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-        [HttpGet("search-basic")]
-        public async Task<IActionResult> SearchBasicAsync([FromQuery] CourseSearchQuery query, CancellationToken ct)
+
+        /// <summary>
+        /// Get all courses with detailed information
+        /// </summary>
+        [HttpGet("detail")]
+        public async Task<ActionResult<IEnumerable<CourseDetailResponse>>> GetAllCoursesDetailsAsync()
         {
-            var result = await _courseService.SearchBasicAsync(query, ct);
-            return Ok(result);
+            try
+            {
+                var courses = await _courseService.GetAllCoursesDetailsAsync();
+                return Ok(courses);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all detailed courses");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
 
