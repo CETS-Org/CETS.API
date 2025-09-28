@@ -132,6 +132,7 @@ namespace WebAPI
 
 
 
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
             builder.Services.AddScoped<IIDN_StudentRepository, IDN_StudentRepository>();
@@ -173,6 +174,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CoursePackageRepository, ACAD_CoursePackageRepository>();
             builder.Services.AddScoped<IACAD_CoursePackageItemRepository, ACAD_CoursePackageItemRepository>();
 
+            builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
 
 
             builder.Services.AddScoped<IdGenerator>();
