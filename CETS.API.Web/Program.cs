@@ -232,6 +232,8 @@ namespace WebAPI
             builder.Services.AddScoped<IWeeklyFeedbackRepository, WeeklyFeedbackRepository>();
             builder.Services.AddScoped<IWeeklyFeedbackService, WeeklyFeedbackService>();
             builder.Services.AddScoped<IACAD_CourseScheduleRepository, ACAD_CourseScheduleRepository>();
+            builder.Services.AddScoped<IACAD_CoursePackageRepository, ACAD_CoursePackageRepository>();
+            builder.Services.AddScoped<IACAD_CoursePackageItemRepository, ACAD_CoursePackageItemRepository>();
 
 
             
