@@ -21,7 +21,6 @@ namespace CETS.API.Web.Controllers.ACAD
         }
        
         [HttpGet]
-    
         public async Task<IActionResult> GetAllReservationItems()
         {
             
@@ -45,7 +44,7 @@ namespace CETS.API.Web.Controllers.ACAD
         [HttpGet("by-reservation/{reservationId:guid}")]    
         public async Task<IActionResult> GetReservationItemByReservationId(Guid reservationId)
         {
-            var reservationItem = await _reservationItemService.GetReservationItemByReservationId(reservationId);
+            var reservationItem =  _reservationItemService.GetReservationItemByReservationId(reservationId);
             if (reservationItem == null)
             {
                 return NotFound($"Không tìm thấy Reservation Item cho Reservation ID: {reservationId}");
