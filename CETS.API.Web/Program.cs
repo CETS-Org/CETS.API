@@ -184,7 +184,6 @@ namespace WebAPI
 
             builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
             builder.Services.AddScoped<IACAD_ClassReservationRepository, ACAD_ClassReservationRepository>();
-            
 
 
             builder.Services.AddScoped<IdGenerator>();
