@@ -500,7 +500,6 @@ namespace CETS.API.Web.Controllers.FIN
 
                 // Create the data string for signature verification
                 var dataString = $"{webhookRequest.Code}|{webhookRequest.Description}|{JsonSerializer.Serialize(webhookRequest.Data)}";
-
                 // Generate HMAC SHA256 signature
                 using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(checksumKey));
                 var computedSignature = Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(dataString)));
