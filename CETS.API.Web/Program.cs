@@ -34,6 +34,7 @@ using Domain.Interfaces.FIN;
 using Domain.Interfaces.HR;
 using Domain.Interfaces.IDN;
 using Domain.Interfaces.RPT;
+using DTOs.ACAD.ACAD_ClassReservation.Responses;
 using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
 using Infrastructure.Implementations.Repositories.ACAD;
@@ -55,6 +56,7 @@ using Microsoft.OData.ModelBuilder;
 using MongoDB.Driver;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection.Emit;
 using System.Text;
 using Utils.Helpers;
 
@@ -72,6 +74,7 @@ namespace WebAPI
             modelbuilder.EntitySet<ACAD_CoursePackage>("ACAD_CoursePackage");
             modelbuilder.EntitySet<ACAD_CoursePackageItem>("ACAD_CoursePackageItem");
             modelbuilder.EntitySet<IDN_Account>("IDN_Accounts");
+            modelbuilder.EntitySet<ClassReservationResponse>("ACAD_ClassReservations");
 
             builder.Services.AddControllers().AddOData(opt =>
                 opt.AddRouteComponents("odata", modelbuilder.GetEdmModel())
@@ -128,8 +131,9 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseScheduleService, ACAD_CourseScheduleService>();
             builder.Services.AddScoped<IACAD_CoursePackageService, ACAD_CoursePackageService>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IACAD_ClassReservationService, ACAD_ClassReservationService>();
+            builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
             
-
 
 
 
@@ -175,6 +179,8 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CoursePackageItemRepository, ACAD_CoursePackageItemRepository>();
 
             builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
+            builder.Services.AddScoped<IACAD_ClassReservationRepository, ACAD_ClassReservationRepository>();
+            
 
 
             builder.Services.AddScoped<IdGenerator>();
