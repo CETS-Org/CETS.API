@@ -62,26 +62,27 @@ namespace CETS.API.Web.Controllers.ACAD
             }
 
             var newReservationId = await _reservationService.CreateReservationAsync(request);
-            // Trả về response 201 Created với ID của đối tượng mới tạo
+           
             return CreatedAtAction(nameof(GetReservationById), new { id = newReservationId }, new { id = newReservationId });
         }
 
-       
-        [HttpPut]
-        public async Task<IActionResult> UpdateReservation([FromBody] UpdateClassReservationRequest request)
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateReservation([FromRoute] Guid id, [FromBody] UpdateClassReservationRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (id != request.Id)
+                return BadRequest("Route id and body id do not match.");
+
             try
             {
                 await _reservationService.UpdateReservationAsync(request);
-                return NoContent(); 
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message); 
+                return NotFound(ex.Message);
             }
         }
     }
