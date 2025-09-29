@@ -28,6 +28,14 @@ namespace CETS.API.Web.Controllers.ACAD
 
             return Ok(summary);
         }
+
+        [HttpGet("students/{studentId}/attendance-report")]
+        public async Task<IActionResult> GetStudentAttendanceSummaries(Guid studentId)
+        {
+            var reports = await _attendanceService.GetStudentAttendanceReportAsync(studentId);
+            return Ok(reports);
+        }
+
     }
 }
 
