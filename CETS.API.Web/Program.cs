@@ -163,17 +163,14 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_LearningMaterialRepository, ACAD_LearningMaterialRepository>();
             builder.Services.AddScoped<IFileStorageService, R2FileStorageService>();
             builder.Services.AddScoped<IACAD_ClassMeetingRepository, ACAD_ClassMeetingRepository>();
-
+            builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
 
 
             builder.Services.AddScoped<IdGenerator>();
 
-<<<<<<< HEAD
-=======
 
 
             // Configure CORS
->>>>>>> f03b057b1993a9d9e759185fefb06971adb43322
             var allowedOrigins = builder.Configuration
               .GetSection("AllowedCorsOrigins")
               .Get<string[]>();
