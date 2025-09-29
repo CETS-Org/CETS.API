@@ -24,5 +24,14 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(schedules);
         }
 
+        [EnableQuery]
+        [HttpGet("{classId}")]
+        public async Task<IActionResult> GetAllClassMeetingByClassIdAs(Guid classId)
+        {
+            var listSession = await _classMeetingsService.GetAllClassMeetingByClassId(classId);
+            return Ok(listSession);
+        }
+
+
     }
 }
