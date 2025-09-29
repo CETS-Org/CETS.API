@@ -177,17 +177,14 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_LearningMaterialRepository, ACAD_LearningMaterialRepository>();
             builder.Services.AddScoped<IFileStorageService, R2FileStorageService>();
             builder.Services.AddScoped<IACAD_ClassMeetingRepository, ACAD_ClassMeetingRepository>();
-<<<<<<< HEAD
             builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
-=======
+
             builder.Services.AddScoped<IACAD_CourseScheduleRepository, ACAD_CourseScheduleRepository>();
             builder.Services.AddScoped<IACAD_CoursePackageRepository, ACAD_CoursePackageRepository>();
             builder.Services.AddScoped<IACAD_CoursePackageItemRepository, ACAD_CoursePackageItemRepository>();
 
             builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
             builder.Services.AddScoped<IACAD_ClassReservationRepository, ACAD_ClassReservationRepository>();
-            
->>>>>>> 9d1b6f6d3c458d4381d792745c1764e266c40b64
 
 
             builder.Services.AddScoped<IdGenerator>();
