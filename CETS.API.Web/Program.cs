@@ -34,6 +34,7 @@ using Domain.Interfaces.FIN;
 using Domain.Interfaces.HR;
 using Domain.Interfaces.IDN;
 using Domain.Interfaces.RPT;
+using DTOs.ACAD.ACAD_ClassReservation.Responses;
 using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
 using Infrastructure.Implementations.Repositories.ACAD;
@@ -55,6 +56,7 @@ using Microsoft.OData.ModelBuilder;
 using MongoDB.Driver;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection.Emit;
 using System.Text;
 using Utils.Helpers;
 
@@ -69,7 +71,10 @@ namespace WebAPI
             // Add services to the container.
             var modelbuilder = new ODataConventionModelBuilder();
             modelbuilder.EntitySet<ACAD_Course>("ACAD_Course");
+            modelbuilder.EntitySet<ACAD_CoursePackage>("ACAD_CoursePackage");
+            modelbuilder.EntitySet<ACAD_CoursePackageItem>("ACAD_CoursePackageItem");
             modelbuilder.EntitySet<IDN_Account>("IDN_Accounts");
+            modelbuilder.EntitySet<ClassReservationResponse>("ACAD_ClassReservations");
 
             builder.Services.AddControllers().AddOData(opt =>
                 opt.AddRouteComponents("odata", modelbuilder.GetEdmModel())
@@ -115,6 +120,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseService, ACAD_CourseService>();
             builder.Services.AddScoped<IACAD_CourseBenefitService, ACAD_CourseBenefitService>();
             builder.Services.AddScoped<IACAD_CourseRequirementService, ACAD_CourseRequirementService>();
+            builder.Services.AddScoped<IACAD_CourseSkillService, ACAD_CourseSkillService>();
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();  
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
@@ -122,8 +128,15 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
             builder.Services.AddScoped<IACAD_SubmissionService, ACAD_SubmissionService>();
             builder.Services.AddScoped<IACAD_LearningMaterialService, ACAD_LearningMaterialService>();
+            builder.Services.AddScoped<IACAD_CourseScheduleService, ACAD_CourseScheduleService>();
+            builder.Services.AddScoped<IACAD_CoursePackageService, ACAD_CoursePackageService>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IACAD_ClassReservationService, ACAD_ClassReservationService>();
+            builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
             
+            builder.Services.AddScoped<IACAD_ClassMeetingsService, ACAD_ClassMeetingsService>();
+
+
 
 
 
@@ -156,6 +169,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseRepository, ACAD_CourseRepository>();
             builder.Services.AddScoped<IACAD_CourseBenefitRepository, ACAD_CourseBenefitRepository>();
             builder.Services.AddScoped<IACAD_CourseRequirementRepository, ACAD_CourseRequirementRepository>();
+            builder.Services.AddScoped<IACAD_CourseSkillRepository, ACAD_CourseSkillRepository>();
             builder.Services.AddScoped<IACAD_EnrollmentRepository, ACAD_EnrollmentRepository>();
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentRepository, ACAD_CourseTeacherAssignmentRepository>();
             builder.Services.AddScoped<IACAD_AttendanceRepository, ACAD_AttendanceRepository>();
@@ -163,7 +177,13 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_LearningMaterialRepository, ACAD_LearningMaterialRepository>();
             builder.Services.AddScoped<IFileStorageService, R2FileStorageService>();
             builder.Services.AddScoped<IACAD_ClassMeetingRepository, ACAD_ClassMeetingRepository>();
+            builder.Services.AddScoped<IACAD_CourseScheduleRepository, ACAD_CourseScheduleRepository>();
+            builder.Services.AddScoped<IACAD_CoursePackageRepository, ACAD_CoursePackageRepository>();
+            builder.Services.AddScoped<IACAD_CoursePackageItemRepository, ACAD_CoursePackageItemRepository>();
 
+            builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
+            builder.Services.AddScoped<IACAD_ClassReservationRepository, ACAD_ClassReservationRepository>();
+            
 
 
             builder.Services.AddScoped<IdGenerator>();
