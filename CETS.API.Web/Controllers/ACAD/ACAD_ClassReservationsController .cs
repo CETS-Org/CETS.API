@@ -44,12 +44,12 @@ namespace CETS.API.Web.Controllers.ACAD
         [HttpGet("student/{studentId:guid}")]
         public async Task<IActionResult> GetReservationByStudentId(Guid studentId)
         {
-            var reservation = await _reservationService.GetReservationByStudentId(studentId);
-            if (reservation == null)
+            var reservationList =  _reservationService.GetReservationByStudentId(studentId);
+            if (reservationList == null)
             {
                 return NotFound();
             }
-            return Ok(reservation);
+            return Ok(reservationList);
         }
 
        
