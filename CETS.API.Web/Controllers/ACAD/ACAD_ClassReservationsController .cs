@@ -44,7 +44,7 @@ namespace CETS.API.Web.Controllers.ACAD
         [HttpGet("student/{studentId:guid}")]
         public async Task<IActionResult> GetReservationByStudentId(Guid studentId)
         {
-            var reservationList =  _reservationService.GetReservationByStudentId(studentId);
+            var reservationList = await _reservationService.GetReservationByStudentId(studentId).ToListAsync();
             if (reservationList == null)
             {
                 return NotFound();

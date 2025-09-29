@@ -40,19 +40,21 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(reservationItem);
         }
 
-      
-        [HttpGet("by-reservation/{reservationId:guid}")]    
+
+        [HttpGet("by-reservation/{reservationId:guid}")]
         public async Task<IActionResult> GetReservationItemByReservationId(Guid reservationId)
         {
-            var reservationItem =  _reservationItemService.GetReservationItemByReservationId(reservationId);
+            var reservationItem = await _reservationItemService.GetReservationItemByReservationId(reservationId).ToListAsync();
+
             if (reservationItem == null)
             {
                 return NotFound($"Không tìm thấy Reservation Item cho Reservation ID: {reservationId}");
             }
+
             return Ok(reservationItem);
         }
 
-       
+
         [HttpPost]
         public async Task<IActionResult> CreateReservationItem([FromBody] CreateReservationItemRequests request)
         {
