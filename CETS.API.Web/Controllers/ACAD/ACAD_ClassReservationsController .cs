@@ -66,6 +66,36 @@ namespace CETS.API.Web.Controllers.ACAD
             return CreatedAtAction(nameof(GetReservationById), new { id = newReservationId }, new { id = newReservationId });
         }
 
+        [HttpPost("items")]
+        public async Task<IActionResult> CreateReservationWithItems([FromBody] CreateClassReservationWithItemsRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var newReservationId = await _reservationService.CreateReservationWithItemsAsync(request);
+                return CreatedAtAction(nameof(GetReservationById), new { id = newReservationId }, new { id = newReservationId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Business logic errors (duplicate courses, active reservations, etc.)
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Resource not found errors (course not found, plan type not found, etc.)
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Unexpected errors
+                return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
+        }
+
 
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateReservation([FromRoute] Guid id, [FromBody] UpdateClassReservationRequest request)

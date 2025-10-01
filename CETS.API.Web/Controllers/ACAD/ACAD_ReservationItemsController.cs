@@ -10,12 +10,12 @@ namespace CETS.API.Web.Controllers.ACAD
 {
     [ApiController]
     [Route("api/reservation-items")]
-    public class ReservationItemsController : ControllerBase
+    public class ACAD_ReservationItemsController : ControllerBase
     {
         private readonly IACAD_ReservationItemService _reservationItemService;
 
         
-        public ReservationItemsController(IACAD_ReservationItemService reservationItemService)
+        public ACAD_ReservationItemsController(IACAD_ReservationItemService reservationItemService)
         {
             _reservationItemService = reservationItemService;
         }
