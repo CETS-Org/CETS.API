@@ -158,9 +158,10 @@ namespace WebAPI
             builder.Services.AddScoped<IMailService, MailService>();
             builder.Services.AddScoped<IACAD_ClassReservationService, ACAD_ClassReservationService>();
             builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
-            builder.Services.AddScoped<IACAD_AssignmentService, AssignmentService>();
+            
             builder.Services.AddScoped<IACAD_ClassMeetingsService, ACAD_ClassMeetingsService>();
-
+            builder.Services.AddScoped<IACAD_AssignmentRepository, ACAD_AssignmentRepository>();
+            builder.Services.AddScoped<IACAD_ClassRepository, ACAD_ClassRepository>();
 
 
 
@@ -202,8 +203,6 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_LearningMaterialRepository, ACAD_LearningMaterialRepository>();
             builder.Services.AddScoped<IFileStorageService, R2FileStorageService>();
             builder.Services.AddScoped<IACAD_ClassMeetingRepository, ACAD_ClassMeetingRepository>();
-            builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
-
             builder.Services.AddScoped<IACAD_CourseScheduleRepository, ACAD_CourseScheduleRepository>();
             builder.Services.AddScoped<IACAD_CoursePackageRepository, ACAD_CoursePackageRepository>();
             builder.Services.AddScoped<IACAD_CoursePackageItemRepository, ACAD_CoursePackageItemRepository>();
@@ -214,6 +213,9 @@ namespace WebAPI
 
             builder.Services.AddScoped<IACAD_AssignmentRepository, ACAD_AssignmentRepository>();
             builder.Services.AddScoped<IACAD_SubmissionRepository, ACAD_SubmissionRepository>();
+            builder.Services.AddScoped<IACAD_AssignmentService, AssignmentService>();
+            builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
+
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
