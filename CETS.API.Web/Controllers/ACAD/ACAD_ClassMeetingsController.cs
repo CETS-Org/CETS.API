@@ -32,6 +32,12 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(listSession);
         }
 
-
+        [HttpGet("{classMeetingId}/covered-topic")]
+        public async Task<IActionResult> GetCoveredTopic(Guid classMeetingId)
+        {
+            var result = await _classMeetingsService.GetCoveredTopicAsync(classMeetingId);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
     }
 }
