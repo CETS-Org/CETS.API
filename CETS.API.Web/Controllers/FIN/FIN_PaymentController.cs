@@ -196,7 +196,7 @@ namespace CETS.API.Web.Controllers.FIN
             // Create payment data
             var paymentData = new PaymentData(
                 orderCode: orderCode,
-                amount: 2000,
+                amount: 10000,
                 description: $"Payment for CETS invoice",
                 items: items,
                 returnUrl: _configuration["PayOS:ReturnUrl"] ?? "https://localhost:8000/payment/success",
@@ -356,7 +356,7 @@ namespace CETS.API.Web.Controllers.FIN
             // Create payment data
             var paymentData = new PaymentData(
                 orderCode: orderCode,
-                amount: 2000,
+                amount: 10000,
                 description: $"Payment for CETS invoice",
                 items: items,
                 returnUrl: _configuration["PayOS:ReturnUrl"] ?? "https://localhost:8000/payment/success",

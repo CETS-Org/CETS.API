@@ -313,109 +313,28 @@ namespace CETS.API.Web.Controllers.IDN
                 var result = await _accountService.VerifyAccountAsync(request);
                 if (result)
                 {
-                    // Return HTML page for successful verification
-                    var loginUrl = _configuration["VerificationSettings:FrontendLoginUrl"] ?? "https://localhost:3000/login";
-                    var htmlContent = $@"
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>Account Verified - CETS</title>
-                            <meta charset='UTF-8'>
-                            <style>
-                                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }}
-                                .container {{ max-width: 500px; margin: 0 auto; background: white; padding: 50px 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }}
-                                .success-icon {{ color: #4CAF50; font-size: 80px; margin-bottom: 30px; font-weight: bold; }}
-                                .title {{ color: #333; font-size: 28px; margin-bottom: 20px; font-weight: 600; }}
-                                .message {{ color: #666; font-size: 16px; margin-bottom: 40px; line-height: 1.6; }}
-                                .button {{ background: linear-gradient(45deg, #4CAF50, #45a049); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: 600; font-size: 16px; transition: transform 0.3s ease; }}
-                                .button:hover {{ transform: translateY(-2px); box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3); }}
-                                .logo {{ margin-bottom: 20px; }}
-                                .logo img {{ height: 50px; }}
-                            </style>
-                        </head>
-                        <body>
-                            <div class='container'>
-                                <div class='logo'>
-                                    <img src='https://i.ibb.co/0c2dT3L/cets-logo.png' alt='CETS Logo'>
-                                </div>
-                                <div class='title'>Account Verified Successfully!</div>
-                                <div class='message'>Your CETS account has been verified successfully. You can now log in to your account and start your learning journey.</div>
-                                <a href='{loginUrl}' class='button'>Go to Login</a>
-                            </div>
-                        </body>
-                        </html>";
-                    
-                    return Content(htmlContent, "text/html");
+                    // Redirect to frontend success page
+                    var successUrl = _configuration["VerificationSettings:FrontendSuccessUrl"] ?? "https://localhost:3000/verification-success";
+                    return Redirect(successUrl);
                 }
-                return BadRequest(new { message = "Verification failed." });
+                
+                // Redirect to frontend error page
+                var errorUrl = _configuration["VerificationSettings:FrontendErrorUrl"] ?? "https://localhost:3000/verification-error";
+                return Redirect(errorUrl);
             }
             catch (KeyNotFoundException ex)
             {
-                var errorMessage = System.Web.HttpUtility.HtmlEncode(ex.Message);
-                var errorHtml = $@"
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Verification Failed - CETS</title>
-                        <meta charset='UTF-8'>
-                        <style>
-                            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 50px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }}
-                            .container {{ max-width: 500px; margin: 0 auto; background: white; padding: 50px 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }}
-                            .error-icon {{ color: #f44336; font-size: 80px; margin-bottom: 30px; font-weight: bold; }}
-                            .title {{ color: #333; font-size: 28px; margin-bottom: 20px; font-weight: 600; }}
-                            .message {{ color: #666; font-size: 16px; margin-bottom: 40px; line-height: 1.6; }}
-                            .button {{ background: linear-gradient(45deg, #f44336, #d32f2f); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: 600; font-size: 16px; transition: transform 0.3s ease; }}
-                            .button:hover {{ transform: translateY(-2px); box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3); }}
-                            .logo {{ margin-bottom: 20px; }}
-                            .logo img {{ height: 50px; }}
-                        </style>
-                    </head>
-                    <body>
-                        <div class='container'>
-                            <div class='logo'>
-                                <img src='https://i.ibb.co/0c2dT3L/cets-logo.png' alt='CETS Logo'>
-                            </div>
-                            <div class='title'>Verification Failed</div>
-                            <div class='message'>{errorMessage}</div>
-                            <a href='javascript:history.back()' class='button'>Go Back</a>
-                        </div>
-                    </body>
-                    </html>";
-                return Content(errorHtml, "text/html");
+                // Redirect to frontend error page with error message
+                var errorUrl = _configuration["VerificationSettings:FrontendErrorUrl"] ?? "https://localhost:3000/verification-error";
+                var encodedMessage = Uri.EscapeDataString(ex.Message);
+                return Redirect($"{errorUrl}?error={encodedMessage}");
             }
             catch (InvalidOperationException ex)
             {
-                var errorMessage = System.Web.HttpUtility.HtmlEncode(ex.Message);
-                var errorHtml = $@"
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Verification Failed - CETS</title>
-                        <meta charset='UTF-8'>
-                        <style>
-                            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 50px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }}
-                            .container {{ max-width: 500px; margin: 0 auto; background: white; padding: 50px 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }}
-                            .error-icon {{ color: #f44336; font-size: 80px; margin-bottom: 30px; font-weight: bold; }}
-                            .title {{ color: #333; font-size: 28px; margin-bottom: 20px; font-weight: 600; }}
-                            .message {{ color: #666; font-size: 16px; margin-bottom: 40px; line-height: 1.6; }}
-                            .button {{ background: linear-gradient(45deg, #f44336, #d32f2f); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: 600; font-size: 16px; transition: transform 0.3s ease; }}
-                            .button:hover {{ transform: translateY(-2px); box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3); }}
-                            .logo {{ margin-bottom: 20px; }}
-                            .logo img {{ height: 50px; }}
-                        </style>
-                    </head>
-                    <body>
-                        <div class='container'>
-                            <div class='logo'>
-                                <img src='https://i.ibb.co/0c2dT3L/cets-logo.png' alt='CETS Logo'>
-                            </div>
-                            <div class='title'>Verification Failed</div>
-                            <div class='message'>{errorMessage}</div>
-                            <a href='javascript:history.back()' class='button'>Go Back</a>
-                        </div>
-                    </body>
-                    </html>";
-                return Content(errorHtml, "text/html");
+                // Redirect to frontend error page with error message
+                var errorUrl = _configuration["VerificationSettings:FrontendErrorUrl"] ?? "https://localhost:3000/verification-error";
+                var encodedMessage = Uri.EscapeDataString(ex.Message);
+                return Redirect($"{errorUrl}?error={encodedMessage}");
             }
         }
 
