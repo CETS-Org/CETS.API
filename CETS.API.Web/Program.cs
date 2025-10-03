@@ -158,10 +158,12 @@ namespace WebAPI
             builder.Services.AddScoped<IMailService, MailService>();
             builder.Services.AddScoped<IACAD_ClassReservationService, ACAD_ClassReservationService>();
             builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
-            
+   
             builder.Services.AddScoped<IACAD_ClassMeetingsService, ACAD_ClassMeetingsService>();
             builder.Services.AddScoped<IACAD_AssignmentRepository, ACAD_AssignmentRepository>();
             builder.Services.AddScoped<IACAD_ClassRepository, ACAD_ClassRepository>();
+            builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
+
 
 
 
@@ -215,6 +217,9 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_SubmissionRepository, ACAD_SubmissionRepository>();
             builder.Services.AddScoped<IACAD_AssignmentService, AssignmentService>();
             builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
+            builder.Services.AddScoped<IACAD_AcademicRequestRepository, ACAD_AcademicRequestRepository>();
+            builder.Services.AddScoped<IACAD_AcademicRequestHistoryRepository, ACAD_AcademicRequestHistoryRepository>();
+
 
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
