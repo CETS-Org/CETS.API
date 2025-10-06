@@ -38,7 +38,7 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
         [HttpGet("day/{dayOfWeek}")]
-        public async Task<IActionResult> GetSchedulesByDayOfWeekAsync(string dayOfWeek)
+        public async Task<IActionResult> GetSchedulesByDayOfWeekAsync(DayOfWeek dayOfWeek)
         {
             var schedules = await _courseScheduleService.GetSchedulesByDayOfWeekAsync(dayOfWeek);
             return Ok(schedules);
@@ -55,7 +55,7 @@ namespace CETS.API.Web.Controllers.ACAD
         public async Task<IActionResult> CheckTimeSlotAvailabilityAsync(
             [FromQuery] Guid courseId, 
             [FromQuery] Guid timeSlotId, 
-            [FromQuery] string dayOfWeek)
+            [FromQuery] DayOfWeek dayOfWeek)
         {
             var isAvailable = await _courseScheduleService.IsTimeSlotAvailableAsync(courseId, timeSlotId, dayOfWeek);
             return Ok(new { IsAvailable = isAvailable });
