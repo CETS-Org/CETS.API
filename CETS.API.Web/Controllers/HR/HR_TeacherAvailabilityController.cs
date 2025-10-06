@@ -38,9 +38,9 @@ namespace CETS.API.Web.Controllers.HR
 		}
 
 		[HttpGet("teacher/{teacherId:guid}/date/{teachDate}")]
-		public async Task<IActionResult> GetByTeacherAndDateAsync(Guid teacherId, DateTime teachDate)
+		public async Task<IActionResult> GetByTeacherAndDateAsync(Guid teacherId, DateOnly teachDate)
 		{
-			var items = await _service.GetByTeacherAndDateAsync(teacherId, teachDate);
+			var items = await _service.GetByTeacherAndDateAsync(teacherId, teachDate.DayOfWeek);
 			return Ok(items);
 		}
 
