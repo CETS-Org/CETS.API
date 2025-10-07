@@ -1,4 +1,6 @@
 ﻿using Application.Interfaces.ACAD;
+using DTOs.ACAD.ACAD_Submission.Requests;
+using DTOs.ACAD.ACAD_Submission.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +30,20 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(new { submitted, total, summary = $"{submitted}/{total} assignments submitted" });
         }
 
+        [HttpPost("submit")]
+        public async Task<ActionResult<SubmissionResponse>> Submit([FromBody] SubmitAssignmentRequest request)
+        {
+            var result = await _submissionService.SubmitAssignmentAsync(request);
+            return Ok(result);
+        }
 
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<SubmissionDetailResponse>> GetDetail(Guid id)
+        {
+            var result = await _submissionService.GetSubmissionsByAssignmentAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
     }
 }
