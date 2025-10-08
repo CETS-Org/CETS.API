@@ -25,6 +25,14 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
         [EnableQuery]
+        [HttpGet("Schedule/Teacher/{teacherId}")]
+        public async Task<IActionResult> GetByTeacherAsync(Guid teacherId, CancellationToken ct)
+        {
+            var schedules = await _classMeetingsService.WeeklyScheduleGetByTeacherAsync(teacherId, ct);
+            return Ok(schedules);
+        }
+
+        [EnableQuery]
         [HttpGet("{classId}")]
         public async Task<IActionResult> GetAllClassMeetingByClassIdAs(Guid classId)
         {
