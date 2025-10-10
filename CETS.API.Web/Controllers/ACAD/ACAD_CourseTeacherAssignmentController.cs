@@ -44,13 +44,13 @@ namespace CETS.API.Web.Controllers.ACAD
             {
                 var teachingCourses = await _courseAssignmentService.GetAllTeachingCourses(teacherId);
                 if (!teachingCourses.Any())
-                    return NotFound(new { Message = "Giáo viên này chưa được phân công dạy khóa học nào." });
+                    return NotFound(new { Message = "This teacher has not been assigned to teach any courses." });
                 return Ok(teachingCourses);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting teaching courses for teacher {TeacherId}", teacherId);
-                return StatusCode(500, new { Message = "Có lỗi xảy ra khi lấy danh sách khóa học của giáo viên." });
+                return StatusCode(500, new { Message = "An error occurred while retrieving the teacher's course list." });
             }
         }
         #endregion
