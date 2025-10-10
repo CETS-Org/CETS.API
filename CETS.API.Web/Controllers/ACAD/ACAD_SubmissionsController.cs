@@ -45,5 +45,63 @@ namespace CETS.API.Web.Controllers.ACAD
             if (result == null) return NotFound();
             return Ok(result);
         }
+
+        /// <summary>
+        /// Lấy danh sách submissions theo AssignmentId
+        /// </summary>
+        /// <param name="assignmentId">ID của assignment</param>
+        /// <returns>Danh sách submissions của assignment đó</returns>
+        [HttpGet("assignment/{assignmentId}")]
+        public async Task<IActionResult> GetSubmissionsByAssignment(Guid assignmentId)
+        {
+            var result = await _submissionService.GetSubmissionsByAssignmentAsync(assignmentId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Cập nhật điểm cho submission
+        /// </summary>
+        /// <param name="request">Request bao gồm SubmissionId và Score</param>
+        /// <returns>Submission đã được cập nhật điểm</returns>
+        [HttpPut("update-score")]
+        public async Task<IActionResult> UpdateScore([FromBody] UpdateSubmissionScoreRequest request)
+        {
+            try
+            {
+                var result = await _submissionService.UpdateScoreAsync(request);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Cập nhật feedback cho submission
+        /// </summary>
+        /// <param name="request">Request bao gồm SubmissionId và Feedback</param>
+        /// <returns>Submission đã được cập nhật feedback</returns>
+        [HttpPut("update-feedback")]
+        public async Task<IActionResult> UpdateFeedback([FromBody] UpdateSubmissionFeedbackRequest request)
+        {
+            try
+            {
+                var result = await _submissionService.UpdateFeedbackAsync(request);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
