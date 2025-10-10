@@ -40,9 +40,4 @@
 	  <Folder Include="Controllers\RPT\" />
 	</ItemGroup>
 
-
-	<ItemGroup>
-	  <None Include="appsettings.Development.json" />
-	</ItemGroup>
-
 </Project>

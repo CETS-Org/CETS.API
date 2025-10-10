@@ -116,20 +116,21 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
+     
         /// <summary>
-        /// Get learning materials by class
+        /// Get learning materials by class meeting (session)
         /// </summary>
-        [HttpGet("class/{classId}")]
-        public async Task<ActionResult<IEnumerable<LearningMaterialResponse>>> GetLearningMaterialsByClass(Guid classId)
+        [HttpGet("class-meeting/{classMeetingId}")]
+        public async Task<ActionResult<IEnumerable<LearningMaterialResponse>>> GetLearningMaterialsByClassMeeting(Guid classMeetingId)
         {
             try
             {
-                var result = await _learningMaterialService.GetLearningMaterialsByClassAsync(classId);
+                var result = await _learningMaterialService.GetLearningMaterialsByClassMeetingAsync(classMeetingId);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting learning materials for class {ClassId}", classId);
+                _logger.LogError(ex, "Error getting learning materials for class meeting {ClassMeetingId}", classMeetingId);
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
