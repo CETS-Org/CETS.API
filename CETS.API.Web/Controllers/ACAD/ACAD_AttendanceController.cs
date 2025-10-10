@@ -50,15 +50,7 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(students);
         }
 
-        /// <summary>
-        /// Điểm danh hàng loạt cho một buổi học
-        /// </summary>
-        /// <param name="request">
-        /// Request bao gồm:
-        /// - ClassMeetingId: ID của buổi học
-        /// - TeacherId: ID của giáo viên điểm danh
-        /// - AbsentStudentIds: Danh sách ID học sinh vắng mặt (các học sinh không có trong list này sẽ được đánh dấu Present)
-        /// </param>
+        
         [HttpPost("bulk-mark")]
         public async Task<IActionResult> BulkMarkAttendance([FromBody] BulkAttendanceRequest request)
         {
