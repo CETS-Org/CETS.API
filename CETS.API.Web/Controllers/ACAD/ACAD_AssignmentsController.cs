@@ -23,6 +23,17 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(result);
         }
 
+        /// <summary>
+        /// Lấy danh sách assignments theo classMeetingId kèm số lượng submissions
+        /// </summary>
+        /// <param name="classMeetingId">ID của buổi học</param>
+        /// <returns>Danh sách assignments với count submissions</returns>
+        [HttpGet("class-Assignment/{classMeetingId}")]
+        public async Task<IActionResult> GetAssignmentsWithSubmissionCount(Guid classMeetingId)
+        {
+            var result = await _AssignmentService.GetAssignmentsWithSubmissionCountAsync(classMeetingId);
+            return Ok(result);
+        }
 
     }
 }
