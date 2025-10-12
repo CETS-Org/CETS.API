@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.ACAD;
+﻿using Application.Implementations.ACAD;
+using Application.Interfaces.ACAD;
 using DTOs.ACAD.ACAD_Submission.Requests;
 using DTOs.ACAD.ACAD_Submission.Responses;
 using Microsoft.AspNetCore.Http;
@@ -59,6 +60,30 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
         /// <summary>
+        /// Lấy danh sách submissions với download URLs theo AssignmentId
+        /// </summary>
+        /// <param name="assignmentId">ID của assignment</param>
+        /// <returns>Assignment info và danh sách submissions với download URLs</returns>
+        [HttpGet("assignment/{assignmentId}/downloads")]
+        public async Task<IActionResult> GetSubmissionsWithDownloadUrls(Guid assignmentId)
+        {
+            try
+            {
+                var result = await _submissionService.GetSubmissionsWithDownloadUrlsAsync(assignmentId);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting submissions with download URLs for assignment {AssignmentId}", assignmentId);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Cập nhật điểm cho submission
         /// </summary>
         /// <param name="request">Request bao gồm SubmissionId và Score</param>
@@ -101,6 +126,42 @@ namespace CETS.API.Web.Controllers.ACAD
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("download/{id}")]
+        public async Task<ActionResult<string>> GetDownloadUrl(Guid id)
+        {
+            try
+            {
+                var submission = await _submissionService.GetSubmissionByIdAsync(id);
+                if (submission == null)
+                    return NotFound("Assignment not found");
+
+                var downloadUrl = await _submissionService.GetDownloadUrlAsync(id);
+
+                return Ok(new
+                {
+                    downloadUrl,
+                    submissionInfo = new
+                    {
+                        id = submission.Id,
+                        createdAt = submission.CreatedAt
+                    }
+                });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Assignment not found");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting download URL for assignment {Id}", id);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
