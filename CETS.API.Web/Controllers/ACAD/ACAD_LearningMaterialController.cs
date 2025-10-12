@@ -40,7 +40,10 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
       
-        [HttpPut("{id}")]
+        /// <summary>
+        /// Partially updates a learning material (PATCH)
+        /// </summary>
+        [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateLearningMaterial(Guid id, [FromBody] UpdateLearningMaterialRequest request)
         {
             try
