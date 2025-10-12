@@ -18,51 +18,108 @@ namespace CETS.API.Web.Controllers.HR
 		[HttpGet]
 		public async Task<IActionResult> GetAllAsync()
 		{
-			var items = await _service.GetAllAsync();
-			return Ok(items);
+			try
+			{
+				var items = await _service.GetAllAsync();
+				return Ok(items);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
 		}
 
 		[HttpGet("{id:guid}")]
 		public async Task<IActionResult> GetByIdAsync(Guid id)
 		{
-			var item = await _service.GetByIdAsync(id);
-			if (item == null) return NotFound();
-			return Ok(item);
+			try
+			{
+				var item = await _service.GetByIdAsync(id);
+				if (item == null) return NotFound($"Teacher availability with id '{id}' not found.");
+				return Ok(item);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
 		}
 
 		[HttpGet("teacher/{teacherId:guid}")]
 		public async Task<IActionResult> GetByTeacherIdAsync(Guid teacherId)
 		{
-			var items = await _service.GetByTeacherIdAsync(teacherId);
-			return Ok(items);
+			try
+			{
+				var items = await _service.GetByTeacherIdAsync(teacherId);
+				return Ok(items);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
 		}
 
 		[HttpGet("teacher/{teacherId:guid}/date/{teachDate}")]
 		public async Task<IActionResult> GetByTeacherAndDateAsync(Guid teacherId, DateOnly teachDate)
 		{
-			var items = await _service.GetByTeacherAndDateAsync(teacherId, teachDate.DayOfWeek);
-			return Ok(items);
+			try
+			{
+				var items = await _service.GetByTeacherAndDateAsync(teacherId, teachDate.DayOfWeek);
+				return Ok(items);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> CreateAsync([FromBody] CreateTeacherAvailabilityRequest request)
 		{
-			var created = await _service.CreateAsync(request);
-			return Created("Created", created);
+			try
+			{
+				var created = await _service.CreateAsync(request);
+				return Created("Created", created);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest($"{ex.Message}");
+			}
 		}
 
 		[HttpPut("{id:guid}")]
 		public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateTeacherAvailabilityRequest request)
 		{
-			var updated = await _service.UpdateAsync(id, request);
-			return Ok(updated);
+			try
+			{
+				var updated = await _service.UpdateAsync(id, request);
+				return Ok(updated);
+			}
+			catch (KeyNotFoundException)
+			{
+				return NotFound($"Teacher availability with id '{id}' not found.");
+			}
+			catch (Exception ex)
+			{
+				return BadRequest($"Error updating teacher availability: {ex.Message}");
+			}
 		}
 
 		[HttpDelete("{id:guid}")]
 		public async Task<IActionResult> DeleteAsync(Guid id)
 		{
-			await _service.DeleteAsync(id);
-			return NoContent();
+			try
+			{
+				await _service.DeleteAsync(id);
+				return NoContent();
+			}
+			catch (KeyNotFoundException)
+			{
+				return NotFound($"Teacher availability with id '{id}' not found.");
+			}
+			catch (Exception ex)
+			{
+				return BadRequest($"Error deleting teacher availability: {ex.Message}");
+			}
 		}
 	}
 }
