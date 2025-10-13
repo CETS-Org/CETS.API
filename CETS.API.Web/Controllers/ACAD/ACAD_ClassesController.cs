@@ -25,5 +25,23 @@ namespace CETS.API.Web.Controllers.ACAD
 
             return Ok(result);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetClassById(Guid id)
+        {
+            var result = await _classService.GetClassByIdAsync(id);
+            if (result == null)
+                return NotFound(new { message = "Class not found" });
+            return Ok(result);
+        }
+
+        [HttpGet("{id:guid}/detail")]
+        public async Task<ActionResult<ClassDetailResponse>> GetClassDetailAsync(Guid id)
+        {
+            var detail = await _classService.GetClassDetailAsync(id);
+            if (detail == null)
+                return NotFound();
+            return Ok(detail);
+        }
     }
 }
