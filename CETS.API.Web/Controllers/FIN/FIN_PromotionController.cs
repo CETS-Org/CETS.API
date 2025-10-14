@@ -50,7 +50,7 @@ namespace CETS.API.Web.Controllers.FIN
 			await _service.DeleteAsync(id);
 			return NoContent();
 		}
-	}
+    }
 }
 
 

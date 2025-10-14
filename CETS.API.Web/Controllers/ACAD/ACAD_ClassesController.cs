@@ -43,5 +43,12 @@ namespace CETS.API.Web.Controllers.ACAD
                 return NotFound();
             return Ok(detail);
         }
+
+        [HttpGet("staff-classes")]
+        public async Task<ActionResult<List<ClassRowResponse>>> GetAllClassRows()
+        {
+            var classes = await _classService.GetAllClassRowsAsync();
+            return Ok(classes);
+        }
     }
 }
