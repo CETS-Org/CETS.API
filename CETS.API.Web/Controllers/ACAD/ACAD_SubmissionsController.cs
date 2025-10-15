@@ -32,7 +32,7 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
         [HttpPost("submit")]
-        public async Task<ActionResult<SubmissionResponse>> Submit([FromBody] SubmitAssignmentRequest request)
+        public async Task<ActionResult<SubmitAssignmentRequest>> Submit([FromBody] SubmitAssignmentRequest request)
         {
             var result = await _submissionService.SubmitAssignmentAsync(request);
             return Ok(result);
