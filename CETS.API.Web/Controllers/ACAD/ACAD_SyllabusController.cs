@@ -90,7 +90,7 @@ namespace CETS.API.Web.Controllers.ACAD
         {
             try
             {
-                await _syllabusService.DeleteAsync(id);
+                await _syllabusService.SoftDeleteAsync(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

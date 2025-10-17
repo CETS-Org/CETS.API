@@ -81,6 +81,29 @@ namespace CETS.API.Web.Controllers.ACAD
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Soft delete a syllabus item
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSyllabusItemAsync(Guid id)
+        {
+            try
+            {
+                await _syllabusService.SoftDeleteSyllabusItemAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Syllabus item not found for deletion with ID {ItemId}", id);
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting syllabus item with ID {ItemId}", id);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
 
