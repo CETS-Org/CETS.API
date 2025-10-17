@@ -146,6 +146,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseBenefitService, ACAD_CourseBenefitService>();
             builder.Services.AddScoped<IACAD_CourseRequirementService, ACAD_CourseRequirementService>();
             builder.Services.AddScoped<IACAD_CourseSkillService, ACAD_CourseSkillService>();
+            builder.Services.AddScoped<IACAD_CourseCategoryService, ACAD_CourseCategoryService>();
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();  
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
@@ -162,6 +163,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_AssignmentService, AssignmentService>();
             builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
+            builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
 
 
 
@@ -197,6 +199,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseBenefitRepository, ACAD_CourseBenefitRepository>();
             builder.Services.AddScoped<IACAD_CourseRequirementRepository, ACAD_CourseRequirementRepository>();
             builder.Services.AddScoped<IACAD_CourseSkillRepository, ACAD_CourseSkillRepository>();
+            builder.Services.AddScoped<IACAD_CourseCategoryRepository, ACAD_CourseCategoryRepository>();
             builder.Services.AddScoped<IACAD_EnrollmentRepository, ACAD_EnrollmentRepository>();
             builder.Services.AddScoped<IACAD_CourseTeacherAssignmentRepository, ACAD_CourseTeacherAssignmentRepository>();
             builder.Services.AddScoped<IACAD_AttendanceRepository, ACAD_AttendanceRepository>();
@@ -219,6 +222,8 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_ClassRepository, ACAD_ClassRepository>();
             builder.Services.AddScoped<IACAD_AcademicRequestRepository, ACAD_AcademicRequestRepository>();
             builder.Services.AddScoped<IACAD_AcademicRequestHistoryRepository, ACAD_AcademicRequestHistoryRepository>();
+            builder.Services.AddScoped<IACAD_SyllabusRepository, ACAD_SyllabusRepository>();
+            builder.Services.AddScoped<IACAD_SyllabusItemRepository, ACAD_SyllabusItemRepository>();
 
 
 
