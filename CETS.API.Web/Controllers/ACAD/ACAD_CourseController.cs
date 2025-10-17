@@ -120,7 +120,7 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
         /// <summary>
-        /// Create a new course
+        /// Create a new course with all related details (benefits, requirements, skills, schedules)
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<Guid>> CreateCourseAsync([FromBody] CreateCourseRequest request)
@@ -128,7 +128,7 @@ namespace CETS.API.Web.Controllers.ACAD
             try
             {
                 var courseId = await _courseService.CreateCourseAsync(request);
-                return Ok(request);
+                return Ok(new { Id = courseId, Message = "Course created successfully with all related details" });
             }
             catch (Exception ex)
             {
@@ -136,6 +136,25 @@ namespace CETS.API.Web.Controllers.ACAD
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Get presigned URL for uploading course image directly to R2
+        /// </summary>
+        [HttpPost("image-upload-url")]
+        public async Task<ActionResult<CourseImageUploadResponse>> GetImageUploadUrlAsync([FromBody] ImageUploadRequest request)
+        {
+            try
+            {
+                var response = await _courseService.GetImageUploadUrlAsync(request.FileName, request.ContentType);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting image upload URL");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
 
         /// <summary>
         /// Update an existing course
