@@ -1,4 +1,5 @@
 using Application.Interfaces.ACAD;
+using DTOs.ACAD.ACAD_Course.Requests;
 using DTOs.ACAD.ACAD_CoursePackage.Requests;
 using DTOs.ACAD.ACAD_CoursePackage.Responses;
 using DTOs.ACAD.ACAD_CoursePackage.Search;
@@ -317,6 +318,42 @@ namespace CETS.API.Web.Controllers.ACAD
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error performing basic search for course packages");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Get package statistics including total packages, active packages, revenue from sales, and packages sold
+        /// </summary>
+        [HttpGet("statistics")]
+        public async Task<ActionResult<CoursePackageStatisticsResponse>> GetStatistics()
+        {
+            try
+            {
+                var statistics = await _coursePackageService.GetStatisticsAsync();
+                return Ok(statistics);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving course package statistics");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Get presigned URL for uploading package image directly to R2
+        /// </summary>
+        [HttpPost("image-upload-url")]
+        public async Task<ActionResult<CoursePackageImageUploadResponse>> GetImageUploadUrlAsync([FromBody] ImageUploadRequest request)
+        {
+            try
+            {
+                var response = await _coursePackageService.GetImageUploadUrlAsync(request.FileName, request.ContentType);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting image upload URL for package");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
