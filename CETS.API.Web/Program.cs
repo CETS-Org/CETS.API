@@ -164,6 +164,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
+            builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
 
 
 
@@ -224,6 +225,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_AcademicRequestHistoryRepository, ACAD_AcademicRequestHistoryRepository>();
             builder.Services.AddScoped<IACAD_SyllabusRepository, ACAD_SyllabusRepository>();
             builder.Services.AddScoped<IACAD_SyllabusItemRepository, ACAD_SyllabusItemRepository>();
+            builder.Services.AddScoped<IACAD_CourseWishlistRepository, ACAD_CourseWishlistRepository>();
 
 
 
