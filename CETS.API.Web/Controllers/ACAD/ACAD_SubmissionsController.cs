@@ -164,5 +164,44 @@ namespace CETS.API.Web.Controllers.ACAD
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Bulk update multiple student submissions (scores and/or feedback)
+        /// </summary>
+        /// <param name="request">Request containing list of submission updates</param>
+        /// <returns>Result with updated count and details for each submission</returns>
+        [HttpPut("bulk-update")]
+        public async Task<IActionResult> BulkUpdateSubmissions([FromBody] BulkUpdateSubmissionsRequest request)
+        {
+            try
+            {
+                var result = await _submissionService.BulkUpdateSubmissionsAsync(request);
+                
+                // Return 207 Multi-Status if there are partial failures
+                if (result.Data.FailedCount > 0 && result.Data.UpdatedCount > 0)
+                {
+                    return StatusCode(207, result);
+                }
+                
+                // Return 200 OK if all succeeded
+                if (result.Data.FailedCount == 0)
+                {
+                    return Ok(result);
+                }
+                
+                // Return 400 Bad Request if all failed
+                return BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error performing bulk update on submissions");
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = "An unexpected error occurred while processing your request"
+                });
+            }
+        }
     }
 }
