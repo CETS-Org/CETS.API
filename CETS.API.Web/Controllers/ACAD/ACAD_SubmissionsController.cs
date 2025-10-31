@@ -32,7 +32,7 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
         [HttpPost("submit")]
-        public async Task<ActionResult<SubmitAssignmentRequest>> Submit([FromBody] SubmitAssignmentRequest request)
+        public async Task<ActionResult<SubmissionResponse>> Submit([FromBody] SubmitAssignmentRequest request)
         {
             var result = await _submissionService.SubmitAssignmentAsync(request);
             return Ok(result);
@@ -136,7 +136,7 @@ namespace CETS.API.Web.Controllers.ACAD
             {
                 var submission = await _submissionService.GetSubmissionByIdAsync(id);
                 if (submission == null)
-                    return NotFound("Assignment not found");
+                    return NotFound("Submission not found");
 
                 var downloadUrl = await _submissionService.GetDownloadUrlAsync(id);
 
@@ -152,7 +152,7 @@ namespace CETS.API.Web.Controllers.ACAD
             }
             catch (KeyNotFoundException)
             {
-                return NotFound("Assignment not found");
+                return NotFound("Submission not found");
             }
             catch (InvalidOperationException ex)
             {
