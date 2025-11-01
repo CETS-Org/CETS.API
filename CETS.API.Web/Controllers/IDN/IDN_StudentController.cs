@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.IDN;
+﻿using Application.Interfaces.Common.Storage;
+using Application.Interfaces.IDN;
 using DTOs.IDN.IDN_Student.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace CETS.API.Web.Controllers.IDN
     {
         private readonly ILogger<IDN_StudentController> _logger;
         private readonly IIDN_StudentService _studentService;
-        public IDN_StudentController(ILogger<IDN_StudentController> logger, IIDN_StudentService studentService)
+        private readonly IFileStorageService _fileStorageService;
+        public IDN_StudentController(ILogger<IDN_StudentController> logger, IIDN_StudentService studentService, IFileStorageService fileStorageService)
         {
             _logger = logger;
             _studentService = studentService;
+            _fileStorageService = fileStorageService;
         }
 
         [HttpGet]
@@ -93,6 +96,19 @@ namespace CETS.API.Web.Controllers.IDN
             }
             return Ok(deletedStudent);
         }
+
+        [HttpGet("avatar/upload-url")]
+        public async Task<IActionResult> GetAvatarUploadUrl(string fileName, string contentType)
+        {
+            var (url, filePath) = await _fileStorageService.GetPresignedPutUrlAsync("students/avatars", fileName, contentType);
+            return Ok(new
+            {
+                uploadUrl = url,
+                filePath = filePath,
+                publicUrl = _fileStorageService.GetPublicUrl(filePath)
+            });
+        }
+
 
     }
 }
