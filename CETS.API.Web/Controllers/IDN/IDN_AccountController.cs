@@ -83,7 +83,7 @@ namespace CETS.API.Web.Controllers.IDN
             }
         }
 
-        
+
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAccountAsync(Guid id, [FromBody] UpdateAccountRequest dto)
         {
@@ -153,6 +153,29 @@ namespace CETS.API.Web.Controllers.IDN
             }
             return Ok(restoredAccount);
         }
+
+        [HttpGet("checkEmailExist/{email}")]
+        public async Task<IActionResult> CheckEmailExist(string email)
+        {
+            var result = await _accountService.CheckEmailExist(email);
+            if (result)
+            {
+                return Ok(true);
+            }
+            return NotFound(false);
+        }
+
+        [HttpGet("checkCIDExist/{cid}")]
+        public async Task<IActionResult> CheckCIDExist(string cid)
+        {
+            var result = await _accountService.CheckCIDExist(cid);
+            if (result)
+            {
+                return Ok(true);
+            }
+            return NotFound(false);
+        }
+
 
         #region Login
         [HttpPost("login/student")]
