@@ -1,5 +1,6 @@
 ﻿using Application.Implementations.ACAD;
 using Application.Interfaces.ACAD;
+using DTOs.ACAD.ACAD_Class.Requests;
 using DTOs.ACAD.ACAD_Class.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,5 +51,109 @@ namespace CETS.API.Web.Controllers.ACAD
             var classes = await _classService.GetAllClassRowsAsync();
             return Ok(classes);
         }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateClass([FromBody] CreateClassRequest request)
+        {
+            
+            if (request.EndDate < request.StartDate)
+                return BadRequest(new { message = "EndDate must be greater than or equal to StartDate." });
+
+            if (request.Capacity <= 0)
+                return BadRequest(new { message = "Capacity must be greater than 0." });
+
+            var id = await _classService.CreateClassAsync(request);
+
+
+            return Ok(new { Id = id, Message = "Class created successfully with all related details" });
+        }
+
+        [HttpPut("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateClass([FromRoute] Guid id, [FromBody] UpdateClassRequest request)
+        {
+            // Đồng bộ Id giữa route và body để tránh nhầm lẫn
+            if (request.Id == Guid.Empty)
+            {
+                request.Id = id;
+            }
+            else if (request.Id != id)
+            {
+                return BadRequest(new { message = "Route id and body id do not match." });
+            }
+
+            // (Tuỳ chọn) guard cơ bản cho ngày/thời gian & capacity
+            if (request.EndDate < request.StartDate)
+                return BadRequest(new { message = "EndDate must be greater than or equal to StartDate." });
+
+            if (request.Capacity <= 0)
+                return BadRequest(new { message = "Capacity must be greater than 0." });
+
+            try
+            {
+                await _classService.UpdateClassAsync(request);
+                return Ok(new { Id = id, Message = "Class updated successfully with all related details" });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Nếu service ném NotFound (nên dùng kiểu này trong service)
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Các xung đột nghiệp vụ: trùng lịch, giáo viên không rảnh, v.v.
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Fallback cho lỗi không dự liệu (tuỳ bạn có global exception handler hay không)
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteClass([FromRoute] Guid id)
+        {
+            try
+            {
+                await _classService.SoftDeleteClassAsync(id); 
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("staff-view")]
+        [ProducesResponseType(typeof(List<ClassStaffViewResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<ClassStaffViewResponse>>> GetAllClassStaffView()
+        {
+            var result = await _classService.GetAllClassStaffView(); 
+            return Ok(result);
+        }
+
+        [HttpGet("staff-view/{id:guid}")]
+        [ProducesResponseType(typeof(ClassStaffViewResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ClassStaffViewResponse>> GetClassStaffViewById([FromRoute] Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Id is required." });
+
+            var result = await _classService.GetClassByIdStaffView(id); 
+            if (result is null)
+                return NotFound(new { message = "Class not found." });
+
+            return Ok(result);
+        }
+
     }
 }
