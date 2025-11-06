@@ -28,6 +28,7 @@ using Domain.Data;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Interfaces.ACAD;
+using Domain.Interfaces.Analytics;
 using Domain.Interfaces.COM;
 using Domain.Interfaces.CORE;
 using Domain.Interfaces.EVT;
@@ -165,8 +166,10 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
-
-
+            
+            // Analytics Services
+            builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+            builder.Services.AddScoped<IClassAnalyticsService, ClassAnalyticsService>();
 
 
 
@@ -227,7 +230,9 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_SyllabusItemRepository, ACAD_SyllabusItemRepository>();
             builder.Services.AddScoped<IACAD_CourseWishlistRepository, ACAD_CourseWishlistRepository>();
 
-
+            // Analytics Repositories
+            builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+            builder.Services.AddScoped<IClassAnalyticsRepository, ClassAnalyticsRepository>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
