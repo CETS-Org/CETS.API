@@ -1,6 +1,7 @@
 using Amazon.S3;
 using Application.Implementations;
 using Application.Implementations.ACAD;
+using Application.Implementations.Analytics;
 using Application.Implementations.COM;
 using Application.Implementations.CORE;
 using Application.Implementations.EVT;
@@ -11,6 +12,7 @@ using Application.Implementations.IDN;
 using Application.Implementations.RPT;
 using Application.Interfaces;
 using Application.Interfaces.ACAD;
+using Application.Interfaces.Analytics;
 using Application.Interfaces.COM;
 using Application.Interfaces.Common.Storage;
 using Application.Interfaces.CORE;
@@ -26,6 +28,7 @@ using Domain.Data;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Interfaces.ACAD;
+using Domain.Interfaces.Analytics;
 using Domain.Interfaces.COM;
 using Domain.Interfaces.CORE;
 using Domain.Interfaces.EVT;
@@ -38,6 +41,7 @@ using DTOs.ACAD.ACAD_ClassReservation.Responses;
 using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
 using Infrastructure.Implementations.Repositories.ACAD;
+using Infrastructure.Implementations.Repositories.Analytics;
 using Infrastructure.Implementations.Repositories.COM;
 using Infrastructure.Implementations.Repositories.CORE;
 using Infrastructure.Implementations.Repositories.EVT;
@@ -142,8 +146,10 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
-
-
+            
+            // Analytics Services
+            builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+            builder.Services.AddScoped<IClassAnalyticsService, ClassAnalyticsService>();
 
 
 
@@ -199,7 +205,9 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_SyllabusItemRepository, ACAD_SyllabusItemRepository>();
             builder.Services.AddScoped<IACAD_CourseWishlistRepository, ACAD_CourseWishlistRepository>();
 
-
+            // Analytics Repositories
+            builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+            builder.Services.AddScoped<IClassAnalyticsRepository, ClassAnalyticsRepository>();
 
             builder.Services.AddScoped<IdGenerator>();
 

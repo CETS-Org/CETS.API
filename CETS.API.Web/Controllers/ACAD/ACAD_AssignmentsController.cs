@@ -98,5 +98,40 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
+        /// <summary>
+        /// Update an existing assignment
+        /// </summary>
+        /// <param name="id">Assignment ID</param>
+        /// <param name="request">Update assignment request</param>
+        /// <returns>Updated assignment response</returns>
+        [HttpPut("update/{id}")]
+        public async Task<ActionResult<AssignmentResponse>> UpdateAssignment(Guid id, [FromBody] UpdateAssignmentRequest request)
+        {
+            try
+            {
+                // Set the ID from route parameter to ensure consistency
+                request.Id = id;
+                
+                var result = await _AssignmentService.UpdateAssignmentAsync(request);
+                if (result == null)
+                    return NotFound("Assignment not found");
+
+                return Ok(result);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Assignment not found");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating assignment {Id}", id);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }
