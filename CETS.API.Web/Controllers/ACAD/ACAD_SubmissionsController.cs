@@ -20,6 +20,37 @@ namespace CETS.API.Web.Controllers.ACAD
             _submissionService = submissionService;
         }
 
+        /// <summary>
+        /// Lấy danh sách submissions theo assignmentId và assignmentSkill (reading, writing, speaking, listening)
+        /// </summary>
+        /// <param name="assignmentId">ID của assignment</param>
+        /// <param name="assignmentSkill">Skill code: reading, writing, speaking, listening</param>
+        /// <returns>Danh sách submissions</returns>
+        [HttpGet]
+        [Route("api/submissions")]
+        public async Task<IActionResult> GetSubmissions([FromQuery] Guid assignmentId, [FromQuery] string? assignmentSkill)
+        {
+            try
+            {
+                var submissions = await _submissionService.GetSubmissionsByAssignmentAndSkillAsync(assignmentId, assignmentSkill);
+                return Ok(new
+                {
+                    success = true,
+                    data = submissions
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting submissions for assignment {AssignmentId} with skill {AssignmentSkill}", assignmentId, assignmentSkill);
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = ex.Message
+                });
+            }
+        }
+
         [HttpGet("courses/assignments-summary/{courseId}/students/{studentId}")]
         public async Task<IActionResult> GetAssignmentsSummary(Guid courseId, Guid studentId)
         {
