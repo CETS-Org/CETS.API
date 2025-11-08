@@ -207,19 +207,19 @@ namespace CETS.API.Web.Controllers.ACAD
             try
             {
                 var result = await _submissionService.BulkUpdateSubmissionsAsync(request);
-                
+
                 // Return 207 Multi-Status if there are partial failures
                 if (result.Data.FailedCount > 0 && result.Data.UpdatedCount > 0)
                 {
                     return StatusCode(207, result);
                 }
-                
+
                 // Return 200 OK if all succeeded
                 if (result.Data.FailedCount == 0)
                 {
                     return Ok(result);
                 }
-                
+
                 // Return 400 Bad Request if all failed
                 return BadRequest(result);
             }
@@ -231,6 +231,81 @@ namespace CETS.API.Web.Controllers.ACAD
                     success = false,
                     message = "Internal server error",
                     error = "An unexpected error occurred while processing your request"
+                });
+            }
+        }
+
+        [HttpPost("SubmitWritingSubmisson")]
+        public async Task<IActionResult> SubmitWritingSubmisson([FromForm] SubmitWritingSubmissionRequest request)
+        {
+            try
+            {
+                // Validate file exists
+                if (request.File == null || request.File.Length == 0)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "File is required"
+                    });
+                }
+
+                // Validate file type (docx, doc, or pdf) - get extension from actual file
+                var fileExtension = Path.GetExtension(request.File.FileName).ToLower();
+                if (string.IsNullOrEmpty(fileExtension) || 
+                    (fileExtension != ".docx" && fileExtension != ".doc" && fileExtension != ".pdf"))
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Only DOCX, DOC, and PDF files are allowed"
+                    });
+                }
+
+                // Submit writing assignment - this will extract text, grade by AI, and save to database
+                var result = await _submissionService.SubmitWritingAssignmentAsync(request);
+
+                return Ok(new
+                {
+                    success = true,
+                    data = new
+                    {
+                        submissionId = result.Id,
+                        score = result.Score,
+                        feedback = result.Feedback,
+                        isAiScore = result.IsAiScore,
+                        uploadUrl = result.UploadUrl,
+                        storeUrl = result.StoreUrl,
+                        submittedAt = result.CreatedAt
+                    }
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex, "Invalid argument for writing assignment submission");
+                return BadRequest(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+            catch (NotSupportedException ex)
+            {
+                _logger.LogWarning(ex, "Unsupported file type for writing assignment submission");
+                return BadRequest(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error submitting writing assignment for student {StudentId}", request.StudentId);
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = ex.Message
                 });
             }
         }
