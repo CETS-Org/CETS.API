@@ -133,5 +133,37 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteAssignment(Guid id)
+        {
+            try
+            {
+                await _AssignmentService.DeleteAssignmentAsync(id);
+                return Ok(new
+                {
+                    success = true,
+                    message = "Assignment deleted successfully"
+                });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Assignment not found"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting assignment {Id}", id);
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = ex.Message
+                });
+            }
+        }
+
     }
 }
