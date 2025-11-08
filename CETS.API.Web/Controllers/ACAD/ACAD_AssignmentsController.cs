@@ -197,43 +197,35 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-        
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteAssignment(Guid id)
         {
             try
             {
                 await _AssignmentService.DeleteAssignmentAsync(id);
-                return NoContent();
+                return Ok(new
+                {
+                    success = true,
+                    message = "Assignment deleted successfully"
+                });
             }
             catch (KeyNotFoundException)
             {
-                return NotFound("Assignment not found");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting assignment {Id}", id);
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-      
-        [HttpGet("question-json-upload-url")]
-        public async Task<IActionResult> GetQuestionJsonUploadUrl([FromQuery] string fileName = "quiz-assignment.json")
-        {
-            try
-            {
-                var (uploadUrl, filePath) = await _fileStorageService.GetPresignedPutUrlAsync("assignments/questions", fileName, "application/json");
-                return Ok(new
+                return NotFound(new
                 {
-                    uploadUrl = uploadUrl,
-                    filePath = filePath
+                    success = false,
+                    message = "Assignment not found"
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting presigned URL for question JSON upload");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                _logger.LogError(ex, "Error deleting assignment {Id}", id);
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = ex.Message
+                });
             }
         }
 
