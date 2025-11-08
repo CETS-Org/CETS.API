@@ -1,5 +1,6 @@
 ﻿using Application.Implementations.ACAD;
 using Application.Interfaces.ACAD;
+using Application.Interfaces.Common.Storage;
 using DTOs.ACAD.ACAD_Assignment.Requests;
 using DTOs.ACAD.ACAD_Assignment.Responses;
 using Microsoft.AspNetCore.Http;
@@ -13,13 +14,16 @@ namespace CETS.API.Web.Controllers.ACAD
     {
         private readonly ILogger<ACAD_AssignmentsController> _logger;
         private readonly IACAD_AssignmentService _AssignmentService;
+        private readonly IFileStorageService _fileStorageService;
 
         public ACAD_AssignmentsController(
             ILogger<ACAD_AssignmentsController> logger,
-            IACAD_AssignmentService AssignmentService)
+            IACAD_AssignmentService AssignmentService,
+            IFileStorageService fileStorageService)
         {
             _logger = logger;
             _AssignmentService = AssignmentService;
+            _fileStorageService = fileStorageService;
         }
 
         /// <summary>
@@ -40,11 +44,71 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
+        /// <summary>
+        /// Create a new quiz assignment with questions
+        /// </summary>
+        [HttpPost("create-quiz-assignment")]
+        public async Task<ActionResult<QuizAssignmentResponse>> CreateQuizAssignment([FromBody] CreateQuizAssignmentRequest request)
+        {
+            try
+            {
+                var result = await _AssignmentService.CreateQuizAssignmentAsync(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating quiz assignment");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Create a new speaking assignment with questions
+        /// </summary>
+        [HttpPost("create-speaking-assignment")]
+        public async Task<ActionResult<SpeakingAssignmentResponse>> CreateSpeakingAssignment([FromBody] CreateSpeakingAssignmentRequest request)
+        {
+            try
+            {
+                var result = await _AssignmentService.CreateSpeakingAssignmentAsync(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating speaking assignment");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+     
+       
+
         [HttpGet("class-meeting/{classMeetingId}/student/{studentId}/assignments")]
         public async Task<IActionResult> GetAssignmentsAndSubmissions(Guid classMeetingId, Guid studentId)
         {
             var result = await _AssignmentService.GetAssignmentsWithSubmissions(classMeetingId, studentId);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Get assignment by ID (works for Homework, Quiz, and Speaking assignments)
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<AssignmentResponse>> GetAssignmentById(Guid id)
+        {
+            try
+            {
+                var result = await _AssignmentService.GetAssignmentByIdAsync(id);
+                if (result == null)
+                    return NotFound("Assignment not found");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting assignment {Id}", id);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -129,6 +193,46 @@ namespace CETS.API.Web.Controllers.ACAD
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating assignment {Id}", id);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAssignment(Guid id)
+        {
+            try
+            {
+                await _AssignmentService.DeleteAssignmentAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Assignment not found");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting assignment {Id}", id);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+      
+        [HttpGet("question-json-upload-url")]
+        public async Task<IActionResult> GetQuestionJsonUploadUrl([FromQuery] string fileName = "quiz-assignment.json")
+        {
+            try
+            {
+                var (uploadUrl, filePath) = await _fileStorageService.GetPresignedPutUrlAsync("assignments/questions", fileName, "application/json");
+                return Ok(new
+                {
+                    uploadUrl = uploadUrl,
+                    filePath = filePath
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting presigned URL for question JSON upload");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
