@@ -162,12 +162,8 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-        /// <summary>
-        /// Update an existing assignment
-        /// </summary>
-        /// <param name="id">Assignment ID</param>
-        /// <param name="request">Update assignment request</param>
-        /// <returns>Updated assignment response</returns>
+    
+      
         [HttpPut("update/{id}")]
         public async Task<ActionResult<AssignmentResponse>> UpdateAssignment(Guid id, [FromBody] UpdateAssignmentRequest request)
         {
@@ -217,7 +213,33 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-      
+          /// <summary>
+        /// Get presigned URL for question data (used when taking test, viewing details, or editing)
+        /// </summary>
+        [HttpGet("{id}/question-data-url")]
+        public async Task<ActionResult<string>> GetQuestionDataUrl(Guid id)
+        {
+            try
+            {
+                var questionDataUrl = await _AssignmentService.GetQuestionDataUrlAsync(id);
+                return Ok(new { questionDataUrl });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Assignment not found");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting question data URL for assignment {Id}", id);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
         [HttpGet("question-json-upload-url")]
         public async Task<IActionResult> GetQuestionJsonUploadUrl([FromQuery] string fileName = "quiz-assignment.json")
         {
