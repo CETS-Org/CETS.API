@@ -69,6 +69,93 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(result);
         }
 
+     
+        [HttpPost("speaking-upload-urls")]
+        public async Task<ActionResult<SpeakingSubmissionUploadUrlsResponse>> GetSpeakingSubmissionUploadUrls([FromBody] GetSpeakingSubmissionUploadUrlsRequest request)
+        {
+            try
+            {
+                var result = await _submissionService.GetSpeakingSubmissionUploadUrlsAsync(request);
+                return Ok(new
+                {
+                    success = true,
+                    data = result
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting upload URLs for speaking assignment {AssignmentId} and student {StudentId}", request.AssignmentID, request.StudentID);
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = ex.Message
+                });
+            }
+        }
+
+     
+        [HttpPost("submit-speaking")]
+        public async Task<ActionResult<SubmissionResponse>> SubmitSpeakingSubmission([FromBody] SubmitSpeakingSubmissionRequest request)
+        {
+            try
+            {
+                var result = await _submissionService.SubmitSpeakingSubmissionAsync(request);
+                return Ok(new
+                {
+                    success = true,
+                    data = result
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error finalizing speaking submission for assignment {AssignmentId} and student {StudentId}", request.AssignmentID, request.StudentID);
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = ex.Message
+                });
+            }
+        }
+
+       
+        [HttpPost("start-attempt")]
+        public async Task<ActionResult<SubmissionResponse>> StartAttempt([FromBody] StartAttemptRequest request)
+        {
+            try
+            {
+                var result = await _submissionService.StartAttemptAsync(request);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error starting attempt for assignment {AssignmentId} and student {StudentId}", request.AssignmentID, request.StudentID);
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = ex.Message
+                });
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<SubmissionDetailResponse>> GetDetail(Guid id)
