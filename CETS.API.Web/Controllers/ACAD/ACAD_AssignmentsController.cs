@@ -259,5 +259,18 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
+        [HttpGet("audio-url")]
+        public async Task<IActionResult> GetAudioUploadUrl(string fileName)
+        {
+            string contentType = "audio/mpeg";
+            var (url, filePath) = await _fileStorageService.GetPresignedPutUrlAsync("assignments/audio", fileName, contentType);
+     
+            return Ok(new
+            {
+                uploadUrl = url,
+                filePath = filePath,
+                publicUrl = _fileStorageService.GetPublicUrl(filePath)
+            });
+        }
     }
 }
