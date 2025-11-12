@@ -51,6 +51,16 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(result);
         }
 
+        [HttpGet("students/{studentId}/learning-path/overview")]
+        public async Task<IActionResult> GetLearningPathOverview(Guid studentId)
+        {
+            var result = await _enrollmentService.GetLearningPathOverviewAsync(studentId);
+
+            if (result == null)
+                return NotFound(new { message = "Không tìm thấy thông tin cho học viên." });
+
+            return Ok(result);
+        }
 
     }
 }
