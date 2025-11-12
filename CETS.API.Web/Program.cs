@@ -203,6 +203,8 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_SyllabusRepository, ACAD_SyllabusRepository>();
             builder.Services.AddScoped<IACAD_SyllabusItemRepository, ACAD_SyllabusItemRepository>();
             builder.Services.AddScoped<IACAD_CourseWishlistRepository, ACAD_CourseWishlistRepository>();
+            builder.Services.AddScoped<IWeeklyFeedbackRepository, WeeklyFeedbackRepository>();
+            builder.Services.AddScoped<IWeeklyFeedbackService, WeeklyFeedbackService>();
 
             // Analytics Repositories
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
