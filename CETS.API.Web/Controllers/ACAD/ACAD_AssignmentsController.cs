@@ -142,7 +142,7 @@ namespace CETS.API.Web.Controllers.ACAD
                     assignmentInfo = new {
                         id = assignment.Id,
                         title = assignment.Title,
-                        dueDate = assignment.DueDate,
+                        dueDate = assignment.DueAt,
                         createdAt = assignment.CreatedAt
                     }
                 });
