@@ -71,6 +71,35 @@ namespace CETS.API.Web.Controllers.FIN
             return NoContent();
         }
 
+        [HttpGet("history/{studentId:guid}")]
+        public async Task<IActionResult> GetPaymentHistoryAsync(Guid studentId)
+        {
+            try
+            {
+                var paymentHistory = await _service.GetPaymentHistoryByStudentIdAsync(studentId);
+                
+                return Ok(new
+                {
+                    success = true,
+                    message = "Payment history retrieved successfully",
+                    data = paymentHistory
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "An error occurred while retrieving payment history",
+                    error = new
+                    {
+                        code = "INTERNAL_ERROR",
+                        details = ex.Message
+                    }
+                });
+            }
+        }
+
         #region Monthly Payment Processing
         [HttpPost("monthlyPay")]
         public async Task<IActionResult> CreatePaymentsAsync([FromBody] PaymentRequest request)
