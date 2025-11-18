@@ -57,6 +57,26 @@ namespace CETS.API.Web.Controllers.COM
 			var restored = await _service.RestoreAsync(id);
 			return Ok(restored);
         }
+
+		[HttpPost("combined")]
+		public async Task<IActionResult> CreateCombinedFeedbackAsync([FromBody] CreateCombinedFeedbackRequest request)
+		{
+			var result = await _service.CreateCombinedFeedbackAsync(request);
+			
+			if (!result.Success)
+			{
+				return BadRequest(result);
+			}
+
+			return Created("Created", result);
+		}
+
+		[HttpGet("course/{courseId:guid}")]
+		public async Task<IActionResult> GetFeedbacksByCourseIdAsync(Guid courseId)
+		{
+			var feedbacks = await _service.GetFeedbacksByCourseIdAsync(courseId);
+			return Ok(feedbacks);
+		}
     }
 }
 
