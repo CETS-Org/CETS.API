@@ -37,11 +37,13 @@ using Domain.Interfaces.FIN;
 using Domain.Interfaces.HR;
 using Domain.Interfaces.IDN;
 using Domain.Interfaces.RPT;
+using Application.Interfaces.COM;
 using DTOs.ACAD.ACAD_ClassReservation.Responses;
 using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
 using Infrastructure.Implementations.Repositories.ACAD;
 using Infrastructure.Implementations.Repositories.Analytics;
+using Infrastructure.Implementations.Common.Mongo;
 using Infrastructure.Implementations.Repositories.COM;
 using Infrastructure.Implementations.Repositories.CORE;
 using Infrastructure.Implementations.Repositories.EVT;
@@ -52,11 +54,14 @@ using Infrastructure.Implementations.Repositories.IDN;
 using Infrastructure.Implementations.Repositories.RPT;
 using Infrastructure.Implementations.Services.Email;
 using Infrastructure.Implementations.Services.Security;
+using Infrastructure.Implementations.Common.Notifications;
+
 using MassTransit;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System.Diagnostics;
 using System.Net;
@@ -269,15 +274,27 @@ namespace WebAPI
                 });
             }
 
-            if (builder.Configuration.GetValue("Features:UseMongo", false))
+            builder.Services.Configure<MongoNotificationOptions>(
+                builder.Configuration.GetSection(MongoNotificationOptions.SectionName));
+
+            builder.Services.AddSingleton<IMongoClient>(sp =>
             {
-                builder.Services.AddSingleton<IMongoClient>(sp =>
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                var options = sp.GetRequiredService<IOptions<MongoNotificationOptions>>().Value;
+                var connectionString = options.ConnectionString ?? configuration.GetConnectionString("MongoDb");
+
+                if (string.IsNullOrWhiteSpace(connectionString))
                 {
-                    var mongoConnection = builder.Configuration.GetConnectionString("MongoDb");
-                    var settings = MongoClientSettings.FromConnectionString(mongoConnection);
-                    return new MongoClient(settings);
-                });
-            }
+                    throw new InvalidOperationException("Mongo connection string is not configured. Set Mongo:Notification:ConnectionString or ConnectionStrings:MongoDb.");
+                }
+
+                var settings = MongoClientSettings.FromConnectionString(connectionString);
+                return new MongoClient(settings);
+            });
+
+            builder.Services.AddScoped<ICOM_NotificationService, COM_NotificationService>();
+            builder.Services.AddScoped<ICOM_NotificationRepository, COM_NotificationRepository>();
+            builder.Services.AddSingleton<INotificationEventPublisher, RedisNotificationEventPublisher>();
 
             // Register AutoMapper
             builder.Services.AddAutoMapper(typeof(Application.Mappers.CORE.CORE_LookUpProfile));
