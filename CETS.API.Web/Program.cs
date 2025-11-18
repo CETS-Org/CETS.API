@@ -277,6 +277,19 @@ namespace WebAPI
 
             builder.Services.Configure<MongoNotificationOptions>(
                 builder.Configuration.GetSection(MongoNotificationOptions.SectionName));
+            builder.Services.PostConfigure<MongoNotificationOptions>(options =>
+            {
+                if (string.IsNullOrWhiteSpace(options.Database))
+                {
+                    var databaseName = builder.Configuration["Mongo:Database"];
+                    if (string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        throw new InvalidOperationException("Mongo:Database must be configured.");
+                    }
+
+                    options.Database = databaseName;
+                }
+            });
 
             builder.Services.AddSingleton<IMongoClient>(sp =>
             {
