@@ -27,6 +27,17 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(result);
         }
 
+        [HttpGet("feedbackClasses")]
+        public async Task<IActionResult> GetFeedbackClassesByStudentId(Guid studentId)
+        {
+            var result = await _classService.GetFeedbackClassesByStudentId(studentId);
+
+            if (result == null || !result.Any())
+                return NotFound(new { message = "Student not have any classes for feedback" });
+
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetClassById(Guid id)
         {
