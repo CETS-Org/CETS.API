@@ -147,6 +147,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
             builder.Services.AddScoped<IACAD_ClassMeetingsService, ACAD_ClassMeetingsService>();
             builder.Services.AddScoped<IACAD_AssignmentService, AssignmentService>();
+            builder.Services.AddScoped<IACAD_PlacementTestService, ACAD_PlacementTestService>();
             builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
@@ -208,6 +209,8 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_AssignmentService, AssignmentService>();
             builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
             builder.Services.AddScoped<IACAD_AssignmentRepository, ACAD_AssignmentRepository>();
+            builder.Services.AddScoped<IACAD_PlacementTestRepository, ACAD_PlacementTestRepository>();
+            builder.Services.AddScoped<IACAD_PlacementQuestionRepository, ACAD_PlacementQuestionRepository>();
             builder.Services.AddScoped<IACAD_ClassRepository, ACAD_ClassRepository>();
             builder.Services.AddScoped<IACAD_AcademicRequestRepository, ACAD_AcademicRequestRepository>();
             builder.Services.AddScoped<IACAD_AcademicRequestHistoryRepository, ACAD_AcademicRequestHistoryRepository>();
