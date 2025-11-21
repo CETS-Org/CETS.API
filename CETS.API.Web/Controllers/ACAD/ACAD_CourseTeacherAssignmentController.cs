@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.ACAD;
+using DTOs.ACAD.ACAD_CourseTeacherAssignment.Requests;
 using DTOs.ACAD.ACAD_CourseTeacherAssignment.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +67,46 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(teachingClasses);
         }
         #endregion
+
+        [HttpGet("course/{courseId:guid}")]
+        public async Task<IActionResult> GetAssignmentsByCourse(Guid courseId)
+        {
+            var assignments = await _courseAssignmentService.GetAssignmentsByCourseIdAsync(courseId);
+            return Ok(assignments);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAssignment([FromBody] CreateCourseTeacherAssignmentRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _courseAssignmentService.CreateAssignmentAsync(request);
+                return CreatedAtAction(nameof(GetAssignmentsByCourse), new { courseId = result.CourseID }, result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { Message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{assignmentId:guid}")]
+        public async Task<IActionResult> DeleteAssignment(Guid assignmentId)
+        {
+            try
+            {
+                await _courseAssignmentService.DeleteAssignmentAsync(assignmentId);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
     }
 
 
