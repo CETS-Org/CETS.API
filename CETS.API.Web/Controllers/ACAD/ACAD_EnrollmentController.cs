@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.ACAD;
 using DTOs.ACAD.ACAD_Course.Responses;
 using DTOs.ACAD.ACAD_Enrollment.Responses;
+using DTOs.IDN.IDN_Student.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -60,6 +61,34 @@ namespace CETS.API.Web.Controllers.ACAD
                 return NotFound(new { message = "Không tìm thấy thông tin cho học viên." });
 
             return Ok(result);
+        }
+
+
+        [HttpGet("waiting-students")]
+        [ProducesResponseType(typeof(WaitingStudentSearchResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<WaitingStudentSearchResult>> GetWaitingStudents(
+            [FromQuery] Guid courseId,
+            [FromQuery] string? q = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20)
+        {
+            if (courseId == Guid.Empty)
+            {
+                return BadRequest(new { message = "CourseId is required." });
+            }
+
+            try
+            {
+                var result = await _enrollmentService.GetStudentWaitListAsync(courseId, q, page, pageSize);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting waiting list for Course {CourseId}", courseId);
+                // Tùy policy trả lỗi của bạn, có thể trả 500 hoặc BadRequest
+                return StatusCode(500, new { message = "An error occurred while fetching the waiting list." });
+            }
         }
 
     }
