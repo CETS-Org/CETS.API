@@ -66,5 +66,26 @@ namespace CETS.API.Web.Controllers.ACAD
             await _academicRequestService.ProcessRequestAsync(requestDto);
             return Ok(new { message = "Request processed successfully" });
         }
+
+        // POST api/academicrequest/upload-url - Get presigned upload URL for attachment
+        [HttpPost("upload-url")]
+        public async Task<ActionResult<AcademicRequestUploadResponse>> GetUploadUrl([FromBody] GetUploadUrlRequest request)
+        {
+            var result = await _academicRequestService.GetAttachmentUploadUrlAsync(request.FileName, request.ContentType);
+            return Ok(result);
+        }
+
+        // GET api/academicrequest/download-url?filePath={filePath} - Get presigned download URL for attachment
+        [HttpGet("download-url")]
+        public async Task<ActionResult<string>> GetDownloadUrl([FromQuery] string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return BadRequest("File path is required");
+            }
+
+            var result = await _academicRequestService.GetAttachmentDownloadUrlAsync(filePath);
+            return Ok(new { downloadUrl = result });
+        }
     }
 }
