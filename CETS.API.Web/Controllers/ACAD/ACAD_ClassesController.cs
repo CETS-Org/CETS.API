@@ -166,5 +166,31 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(result);
         }
 
+        [HttpPost("composite")] // Route: api/ACAD_Classes/composite
+        [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateClassComposite([FromBody] CreateClassWithScheduleRequest request)
+        {
+            // 1. Validate cơ bản
+            if (request.EndDate < request.StartDate)
+                return BadRequest(new { message = "EndDate must be greater than or equal to StartDate." });
+
+            if (request.Capacity <= 0)
+                return BadRequest(new { message = "Capacity must be greater than 0." });
+
+            // 2. Gọi Service transaction gộp
+            try
+            {
+                // Giả định hàm này bạn đã viết trong Service trả về Guid của Class mới
+                var classId = await _classService.CreateClassWithScheduleAsync(request);
+
+                return Ok(new { Id = classId, Message = "Class and meetings created successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }
