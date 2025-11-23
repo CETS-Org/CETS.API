@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.ACAD;
+using DTOs.ACAD.ACAD_CourseTeacherAssignment.Request;
 using DTOs.ACAD.ACAD_CourseTeacherAssignment.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +67,37 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(teachingClasses);
         }
         #endregion
+
+        [HttpPost("available-teachers")]
+        [ProducesResponseType(typeof(List<TeacherOptionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAvailableTeachersForClass([FromBody] GetAvailableTeachersRequest request)
+        {
+            // 1. Validate cơ bản
+            if (request.CourseId == Guid.Empty)
+                return BadRequest(new { Message = "CourseId is required." });
+
+          /*  if (request.Schedules == null || !request.Schedules.Any())
+                return BadRequest(new { Message = "At least one schedule is required to check availability." });
+
+            if (request.EndDate < request.StartDate)
+                return BadRequest(new { Message = "EndDate must be after StartDate." });
+          */
+
+            try
+            {
+                // 2. Gọi Service xử lý logic tìm kiếm
+                var availableTeachers = await _courseAssignmentService.GetAvailableTeachersAsync(request);
+
+                // 3. Trả về danh sách (dù rỗng cũng trả về 200 OK list rỗng)
+                return Ok(availableTeachers);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error finding available teachers for Course {CourseId}", request.CourseId);
+                return StatusCode(500, new { Message = "An error occurred while searching for teachers." });
+            }
+        }
     }
 
 
