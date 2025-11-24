@@ -28,7 +28,6 @@ using Domain.Data;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Interfaces.ACAD;
-using Domain.Interfaces.Analytics;
 using Domain.Interfaces.COM;
 using Domain.Interfaces.CORE;
 using Domain.Interfaces.EVT;
@@ -42,7 +41,6 @@ using DTOs.ACAD.ACAD_ClassReservation.Responses;
 using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
 using Infrastructure.Implementations.Repositories.ACAD;
-using Infrastructure.Implementations.Repositories.Analytics;
 using Infrastructure.Implementations.Common.Mongo;
 using Infrastructure.Implementations.Repositories.COM;
 using Infrastructure.Implementations.Repositories.CORE;
@@ -153,8 +151,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
             
             // Analytics Services
-            builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
-            builder.Services.AddScoped<IClassAnalyticsService, ClassAnalyticsService>();
+
 
 
 
@@ -211,9 +208,9 @@ namespace WebAPI
             builder.Services.AddScoped<IWeeklyFeedbackRepository, WeeklyFeedbackRepository>();
             builder.Services.AddScoped<IWeeklyFeedbackService, WeeklyFeedbackService>();
 
-            // Analytics Repositories
-            builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
-            builder.Services.AddScoped<IClassAnalyticsRepository, ClassAnalyticsRepository>();
+            
+            // Dashboard Analytics Service
+            builder.Services.AddScoped<IDashboardAnalyticsService, DashboardAnalyticsService>();
 
             builder.Services.AddScoped<IdGenerator>();
 
