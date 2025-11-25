@@ -142,11 +142,21 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-        [HttpGet("staff-view")]
+        [HttpGet("staff-view-byCourse")]
         [ProducesResponseType(typeof(List<ClassStaffViewResponse>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ClassStaffViewResponse>>> GetAllClassStaffView()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<List<ClassStaffViewResponse>>> GetClassByCourseStaffView([FromQuery] Guid courseId)
         {
-            var result = await _classService.GetAllClassStaffView(); 
+            // 1. Validate đầu vào
+            if (courseId == Guid.Empty)
+            {
+                return BadRequest(new { message = "Course ID is required." });
+            }
+
+            // 2. Gọi Service
+            var result = await _classService.GetClassByCourseStaffView(courseId);
+
+            // 3. Trả về kết quả (kể cả khi list rỗng vẫn trả về 200 OK với mảng rỗng [])
             return Ok(result);
         }
 
