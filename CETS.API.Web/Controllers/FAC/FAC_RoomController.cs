@@ -51,13 +51,85 @@ namespace CETS.API.Web.Controllers.FAC
 			return Ok(updated);
 		}
 
-		[HttpDelete("{id:guid}")]
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> PatchAsync(Guid id, [FromBody] UpdateRoomRequest request)
+        {
+            var updated = await _service.PatchAsync(id, request);
+            return Ok(updated);
+        }
+
+
+        [HttpDelete("{id:guid}")]
 		public async Task<IActionResult> DeleteAsync(Guid id)
 		{
 			await _service.DeleteAsync(id);
 			return NoContent();
 		}
-	}
+
+        [HttpPut("{id:guid}/status")]
+        public async Task<IActionResult> UpdateRoomStatus(Guid id, [FromBody] UpdateRoomStatusRequest request)
+        {
+            var updated = await _service.UpdateRoomStatusAsync(id, request.RoomStatusId);
+            return Ok(updated);
+        }
+
+        [HttpGet("statuses")]
+        public async Task<IActionResult> GetRoomStatusesAsync()
+        {
+            var statuses = await _service.GetRoomStatusesAsync();
+            return Ok(statuses);
+        }
+
+        [HttpGet("{id:guid}/check-availability")]
+        public async Task<IActionResult> CheckAvailability(Guid id, [FromQuery] DateTime date, [FromQuery] int slotNumber)
+        {
+            var result = await _service.CheckSlotAvailabilityAsync(id, date, slotNumber);
+            return Ok(result);
+        }
+
+        [HttpGet("schedule")]
+        public async Task<IActionResult> GetWeeklySchedule([FromQuery] DateTime weekStart, [FromQuery] DateTime weekEnd)
+        {
+            var schedule = await _service.GetWeeklyScheduleAsync(weekStart, weekEnd);
+            return Ok(schedule);
+        }
+
+        [HttpGet("statistics")]
+        public async Task<IActionResult> GetStatisticsAsync()
+        {
+            var stats = await _service.GetStatisticsAsync();
+            return Ok(stats);
+        }
+
+        [HttpGet("types")]
+        public async Task<IActionResult> GetRoomTypesAsync()
+        {
+            var types = await _service.GetRoomTypesAsync();
+            return Ok(types);
+        }
+
+        [HttpGet("{roomId:guid}/slot-info")]
+        public async Task<IActionResult> GetSlotInfo(Guid roomId, [FromQuery] DateOnly date, [FromQuery] int slotNumber)
+        {
+            var result = await _service.GetSlotInfoAsync(roomId, date, slotNumber);
+            return Ok(result);
+        }
+
+        [HttpPost("book-slot")]
+        public async Task<IActionResult> BookSlot([FromBody] BookRoomSlotRequest request)
+        {
+            var meetingId = await _service.BookSlotAsync(request);
+            return Ok(new { MeetingId = meetingId, Message = "Booked successfully" });
+        }
+
+        [HttpDelete("bookings/{meetingId:guid}")]
+        public async Task<IActionResult> CancelBooking(Guid meetingId)
+        {
+            await _service.CancelSlotBookingAsync(meetingId);
+            return Ok(new { Message = "Booking cancelled" });
+        }
+
+    }
 }
 
 
