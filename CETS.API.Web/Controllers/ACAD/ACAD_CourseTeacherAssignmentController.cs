@@ -5,6 +5,7 @@ using DTOs.ACAD.ACAD_CourseTeacherAssignment.Request;
 using DTOs.ACAD.ACAD_CourseTeacherAssignment.Requests;
 >>>>>>> f966465 (feat: Add endpoints for course teacher assignment CRUD)
 using DTOs.ACAD.ACAD_CourseTeacherAssignment.Responses;
+using DTOs.IDN.IDN_Teacher.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -111,6 +112,15 @@ namespace CETS.API.Web.Controllers.ACAD
                 return NotFound(new { Message = ex.Message });
             }
         }
+
+        [HttpGet("teachers-by-course/{courseId:guid}")]
+        public async Task<IActionResult> GetTeachersByCourse(Guid courseId)
+        {
+            var teachers = await _courseAssignmentService.GetTeachersByCourseAsync(courseId);
+
+            return Ok(teachers ?? new List<TeacherResponse>());
+        }
+
     }
 
 
