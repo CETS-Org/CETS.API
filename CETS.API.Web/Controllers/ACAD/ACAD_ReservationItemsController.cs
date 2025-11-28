@@ -44,14 +44,14 @@ namespace CETS.API.Web.Controllers.ACAD
         [HttpGet("by-reservation/{reservationId:guid}")]
         public async Task<IActionResult> GetReservationItemByReservationId(Guid reservationId)
         {
-            var reservationItem = await _reservationItemService.GetReservationItemByReservationId(reservationId).ToListAsync();
+            var reservationItems = await _reservationItemService.GetReservationItemByReservationId(reservationId);
 
-            if (reservationItem == null)
+            if (reservationItems == null || !reservationItems.Any())
             {
                 return NotFound($"Không tìm thấy Reservation Item cho Reservation ID: {reservationId}");
             }
 
-            return Ok(reservationItem);
+            return Ok(reservationItems);
         }
 
 
