@@ -1,4 +1,4 @@
-using Amazon.S3;
+﻿using Amazon.S3;
 using Application.Implementations;
 using Application.Implementations.ACAD;
 using Application.Implementations.Analytics;
@@ -66,6 +66,7 @@ using System.Net;
 using System.Reflection.Emit;
 using System.Text;
 using Utils.Helpers;
+using Infrastructure.Implementations.Common.MongoDB;
 
 namespace WebAPI
 {
@@ -308,6 +309,33 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_NotificationService, COM_NotificationService>();
             builder.Services.AddScoped<ICOM_NotificationRepository, COM_NotificationRepository>();
             builder.Services.AddSingleton<INotificationEventPublisher, RedisNotificationEventPublisher>();
+
+            //chat service regestration
+            // 1. Cấu hình MongoChatOptions
+            builder.Services.Configure<MongoChatOptions>(
+                builder.Configuration.GetSection(MongoChatOptions.SectionName));
+
+            // 2. Xử lý Logic Fallback cho Database Name (tương tự Notification)
+            // Nếu trong Mongo:Chat không set Database, nó sẽ lấy từ Mongo:Database gốc
+            builder.Services.PostConfigure<MongoChatOptions>(options =>
+            {
+                if (string.IsNullOrWhiteSpace(options.Database))
+                {
+                    var databaseName = builder.Configuration["Mongo:Database"];
+                    if (string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        throw new InvalidOperationException("Mongo:Database must be configured.");
+                    }
+
+                    options.Database = databaseName;
+                }
+            });
+
+            // 3. Đăng ký các Services của module Chat
+            builder.Services.AddScoped<ICOM_ChatService, COM_ChatService>();
+            builder.Services.AddScoped<ICOM_ChatRepository, COM_ChatRepository>();
+            builder.Services.AddSingleton<IChatEventPublisher, RedisChatEventPublisher>();
+
 
             // Register AutoMapper
             builder.Services.AddAutoMapper(typeof(Application.Mappers.CORE.CORE_LookUpProfile));
