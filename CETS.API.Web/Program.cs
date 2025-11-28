@@ -36,7 +36,6 @@ using Domain.Interfaces.FIN;
 using Domain.Interfaces.HR;
 using Domain.Interfaces.IDN;
 using Domain.Interfaces.RPT;
-using Application.Interfaces.COM;
 using DTOs.ACAD.ACAD_ClassReservation.Responses;
 using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
@@ -66,6 +65,7 @@ using System.Net;
 using System.Reflection.Emit;
 using System.Text;
 using Utils.Helpers;
+using Domain.Settings;
 
 namespace WebAPI
 {
@@ -96,6 +96,13 @@ namespace WebAPI
 
             // Configure R2 File Storage
             builder.Services.Configure<CloudflareR2Settings>(builder.Configuration.GetSection("CloudflareR2"));
+            
+            // Configure Suspension Policy 
+            builder.Services.Configure<SuspensionPolicySettings>(settings =>
+            {
+                // Configuration will be loaded from appsettings.json if present
+                builder.Configuration.GetSection("SuspensionPolicy").Bind(settings);
+            });
 
 
             builder.Services.AddScoped<IMessageService, MessageService>();
@@ -148,6 +155,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_PlacementTestService, ACAD_PlacementTestService>();
             builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
+            builder.Services.AddScoped<IACAD_SuspensionValidationService, ACAD_SuspensionValidationService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
             
