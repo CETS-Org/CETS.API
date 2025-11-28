@@ -65,6 +65,17 @@ namespace CETS.API.Web.Controllers.ACAD
 
             return Ok(classes);
         }
+
+        [HttpGet("by-course/{courseId:guid}")]
+        public async Task<IActionResult> GetClassesByCourse2(Guid courseId)
+        {
+            var classes = await _classService.GetClassesByCourseIdAsync2(courseId);
+
+            if (!classes.Any())
+                return NotFound(new { message = "No classes found for this course" });
+
+            return Ok(classes);
+        }
         [HttpGet("staff-classes")]
         public async Task<ActionResult<List<ClassRowResponse>>> GetAllClassRows()
         {
