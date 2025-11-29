@@ -41,8 +41,6 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Link>EmailTemplates\Templates\%(Filename)%(Extension)</Link>
 		</None>
-
-	<ItemGroup>
 	  <None Update="EmailTemplates\Templates\ClassPostpone.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>

@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces.ACAD;
-using Application.Interfaces.ExternalServices.Email;
+using Application.Interfaces.Common.Email;
 using Domain.Constants;
 using DTOs.ACAD.ACAD_AcademicRequest.Requests;
 using DTOs.COM.COM_Email.Requests;
