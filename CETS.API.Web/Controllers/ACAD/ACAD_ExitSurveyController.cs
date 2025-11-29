@@ -100,7 +100,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// Get all exit surveys (Admin/Staff only)
         /// </summary>
         [HttpGet]
-        [Authorize(Roles = "Admin,Staff")]
+        //[Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetAllExitSurveys()
         {
             try
@@ -118,7 +118,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// Get exit survey analytics (Admin/Staff only)
         /// </summary>
         [HttpGet("analytics")]
-        [Authorize(Roles = "Admin,Staff")]
+        //[Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetExitSurveyAnalytics()
         {
             try
