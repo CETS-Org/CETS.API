@@ -13,13 +13,16 @@ namespace CETS.API.Web.Controllers.ACAD
     {
         private readonly IACAD_AcademicRequestService _academicRequestService;
         private readonly IACAD_SuspensionValidationService? _suspensionValidationService;
+        private readonly IACAD_DropoutValidationService? _dropoutValidationService;
 
         public ACAD_AcademicRequestController(
             IACAD_AcademicRequestService academicRequestService,
-            IACAD_SuspensionValidationService? suspensionValidationService = null)
+            IACAD_SuspensionValidationService? suspensionValidationService = null,
+            IACAD_DropoutValidationService? dropoutValidationService = null)
         {
             _academicRequestService = academicRequestService;
             _suspensionValidationService = suspensionValidationService;
+            _dropoutValidationService = dropoutValidationService;
         }
 
         // POST api/academicrequest - Submit a new academic request
@@ -119,6 +122,40 @@ namespace CETS.API.Web.Controllers.ACAD
                 SuspensionEndDate = requestDto.EndDate,
                 ReasonCategory = requestDto.ReasonCategory,
                 AttachmentUrl = requestDto.AttachmentUrl
+            };
+
+            var result = await _academicRequestService.SubmitRequestAsync(academicRequest);
+            return Ok(result);
+        }
+
+        // POST api/academicrequest/dropout/validate - Validate a dropout request before submission
+        [HttpPost("dropout/validate")]
+        public async Task<ActionResult<DropoutValidationResult>> ValidateDropout([FromBody] CreateDropoutRequest requestDto)
+        {
+            if (_dropoutValidationService == null)
+            {
+                return StatusCode(500, new { message = "Dropout validation service is not available" });
+            }
+
+            var result = await _dropoutValidationService.ValidateDropoutRequestAsync(requestDto);
+            return Ok(result);
+        }
+
+        // POST api/academicrequest/dropout - Submit a dropout request with specialized DTO
+        [HttpPost("dropout")]
+        public async Task<ActionResult<AcademicRequestResponse>> SubmitDropout([FromBody] CreateDropoutRequest requestDto)
+        {
+            // Convert to generic academic request
+            var academicRequest = new CreateAcademicRequest
+            {
+                StudentID = requestDto.StudentID,
+                RequestTypeID = requestDto.RequestTypeID,
+                Reason = requestDto.ReasonDetail,
+                EffectiveDate = requestDto.EffectiveDate,
+                ReasonCategory = requestDto.ReasonCategory,
+                AttachmentUrl = requestDto.AttachmentUrl,
+                CompletedExitSurvey = requestDto.CompletedExitSurvey,
+                ExitSurveyUrl = requestDto.ExitSurveyUrl
             };
 
             var result = await _academicRequestService.SubmitRequestAsync(academicRequest);
