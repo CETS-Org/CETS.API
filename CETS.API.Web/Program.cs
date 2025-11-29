@@ -1,4 +1,4 @@
-using Amazon.S3;
+﻿using Amazon.S3;
 using Application.Implementations;
 using Application.Implementations.ACAD;
 using Application.Implementations.Analytics;
@@ -28,7 +28,6 @@ using Domain.Data;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Interfaces.ACAD;
-using Domain.Interfaces.Analytics;
 using Domain.Interfaces.COM;
 using Domain.Interfaces.CORE;
 using Domain.Interfaces.EVT;
@@ -42,7 +41,6 @@ using DTOs.ACAD.ACAD_ClassReservation.Responses;
 using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
 using Infrastructure.Implementations.Repositories.ACAD;
-using Infrastructure.Implementations.Repositories.Analytics;
 using Infrastructure.Implementations.Common.Mongo;
 using Infrastructure.Implementations.Repositories.COM;
 using Infrastructure.Implementations.Repositories.CORE;
@@ -68,6 +66,7 @@ using System.Net;
 using System.Reflection.Emit;
 using System.Text;
 using Utils.Helpers;
+using Infrastructure.Implementations.Common.MongoDB;
 
 namespace WebAPI
 {
@@ -154,8 +153,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
             
             // Analytics Services
-            builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
-            builder.Services.AddScoped<IClassAnalyticsService, ClassAnalyticsService>();
+
 
 
 
@@ -214,9 +212,9 @@ namespace WebAPI
             builder.Services.AddScoped<IWeeklyFeedbackRepository, WeeklyFeedbackRepository>();
             builder.Services.AddScoped<IWeeklyFeedbackService, WeeklyFeedbackService>();
 
-            // Analytics Repositories
-            builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
-            builder.Services.AddScoped<IClassAnalyticsRepository, ClassAnalyticsRepository>();
+            
+            // Dashboard Analytics Service
+            builder.Services.AddScoped<IDashboardAnalyticsService, DashboardAnalyticsService>();
 
             builder.Services.AddScoped<IdGenerator>();
 
@@ -311,6 +309,33 @@ namespace WebAPI
             builder.Services.AddScoped<ICOM_NotificationService, COM_NotificationService>();
             builder.Services.AddScoped<ICOM_NotificationRepository, COM_NotificationRepository>();
             builder.Services.AddSingleton<INotificationEventPublisher, RedisNotificationEventPublisher>();
+
+            //chat service regestration
+            // 1. Cấu hình MongoChatOptions
+            builder.Services.Configure<MongoChatOptions>(
+                builder.Configuration.GetSection(MongoChatOptions.SectionName));
+
+            // 2. Xử lý Logic Fallback cho Database Name (tương tự Notification)
+            // Nếu trong Mongo:Chat không set Database, nó sẽ lấy từ Mongo:Database gốc
+            builder.Services.PostConfigure<MongoChatOptions>(options =>
+            {
+                if (string.IsNullOrWhiteSpace(options.Database))
+                {
+                    var databaseName = builder.Configuration["Mongo:Database"];
+                    if (string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        throw new InvalidOperationException("Mongo:Database must be configured.");
+                    }
+
+                    options.Database = databaseName;
+                }
+            });
+
+            // 3. Đăng ký các Services của module Chat
+            builder.Services.AddScoped<ICOM_ChatService, COM_ChatService>();
+            builder.Services.AddScoped<ICOM_ChatRepository, COM_ChatRepository>();
+            builder.Services.AddSingleton<IChatEventPublisher, RedisChatEventPublisher>();
+
 
             // Register AutoMapper
             builder.Services.AddAutoMapper(typeof(Application.Mappers.CORE.CORE_LookUpProfile));

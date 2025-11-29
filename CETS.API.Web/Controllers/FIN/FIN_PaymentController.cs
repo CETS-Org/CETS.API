@@ -113,8 +113,16 @@ namespace CETS.API.Web.Controllers.FIN
                 return BadRequest("Reservation item not found!");
             }
             
+            // Use amount from frontend request (frontend handles 10% fee calculation)
+            decimal paymentAmount = request.Amount;
+            
+            // Validate amount
+            if (paymentAmount <= 0)
+            {
+                return BadRequest("Payment amount must be greater than 0");
+            }
+            
             InvoiceResponse invoice;
-            decimal paymentAmount;
             bool isSecondPayment = false;
             
             // Check if reservation item already has an invoice
@@ -138,32 +146,13 @@ namespace CETS.API.Web.Controllers.FIN
                 {
                     // First payment still pending - allow retry payment
                     invoice = existingInvoice;
-                    var invoiceItems = await _invoiceItemService.GetByInvoiceIdAsync(invoice.Id);
-                    var invoiceItemsList = invoiceItems.ToList();
-                    
-                    if (invoiceItemsList.Count < 1)
-                    {
-                        return BadRequest("Invoice does not have items for payment!");
-                    }
-                    
-                    var firstInvoiceItem = invoiceItemsList[0]; // Get first item (index 0)
-                    paymentAmount = firstInvoiceItem.Total;
                     isSecondPayment = false; // This is still first payment retry
                 }
-                else if (invoiceStatus.Code == "1stPaid")
+                else 
+                if (invoiceStatus.Code == "1stPaid")
                 {
-                    // Second payment - use existing invoice and get amount from second invoice item
+                    // Second payment - use existing invoice
                     invoice = existingInvoice;
-                    var invoiceItems = await _invoiceItemService.GetByInvoiceIdAsync(invoice.Id);
-                    var invoiceItemsList = invoiceItems.ToList();
-                    
-                    if (invoiceItemsList.Count < 2)
-                    {
-                        return BadRequest("Invoice does not have enough items for second payment!");
-                    }
-                    
-                    var secondInvoiceItem = invoiceItemsList[1]; // Get second item (index 1)
-                    paymentAmount = secondInvoiceItem.Total;
                     isSecondPayment = true;
                 }
                 else if (invoiceStatus.Code == "2ndPaid" || invoiceStatus.Code == "PaymentComplete")
@@ -180,23 +169,11 @@ namespace CETS.API.Web.Controllers.FIN
             {
                 // No invoice exists - create new invoice for first payment
                 // This will automatically assign invoice to reservationItem
-                invoice = await _invoiceService.CreateInvolcesToMonthlyPay(Guid.Parse(request.ReservationItemId), Guid.Parse(request.StudentId));
+                invoice = await _invoiceService.CreateInvolcesToMonthlyPay(Guid.Parse(request.ReservationItemId), Guid.Parse(request.StudentId),request.Amount);
                 if (invoice == null)
                 {
                     return BadRequest("Invalid request, can not create invoice!");
                 }
-                
-                // Get amount from first invoice item for first payment
-                var invoiceItems = await _invoiceItemService.GetByInvoiceIdAsync(invoice.Id);
-                var invoiceItemsList = invoiceItems.ToList();
-                
-                if (invoiceItemsList.Count < 1)
-                {
-                    return BadRequest("Invoice does not have items for payment!");
-                }
-                
-                var firstInvoiceItem = invoiceItemsList[0]; // Get first item (index 0)
-                paymentAmount = firstInvoiceItem.Total;
             }
             // Get PayOS configuration
             var clientId = _configuration["PayOS:ClientId"];
@@ -290,8 +267,16 @@ namespace CETS.API.Web.Controllers.FIN
                 return BadRequest("Reservation item not found!");
             }
 
+            // Use amount from frontend request
+            decimal paymentAmount = request.Amount;
+            
+            // Validate amount
+            if (paymentAmount <= 0)
+            {
+                return BadRequest("Payment amount must be greater than 0");
+            }
+
             InvoiceResponse invoice;
-            decimal paymentAmount;
 
             // Check if reservation item already has an invoice
             if (reservationItem.InvoiceId != null)
@@ -314,16 +299,6 @@ namespace CETS.API.Web.Controllers.FIN
                 {
                     // Payment still pending - allow retry payment
                     invoice = existingInvoice;
-                    var invoiceItems = await _invoiceItemService.GetByInvoiceIdAsync(invoice.Id);
-                    var invoiceItemsList = invoiceItems.ToList();
-
-                    if (invoiceItemsList.Count < 1)
-                    {
-                        return BadRequest("Invoice does not have items for payment!");
-                    }
-
-                    var invoiceItem = invoiceItemsList[0]; // Get the only item
-                    paymentAmount = invoiceItem.Total;
                 }
                 else if (invoiceStatus.Code == "PaymentComplete")
                 {
@@ -339,23 +314,11 @@ namespace CETS.API.Web.Controllers.FIN
             {
                 // No invoice exists - create new invoice for full payment
                 // This will automatically assign invoice to reservationItem
-                invoice = await _invoiceService.CreateInvoiceForFullPayment(Guid.Parse(request.ReservationItemId), Guid.Parse(request.StudentId));
+                invoice = await _invoiceService.CreateInvoiceForFullPayment(Guid.Parse(request.ReservationItemId), Guid.Parse(request.StudentId),request.Amount);
                 if (invoice == null)
                 {
                     return BadRequest("Invalid request, can not create invoice!");
                 }
-
-                // Get amount from the single invoice item for full payment
-                var invoiceItems = await _invoiceItemService.GetByInvoiceIdAsync(invoice.Id);
-                var invoiceItemsList = invoiceItems.ToList();
-
-                if (invoiceItemsList.Count < 1)
-                {
-                    return BadRequest("Invoice does not have items for payment!");
-                }
-
-                var invoiceItem = invoiceItemsList[0]; // Get the only item
-                paymentAmount = invoiceItem.Total;
             }
 
             // Get PayOS configuration
@@ -385,8 +348,8 @@ namespace CETS.API.Web.Controllers.FIN
             // Create payment data
             var paymentData = new PaymentData(
                 orderCode: orderCode,
-                amount: 10000,
-                description: $"Payment for CETS invoice",
+                amount: (int)paymentAmount,
+                description: $"Payment for CETS invoice {invoice.InvoiceNumber}",
                 items: items,
                 returnUrl: _configuration["PayOS:ReturnUrl"] ?? "https://localhost:8000/payment/success",
                 cancelUrl: _configuration["PayOS:CancelUrl"] ?? "https://localhost:8000/payment/cancel"

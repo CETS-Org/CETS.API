@@ -65,6 +65,17 @@ namespace CETS.API.Web.Controllers.ACAD
 
             return Ok(classes);
         }
+
+        [HttpGet("by-course/{courseId:guid}")]
+        public async Task<IActionResult> GetClassesByCourse2(Guid courseId)
+        {
+            var classes = await _classService.GetClassesByCourseIdAsync2(courseId);
+
+            if (!classes.Any())
+                return NotFound(new { message = "No classes found for this course" });
+
+            return Ok(classes);
+        }
         [HttpGet("staff-classes")]
         public async Task<ActionResult<List<ClassRowResponse>>> GetAllClassRows()
         {
@@ -151,11 +162,21 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-        [HttpGet("staff-view")]
+        [HttpGet("staff-view-byCourse")]
         [ProducesResponseType(typeof(List<ClassStaffViewResponse>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ClassStaffViewResponse>>> GetAllClassStaffView()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<List<ClassStaffViewResponse>>> GetClassByCourseStaffView([FromQuery] Guid courseId)
         {
-            var result = await _classService.GetAllClassStaffView(); 
+            // 1. Validate đầu vào
+            if (courseId == Guid.Empty)
+            {
+                return BadRequest(new { message = "Course ID is required." });
+            }
+
+            // 2. Gọi Service
+            var result = await _classService.GetClassByCourseStaffView(courseId);
+
+            // 3. Trả về kết quả (kể cả khi list rỗng vẫn trả về 200 OK với mảng rỗng [])
             return Ok(result);
         }
 
@@ -173,6 +194,32 @@ namespace CETS.API.Web.Controllers.ACAD
                 return NotFound(new { message = "Class not found." });
 
             return Ok(result);
+        }
+
+        [HttpPost("composite")] // Route: api/ACAD_Classes/composite
+        [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateClassComposite([FromBody] CreateClassWithScheduleRequest request)
+        {
+            // 1. Validate cơ bản
+            if (request.EndDate < request.StartDate)
+                return BadRequest(new { message = "EndDate must be greater than or equal to StartDate." });
+
+            if (request.Capacity <= 0)
+                return BadRequest(new { message = "Capacity must be greater than 0." });
+
+            // 2. Gọi Service transaction gộp
+            try
+            {
+                // Giả định hàm này bạn đã viết trong Service trả về Guid của Class mới
+                var classId = await _classService.CreateClassWithScheduleAsync(request);
+
+                return Ok(new { Id = classId, Message = "Class and meetings created successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
     }
