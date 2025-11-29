@@ -12,10 +12,17 @@ namespace CETS.API.Web.Controllers.ACAD
     public class ACAD_AcademicRequestController : ControllerBase
     {
         private readonly IACAD_AcademicRequestService _academicRequestService;
+        private readonly IACAD_SuspensionValidationService? _suspensionValidationService;
+        private readonly IACAD_DropoutValidationService? _dropoutValidationService;
 
-        public ACAD_AcademicRequestController(IACAD_AcademicRequestService academicRequestService)
+        public ACAD_AcademicRequestController(
+            IACAD_AcademicRequestService academicRequestService,
+            IACAD_SuspensionValidationService? suspensionValidationService = null,
+            IACAD_DropoutValidationService? dropoutValidationService = null)
         {
             _academicRequestService = academicRequestService;
+            _suspensionValidationService = suspensionValidationService;
+            _dropoutValidationService = dropoutValidationService;
         }
 
         // POST api/academicrequest - Submit a new academic request
@@ -86,6 +93,73 @@ namespace CETS.API.Web.Controllers.ACAD
 
             var result = await _academicRequestService.GetAttachmentDownloadUrlAsync(filePath);
             return Ok(new { downloadUrl = result });
+        }
+
+        // POST api/academicrequest/suspension/validate - Validate a suspension request before submission
+        [HttpPost("suspension/validate")]
+        public async Task<ActionResult<SuspensionValidationResult>> ValidateSuspension([FromBody] CreateSuspensionRequest requestDto)
+        {
+            if (_suspensionValidationService == null)
+            {
+                return StatusCode(500, new { message = "Suspension validation service is not available" });
+            }
+
+            var result = await _suspensionValidationService.ValidateSuspensionRequestAsync(requestDto);
+            return Ok(result);
+        }
+
+        // POST api/academicrequest/suspension - Submit a suspension request with specialized DTO
+        [HttpPost("suspension")]
+        public async Task<ActionResult<AcademicRequestResponse>> SubmitSuspension([FromBody] CreateSuspensionRequest requestDto)
+        {
+            // Convert to generic academic request
+            var academicRequest = new CreateAcademicRequest
+            {
+                StudentID = requestDto.StudentID,
+                RequestTypeID = requestDto.RequestTypeID,
+                Reason = requestDto.ReasonDetail,
+                SuspensionStartDate = requestDto.StartDate,
+                SuspensionEndDate = requestDto.EndDate,
+                ReasonCategory = requestDto.ReasonCategory,
+                AttachmentUrl = requestDto.AttachmentUrl
+            };
+
+            var result = await _academicRequestService.SubmitRequestAsync(academicRequest);
+            return Ok(result);
+        }
+
+        // POST api/academicrequest/dropout/validate - Validate a dropout request before submission
+        [HttpPost("dropout/validate")]
+        public async Task<ActionResult<DropoutValidationResult>> ValidateDropout([FromBody] CreateDropoutRequest requestDto)
+        {
+            if (_dropoutValidationService == null)
+            {
+                return StatusCode(500, new { message = "Dropout validation service is not available" });
+            }
+
+            var result = await _dropoutValidationService.ValidateDropoutRequestAsync(requestDto);
+            return Ok(result);
+        }
+
+        // POST api/academicrequest/dropout - Submit a dropout request with specialized DTO
+        [HttpPost("dropout")]
+        public async Task<ActionResult<AcademicRequestResponse>> SubmitDropout([FromBody] CreateDropoutRequest requestDto)
+        {
+            // Convert to generic academic request
+            var academicRequest = new CreateAcademicRequest
+            {
+                StudentID = requestDto.StudentID,
+                RequestTypeID = requestDto.RequestTypeID,
+                Reason = requestDto.ReasonDetail,
+                EffectiveDate = requestDto.EffectiveDate,
+                ReasonCategory = requestDto.ReasonCategory,
+                AttachmentUrl = requestDto.AttachmentUrl,
+                CompletedExitSurvey = requestDto.CompletedExitSurvey,
+                ExitSurveyId = requestDto.ExitSurveyId
+            };
+
+            var result = await _academicRequestService.SubmitRequestAsync(academicRequest);
+            return Ok(result);
         }
     }
 }

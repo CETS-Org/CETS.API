@@ -17,7 +17,7 @@ using Application.Interfaces.COM;
 using Application.Interfaces.Common.Storage;
 using Application.Interfaces.CORE;
 using Application.Interfaces.EVT;
-using Application.Interfaces.ExternalServices.Email;
+using Application.Interfaces.Common.Email;
 using Application.Interfaces.ExternalServices.Security;
 using Application.Interfaces.FAC;
 using Application.Interfaces.FIN;
@@ -36,7 +36,6 @@ using Domain.Interfaces.FIN;
 using Domain.Interfaces.HR;
 using Domain.Interfaces.IDN;
 using Domain.Interfaces.RPT;
-using Application.Interfaces.COM;
 using DTOs.ACAD.ACAD_ClassReservation.Responses;
 using Infrastructure.Implementations.Common.Storage;
 using Infrastructure.Implementations.Repositories;
@@ -50,9 +49,10 @@ using Infrastructure.Implementations.Repositories.FIN;
 using Infrastructure.Implementations.Repositories.HR;
 using Infrastructure.Implementations.Repositories.IDN;
 using Infrastructure.Implementations.Repositories.RPT;
-using Infrastructure.Implementations.Services.Email;
+using Infrastructure.Implementations.Common.Email;
 using Infrastructure.Implementations.Services.Security;
 using Infrastructure.Implementations.Common.Notifications;
+using Infrastructure.Implementations.Common.Email.EmailTemplates;
 
 using MassTransit;
 using Microsoft.AspNetCore.OData;
@@ -66,7 +66,11 @@ using System.Net;
 using System.Reflection.Emit;
 using System.Text;
 using Utils.Helpers;
+using Domain.Settings;
 using Infrastructure.Implementations.Common.MongoDB;
+using Application.Interfaces.Common.Email;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Infrastructure.Implementations.Common.Email.EmailTemplates;
 
 namespace WebAPI
 {
@@ -97,6 +101,13 @@ namespace WebAPI
 
             // Configure R2 File Storage
             builder.Services.Configure<CloudflareR2Settings>(builder.Configuration.GetSection("CloudflareR2"));
+            
+            // Configure Suspension Policy 
+            builder.Services.Configure<SuspensionPolicySettings>(settings =>
+            {
+                // Configuration will be loaded from appsettings.json if present
+                builder.Configuration.GetSection("SuspensionPolicy").Bind(settings);
+            });
 
 
             builder.Services.AddScoped<IMessageService, MessageService>();
@@ -142,6 +153,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseScheduleService, ACAD_CourseScheduleService>();
             builder.Services.AddScoped<IACAD_CoursePackageService, ACAD_CoursePackageService>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IEmailTemplateBuilder, EmailTemplateBuilder>();
             builder.Services.AddScoped<IACAD_ClassReservationService, ACAD_ClassReservationService>();
             builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
             builder.Services.AddScoped<IACAD_ClassMeetingsService, ACAD_ClassMeetingsService>();
@@ -149,9 +161,13 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_PlacementTestService, ACAD_PlacementTestService>();
             builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
+            builder.Services.AddScoped<IACAD_SuspensionValidationService, ACAD_SuspensionValidationService>();
+            builder.Services.AddScoped<IACAD_DropoutValidationService, ACAD_DropoutValidationService>();
+            builder.Services.AddScoped<IACAD_ExitSurveyService, ACAD_ExitSurveyService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
-            
+            builder.Services.AddSingleton<EmailTemplateBuilder>();
+
             // Analytics Services
 
 
@@ -180,6 +196,7 @@ namespace WebAPI
             builder.Services.AddScoped<IHR_TeacherAvailabilityRepository, HR_TeacherAvailabilityRepository>();
             builder.Services.AddScoped<IRPT_ReportRepository, RPT_ReportRepository>();
             builder.Services.AddScoped<ICOM_NotificationRepository, COM_NotificationRepository>();
+            builder.Services.AddScoped<IACAD_ExitSurveyRepository, ACAD_ExitSurveyRepository>();
             builder.Services.AddScoped<ICOM_FeedbackRepository, COM_FeedbackRepository>();
             builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
             builder.Services.AddScoped<ICOM_ConversationRepository, COM_ConversationRepository>();
@@ -278,6 +295,22 @@ namespace WebAPI
             builder.Services.Configure<MongoNotificationOptions>(
                 builder.Configuration.GetSection(MongoNotificationOptions.SectionName));
             builder.Services.PostConfigure<MongoNotificationOptions>(options =>
+            {
+                if (string.IsNullOrWhiteSpace(options.Database))
+                {
+                    var databaseName = builder.Configuration["Mongo:Database"];
+                    if (string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        throw new InvalidOperationException("Mongo:Database must be configured.");
+                    }
+
+                    options.Database = databaseName;
+                }
+            });
+
+            builder.Services.Configure<MongoExitSurveyOptions>(
+                builder.Configuration.GetSection(MongoExitSurveyOptions.SectionName));
+            builder.Services.PostConfigure<MongoExitSurveyOptions>(options =>
             {
                 if (string.IsNullOrWhiteSpace(options.Database))
                 {

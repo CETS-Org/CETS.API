@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.ACAD;
 using DTOs.ACAD.ACAD_Course.Responses;
+using DTOs.ACAD.ACAD_Enrollment.Requests;
 using DTOs.ACAD.ACAD_Enrollment.Responses;
 using DTOs.IDN.IDN_Student.Responses;
 using Microsoft.AspNetCore.Http;
@@ -88,6 +89,45 @@ namespace CETS.API.Web.Controllers.ACAD
                 _logger.LogError(ex, "Error getting waiting list for Course {CourseId}", courseId);
                 // Tùy policy trả lỗi của bạn, có thể trả 500 hoặc BadRequest
                 return StatusCode(500, new { message = "An error occurred while fetching the waiting list." });
+            }
+        }
+
+        /// <summary>
+        /// Bulk update final grades for multiple students
+        /// </summary>
+        /// <param name="request">Request containing list of enrollment final grade updates</param>
+        /// <returns>Result with updated count and details for each enrollment</returns>
+        [HttpPut("bulk-update-final-grades")]
+        public async Task<IActionResult> BulkUpdateFinalGrades([FromBody] BulkUpdateFinalGradesRequest request)
+        {
+            try
+            {
+                var result = await _enrollmentService.BulkUpdateFinalGradesAsync(request);
+
+                // Return 207 Multi-Status if there are partial failures
+                if (result.Data.FailedCount > 0 && result.Data.UpdatedCount > 0)
+                {
+                    return StatusCode(207, result);
+                }
+
+                // Return 200 OK if all succeeded
+                if (result.Data.FailedCount == 0)
+                {
+                    return Ok(result);
+                }
+
+                // Return 400 Bad Request if all failed
+                return BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error performing bulk update on final grades");
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Internal server error",
+                    error = "An unexpected error occurred while processing your request"
+                });
             }
         }
 

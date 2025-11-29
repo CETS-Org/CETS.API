@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Class Postponed Notification</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; background: #f5f7fa;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding: 30px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0"
+                       style="background: #fff; padding: 30px; border-radius: 12px;">
+                    <tr><td align="center"><h2 style="color:#2b6cb0;">🔔 Class Postponed</h2></td></tr>
+
+                    <tr>
+                        <td style="font-size:15px;color:#444;line-height:1.6;">
+                            <p>Hello <strong>{{StudentName}}</strong>,</p>
+                            <p>
+                                Your class <strong>{{ClassName}}</strong> scheduled on
+                                <strong>{{StartDate}}</strong> has been postponed.
+                            </p>
+                            <p>Please select one of the options below:</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding:20px 0;">
+                            <a href="{{ContinueUrl}}" style="padding:12px 20px;background:#2b6cb0;color:#fff;
+                            border-radius:8px;text-decoration:none;margin-right:10px;">Continue Waiting</a>
+
+                            <a href="{{RefundUrl}}" style="padding:12px 20px;background:#d43f3a;color:#fff;
+                            border-radius:8px;text-decoration:none;">Request Refund</a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="font-size:14px;color:#666;padding-top:10px;">
+                            <p>If you continue waiting, we will notify you when new schedule is available.</p>
+                            <p>If you request refund, it will be processed within 3–5 working days.</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding-top:25px;font-size:13px;color:#999;">
+                            CETS Support Team
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
