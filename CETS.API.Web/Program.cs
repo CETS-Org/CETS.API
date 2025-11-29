@@ -157,6 +157,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
             builder.Services.AddScoped<IACAD_SuspensionValidationService, ACAD_SuspensionValidationService>();
             builder.Services.AddScoped<IACAD_DropoutValidationService, ACAD_DropoutValidationService>();
+            builder.Services.AddScoped<IACAD_ExitSurveyService, ACAD_ExitSurveyService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
             
@@ -188,6 +189,7 @@ namespace WebAPI
             builder.Services.AddScoped<IHR_TeacherAvailabilityRepository, HR_TeacherAvailabilityRepository>();
             builder.Services.AddScoped<IRPT_ReportRepository, RPT_ReportRepository>();
             builder.Services.AddScoped<ICOM_NotificationRepository, COM_NotificationRepository>();
+            builder.Services.AddScoped<IACAD_ExitSurveyRepository, ACAD_ExitSurveyRepository>();
             builder.Services.AddScoped<ICOM_FeedbackRepository, COM_FeedbackRepository>();
             builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
             builder.Services.AddScoped<ICOM_ConversationRepository, COM_ConversationRepository>();
@@ -286,6 +288,22 @@ namespace WebAPI
             builder.Services.Configure<MongoNotificationOptions>(
                 builder.Configuration.GetSection(MongoNotificationOptions.SectionName));
             builder.Services.PostConfigure<MongoNotificationOptions>(options =>
+            {
+                if (string.IsNullOrWhiteSpace(options.Database))
+                {
+                    var databaseName = builder.Configuration["Mongo:Database"];
+                    if (string.IsNullOrWhiteSpace(databaseName))
+                    {
+                        throw new InvalidOperationException("Mongo:Database must be configured.");
+                    }
+
+                    options.Database = databaseName;
+                }
+            });
+
+            builder.Services.Configure<MongoExitSurveyOptions>(
+                builder.Configuration.GetSection(MongoExitSurveyOptions.SectionName));
+            builder.Services.PostConfigure<MongoExitSurveyOptions>(options =>
             {
                 if (string.IsNullOrWhiteSpace(options.Database))
                 {
