@@ -17,7 +17,7 @@ using Application.Interfaces.COM;
 using Application.Interfaces.Common.Storage;
 using Application.Interfaces.CORE;
 using Application.Interfaces.EVT;
-using Application.Interfaces.ExternalServices.Email;
+using Application.Interfaces.Common.Email;
 using Application.Interfaces.ExternalServices.Security;
 using Application.Interfaces.FAC;
 using Application.Interfaces.FIN;
@@ -49,9 +49,10 @@ using Infrastructure.Implementations.Repositories.FIN;
 using Infrastructure.Implementations.Repositories.HR;
 using Infrastructure.Implementations.Repositories.IDN;
 using Infrastructure.Implementations.Repositories.RPT;
-using Infrastructure.Implementations.Services.Email;
+using Infrastructure.Implementations.Common.Email;
 using Infrastructure.Implementations.Services.Security;
 using Infrastructure.Implementations.Common.Notifications;
+using Infrastructure.Implementations.Common.Email.EmailTemplates;
 
 using MassTransit;
 using Microsoft.AspNetCore.OData;
@@ -67,6 +68,7 @@ using System.Text;
 using Utils.Helpers;
 using Domain.Settings;
 using Infrastructure.Implementations.Common.MongoDB;
+using Application.Interfaces.Common.Email;
 
 namespace WebAPI
 {
@@ -149,6 +151,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseScheduleService, ACAD_CourseScheduleService>();
             builder.Services.AddScoped<IACAD_CoursePackageService, ACAD_CoursePackageService>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IEmailTemplateBuilder, EmailTemplateBuilder>();
             builder.Services.AddScoped<IACAD_ClassReservationService, ACAD_ClassReservationService>();
             builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
             builder.Services.AddScoped<IACAD_ClassMeetingsService, ACAD_ClassMeetingsService>();
