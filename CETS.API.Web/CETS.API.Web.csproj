@@ -41,6 +41,15 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Link>EmailTemplates\Templates\%(Filename)%(Extension)</Link>
 		</None>
+	  <None Update="EmailTemplates\Templates\ClassPostpone.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="EmailTemplates\Templates\ContinueWaitingForClass.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="EmailTemplates\Templates\RefundConfirmation.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>
