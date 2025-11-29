@@ -35,4 +35,12 @@
 	  <Folder Include="Controllers\RPT\" />
 	</ItemGroup>
 
+	<!-- Copy Email Templates from Infrastructure project to output directory -->
+	<ItemGroup>
+		<None Include="..\..\CETS.Core\Infrastructure\Implementations\Common\Email\EmailTemplates\Templates\*.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Link>EmailTemplates\Templates\%(Filename)%(Extension)</Link>
+		</None>
+	</ItemGroup>
+
 </Project>

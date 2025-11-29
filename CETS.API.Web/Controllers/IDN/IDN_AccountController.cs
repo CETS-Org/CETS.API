@@ -1,5 +1,5 @@
 ﻿using Application.Implementations.IDN;
-using Application.Interfaces.ExternalServices.Email;
+using Application.Interfaces.Common.Email;
 using Application.Interfaces.ExternalServices.Security;
 using Application.Interfaces.IDN;
 using DTOs.IDN.IDN_Account.Requests;
