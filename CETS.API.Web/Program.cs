@@ -69,6 +69,8 @@ using Utils.Helpers;
 using Domain.Settings;
 using Infrastructure.Implementations.Common.MongoDB;
 using Application.Interfaces.Common.Email;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Infrastructure.Implementations.Common.Email.EmailTemplates;
 
 namespace WebAPI
 {
@@ -164,7 +166,8 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_ExitSurveyService, ACAD_ExitSurveyService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
-            
+            builder.Services.AddSingleton<EmailTemplateBuilder>();
+
             // Analytics Services
 
 
