@@ -156,6 +156,7 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
             builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
             builder.Services.AddScoped<IACAD_SuspensionValidationService, ACAD_SuspensionValidationService>();
+            builder.Services.AddScoped<IACAD_DropoutValidationService, ACAD_DropoutValidationService>();
             builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
             builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
             
