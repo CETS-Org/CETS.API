@@ -161,5 +161,24 @@ namespace CETS.API.Web.Controllers.ACAD
             var result = await _academicRequestService.SubmitRequestAsync(academicRequest);
             return Ok(result);
         }
+
+        // PUT api/academicrequest/update-attachment - Update attachment for request with NeedInfo status
+        [HttpPut("update-attachment")]
+        public async Task<IActionResult> UpdateAttachment([FromBody] UpdateAcademicRequestAttachment requestDto)
+        {
+            try
+            {
+                await _academicRequestService.UpdateAttachmentAsync(requestDto);
+                return Ok(new { message = "Attachment updated successfully" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }
