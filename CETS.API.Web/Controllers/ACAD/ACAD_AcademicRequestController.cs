@@ -155,7 +155,7 @@ namespace CETS.API.Web.Controllers.ACAD
                 ReasonCategory = requestDto.ReasonCategory,
                 AttachmentUrl = requestDto.AttachmentUrl,
                 CompletedExitSurvey = requestDto.CompletedExitSurvey,
-                ExitSurveyUrl = requestDto.ExitSurveyUrl
+                ExitSurveyId = requestDto.ExitSurveyId
             };
 
             var result = await _academicRequestService.SubmitRequestAsync(academicRequest);
