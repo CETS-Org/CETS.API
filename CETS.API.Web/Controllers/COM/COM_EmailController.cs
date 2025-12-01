@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.ACAD;
 using Application.Interfaces.Common.Email;
+using Application.Interfaces.CORE;
 using Domain.Constants;
 using DTOs.ACAD.ACAD_AcademicRequest.Requests;
 using DTOs.COM.COM_Email.Requests;
@@ -16,11 +17,14 @@ namespace CETS.API.Web.Controllers.COM
         private readonly EmailTemplateBuilder _templateBuilder;
         private readonly IACAD_AcademicRequestService _academicRequestService;
         private readonly IACAD_EnrollmentService _enrollmentService;
+        private readonly ICORE_LookUpService _lookUpService;
+        
         private readonly IConfiguration _configuration;
         
 
         public COM_EmailController(
             IMailService mailService,
+            ICORE_LookUpService lookUpService,
             EmailTemplateBuilder templateBuilder,
             IACAD_AcademicRequestService academicRequestService,
             IACAD_EnrollmentService enrollmentService,
@@ -31,6 +35,7 @@ namespace CETS.API.Web.Controllers.COM
             _academicRequestService = academicRequestService;
             _enrollmentService = enrollmentService;
             _configuration = configuration;
+            _lookUpService = lookUpService;
         }
 
         // -------------------------------------------------------
@@ -134,14 +139,14 @@ namespace CETS.API.Web.Controllers.COM
                 );
 
                 // create academic request
-                Guid requestTypeId = Guid.Parse("019acdcc-7e3c-7958-a902-fa8db92acd9d");
-                Guid? priorityId = Guid.Parse("019abb05-4d9f-7b4e-9293-f37b7c61dae9");
+                var requestType = await _lookUpService.GetByCodeAsync("AcademicRequestType", "Refund"); //Guid.Parse("019acdcc-7e3c-7958-a902-fa8db92acd9d");
+                var priority = await _lookUpService.GetByCodeAsync("Priorty", "High");
 
                 var createReq = new CreateAcademicRequest
                 {
                     StudentID = request.StudentId,
-                    RequestTypeID = requestTypeId,
-                    PriorityID = priorityId,
+                    RequestTypeID = requestType.LookUpId,
+                    PriorityID = priority.LookUpId,
                     Reason = "Requested refund after class postponement.",
                     EffectiveDate = DateOnly.FromDateTime(DateTime.UtcNow)
                 };
