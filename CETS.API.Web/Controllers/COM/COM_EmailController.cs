@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces.ACAD;
 using Application.Interfaces.Common.Email;
+using Application.Interfaces.CORE;
+using Application.Interfaces.FIN;
 using Domain.Constants;
 using DTOs.ACAD.ACAD_AcademicRequest.Requests;
 using DTOs.COM.COM_Email.Requests;
@@ -16,21 +18,28 @@ namespace CETS.API.Web.Controllers.COM
         private readonly EmailTemplateBuilder _templateBuilder;
         private readonly IACAD_AcademicRequestService _academicRequestService;
         private readonly IACAD_EnrollmentService _enrollmentService;
+        private readonly ICORE_LookUpService _lookUpService;
+        
+        private readonly IFIN_PaymentService _paymentService;
         private readonly IConfiguration _configuration;
         
 
         public COM_EmailController(
             IMailService mailService,
+            ICORE_LookUpService lookUpService,
             EmailTemplateBuilder templateBuilder,
             IACAD_AcademicRequestService academicRequestService,
             IACAD_EnrollmentService enrollmentService,
-            IConfiguration configuration)
+            IFIN_PaymentService paymentService,
+        IConfiguration configuration)
         {
             _mailService = mailService;
             _templateBuilder = templateBuilder;
             _academicRequestService = academicRequestService;
             _enrollmentService = enrollmentService;
             _configuration = configuration;
+            _lookUpService = lookUpService;
+            _paymentService = paymentService;
         }
 
         // -------------------------------------------------------
@@ -134,26 +143,30 @@ namespace CETS.API.Web.Controllers.COM
                 );
 
                 // create academic request
-                Guid requestTypeId = Guid.Parse("019acdcc-7e3c-7958-a902-fa8db92acd9d");
-                Guid? priorityId = Guid.Parse("019abb05-4d9f-7b4e-9293-f37b7c61dae9");
+                var requestType = await _lookUpService.GetByCodeAsync("AcademicRequestType", "Refund"); //Guid.Parse("019acdcc-7e3c-7958-a902-fa8db92acd9d");
+                var priority = await _lookUpService.GetByCodeAsync("Priorty", "High");
+                var enrollment = await _enrollmentService.GetEnrollmentForRefund(request.EnrollmentId);
+                  var payment = await _paymentService.GetPaymentsByInvoiceIdAsync(enrollment!.InvoiceId);
 
                 var createReq = new CreateAcademicRequest
                 {
                     StudentID = request.StudentId,
-                    RequestTypeID = requestTypeId,
-                    PriorityID = priorityId,
+                    RequestTypeID = requestType.LookUpId,
+                    PriorityID = priority.LookUpId,
                     Reason = "Requested refund after class postponement.",
-                    EffectiveDate = DateOnly.FromDateTime(DateTime.UtcNow)
+                    EffectiveDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                    EnrollmentID = request.EnrollmentId,
+                    PaymentID = payment.FirstOrDefault()?.Id
                 };
 
                 var academicRequest = await _academicRequestService.SubmitRequestAsync(createReq);
 
-                var enrollment = await _enrollmentService.GetEnrollmentForRefund(request.EnrollmentId);
+               
 
                 var refundHtml = _templateBuilder.BuildRefundConfirmationEmail(
                     request.StudentName,
                     request.CourseName,
-                    enrollment?.FirstPaymentAmount ?? 0,
+                    payment.FirstOrDefault()?.Amount ?? 0,
                     enrollment?.FirstPaymentMethod ?? "Bank Transfer",
                     DateTime.UtcNow,
                     DateTime.UtcNow
