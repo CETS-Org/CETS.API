@@ -2,6 +2,7 @@
 using Application.Interfaces.ACAD;
 using DTOs.ACAD.ACAD_AcademicRequest.Requests;
 using DTOs.ACAD.ACAD_AcademicRequest.Responses;
+using DTOs.ACAD.ACAD_AcademicRequestHistory.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -64,6 +65,14 @@ namespace CETS.API.Web.Controllers.ACAD
             var result = await _academicRequestService.GetDetailsAsync(id);
             if (result == null) return NotFound();
             return Ok(result);
+        }
+
+        // GET api/academicrequest/{id}/history - Get request history (for staff)
+        [HttpGet("{id}/history")]
+        public async Task<ActionResult<IEnumerable<AcademicRequestHistoryResponse>>> GetHistory(Guid id)
+        {
+            var history = await _academicRequestService.GetRequestHistoryAsync(id);
+            return Ok(history);
         }
 
         // PUT api/academicrequest/process - Process (approve/reject) a request (for staff)
