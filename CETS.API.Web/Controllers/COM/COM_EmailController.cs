@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CETS.API.Web.Controllers.COM
 {
     [ApiController]
-    [Route("api/postponed-class")]
+    [Route("api/email")]
     public class COM_EmailController : ControllerBase
     {
         private readonly IMailService _mailService;
@@ -55,10 +55,10 @@ namespace CETS.API.Web.Controllers.COM
             if (request.Students == null || request.Students.Count == 0)
                 return BadRequest("Students list cannot be empty.");
 
-            var baseUrl = _configuration["App:PublicBaseUrl"]
+            var baseUrl = _configuration["VerificationSettings:ApiBaseUrl"]
                           ?? $"{Request.Scheme}://{Request.Host}";
 
-            var controllerBaseUrl = $"{baseUrl}/api/postponed-class";
+            var controllerBaseUrl = $"{baseUrl}/api/email";
 
             var results = new List<object>();
 
