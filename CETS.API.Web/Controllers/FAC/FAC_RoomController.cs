@@ -87,6 +87,13 @@ namespace CETS.API.Web.Controllers.FAC
             return Ok(result);
         }
 
+        [HttpGet("available")]
+        public async Task<IActionResult> GetAvailableRoomsForSlot([FromQuery] DateTime date, [FromQuery] Guid slotId)
+        {
+            var rooms = await _service.GetAvailableRoomsForSlotAsync(date, slotId);
+            return Ok(rooms);
+        }
+
         [HttpGet("schedule")]
         public async Task<IActionResult> GetWeeklySchedule([FromQuery] DateTime weekStart, [FromQuery] DateTime weekEnd)
         {
