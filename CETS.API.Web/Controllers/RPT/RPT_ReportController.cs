@@ -172,6 +172,53 @@ namespace CETS.API.Web.Controllers.RPT
 			}).ToList();
 			return Ok(result);
 		}
+
+		/// <summary>
+		/// Get presigned upload URL for report image
+		/// </summary>
+		[HttpPost("image-upload-url")]
+		public async Task<ActionResult<ReportUploadResponse>> GetImageUploadUrl([FromBody] GetReportUploadUrlRequest request)
+		{
+			var result = await _service.GetReportImageUploadUrlAsync(request.FileName, request.ContentType);
+			return Ok(result);
+		}
+
+		/// <summary>
+		/// Get download URL for report image
+		/// </summary>
+		[HttpGet("image/{id:guid}")]
+		public async Task<ActionResult<string>> GetReportImageUrl(Guid id)
+		{
+			try
+			{
+				var report = await _service.GetByIdAsync(id);
+				if (report == null)
+					return NotFound("Report not found");
+
+				var downloadUrl = await _service.GetReportImageDownloadUrlAsync(id);
+				
+				return Ok(new { 
+					downloadUrl,
+					reportInfo = new {
+						id = report.Id,
+						title = report.Title,
+						createdAt = report.CreatedAt
+					}
+				});
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
+		}
 	}
 }
 
