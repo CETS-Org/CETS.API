@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Payment Confirmation</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; background:#f5f7fa;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding:30px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0"
+                       style="background:#fff;border-radius:12px;padding:30px;">
+
+                    <tr>
+                        <td align="center">
+                            <h2 style="color:#007bff;margin:0;">💳 Course Payment Confirmation</h2>
+                            <p style="color:#666;margin:10px 0 0 0;">Thank you for your payment!</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="font-size:15px;color:#444;line-height:1.6;padding-top:20px;">
+                            <p>Hello <strong>{{StudentName}}</strong>,</p>
+                            <p>
+                                Your payment for <strong>{{CourseName}}</strong> has been successfully processed.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding-top:20px;">
+                            <table width="100%" style="background:#f8f9fa;border-left:6px solid #007bff;
+                            padding:20px;border-radius:8px;">
+                                <tr>
+                                    <td style="font-size:14px;color:#333;">
+                                        <h3 style="color:#007bff;margin:0 0 15px 0;">Payment Details</h3>
+                                        <p style="margin:8px 0;"><strong>Invoice Number:</strong> {{InvoiceNumber}}</p>
+                                        <p style="margin:8px 0;"><strong>Payment Date:</strong> {{PaymentDate}}</p>
+                                        <p style="margin:8px 0;"><strong>Status:</strong> <span style="color:#28a745;font-weight:bold;">Paid Successfully</span></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding-top:20px;">
+                            <table width="100%" style="background:#f8f9fa;border-left:6px solid #007bff;
+                            padding:20px;border-radius:8px;">
+                                <tr>
+                                    <td style="font-size:14px;color:#333;">
+                                        <h3 style="color:#007bff;margin:0 0 15px 0;">Course Information</h3>
+                                        <p style="margin:8px 0;"><strong>Course:</strong> {{CourseName}}</p>
+                                        <p style="margin:8px 0;"><strong>Quantity:</strong> {{Quantity}}</p>
+                                        <p style="margin:8px 0;"><strong>Price:</strong> {{UnitPrice}} VND</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding-top:20px;">
+                            <table width="100%" style="background:#e8f5e8;border-left:6px solid #28a745;
+                            padding:20px;border-radius:8px;">
+                                <tr>
+                                    <td align="center" style="font-size:14px;color:#155724;">
+                                        <h2 style="color:#28a745;margin:0 0 10px 0;">Total Paid: {{TotalAmount}} VND</h2>
+                                        <p style="margin:0;font-weight:bold;">Your course enrollment is now confirmed!</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="font-size:14px;color:#666;padding-top:20px;text-align:center;">
+                            <p style="margin:5px 0;">If you have any questions, please contact us.</p>
+                            <p style="margin:5px 0;">Email: support@cets.com | Phone: 1900-xxxx</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding-top:25px;font-size:13px;color:#999;">
+                            Best regards,<br/>
+                            <strong>CETS Team</strong>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
