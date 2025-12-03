@@ -222,5 +222,50 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
+        [HttpGet("{id:guid}/detail-for-edit")]
+        [ProducesResponseType(typeof(ClassDetailForEditResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ClassDetailForEditResponse>> GetClassDetailForEdit(Guid id)
+        {
+            try
+            {
+                var result = await _classService.GetClassDetailForEditAsync(id);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("{id:guid}/composite")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateClassComposite(Guid id, [FromBody] UpdateClassCompositeRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest(new { message = "Invalid request data." });
+            }
+
+            try
+            {
+                // Gọi Service đã viết ở bước trước
+                await _classService.UpdateClassCompositeAsync(id, request);
+
+                return Ok(new { message = "Class updated successfully." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi chung (VD: Database error)
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }
