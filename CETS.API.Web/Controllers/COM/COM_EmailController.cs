@@ -117,98 +117,121 @@ namespace CETS.API.Web.Controllers.COM
         // -------------------------------------------------------
         [HttpGet("decision")]
         public async Task<IActionResult> HandlePostponedClassDecision(
-            [FromQuery] PostponedClassDecisionRequest request)
+     [FromQuery] PostponedClassDecisionRequest request)
         {
-            if (request.EnrollmentId == Guid.Empty)
-                return BadRequest("enrollmentId is required.");
+          
+            var frontendUrl = _configuration["VerificationSettings:FrontendPostponeNoti"] ?? "http://localhost:5173";
+            var redirectBaseUrl = $"{frontendUrl}/postpone-confirmation";
 
-            if (string.IsNullOrWhiteSpace(request.Decision))
-                return BadRequest("decision is required (refund | wait).");
-
-            // 1) Lấy Enrollment + Check status
-            var checkStatus = await _enrollmentService.GetDecisionStatusAsync(request.EnrollmentId);
-
-            if (checkStatus == EmailDecisionStatus.Refund)
-                return Content("You have already selected REFUND. This link is no longer valid.");
-
-            if (checkStatus == EmailDecisionStatus.Waiting)
-                return Content("You have already selected CONTINUE WAITING. This link is no longer valid.");
-
-            // ===================== REFUND =====================
-            if (request.Decision.Equals("refund", StringComparison.OrdinalIgnoreCase))
+            // Helper để tạo URL chuyển hướng kèm query params
+            string BuildRedirectUrl(string status, string type = "", string code = "", string courseName = "")
             {
-                await _enrollmentService.UpdateDecisionStatusAsync(
-                    request.EnrollmentId,
-                    EmailDecisionStatus.Refund
-                );
+                var query = $"status={status}";
+                if (!string.IsNullOrEmpty(type)) query += $"&type={type}";
+                if (!string.IsNullOrEmpty(code)) query += $"&code={code}";
+                if (!string.IsNullOrEmpty(courseName)) query += $"&course={Uri.EscapeDataString(courseName)}";
 
-                // create academic request
-                var requestType = await _lookUpService.GetByCodeAsync("AcademicRequestType", "Refund"); //Guid.Parse("019acdcc-7e3c-7958-a902-fa8db92acd9d");
-                var priority = await _lookUpService.GetByCodeAsync("Priorty", "High");
-                var enrollment = await _enrollmentService.GetEnrollmentForRefund(request.EnrollmentId);
-                  var payment = await _paymentService.GetPaymentsByInvoiceIdAsync(enrollment!.InvoiceId);
-
-                var createReq = new CreateAcademicRequest
-                {
-                    StudentID = request.StudentId,
-                    RequestTypeID = requestType.LookUpId,
-                    PriorityID = priority.LookUpId,
-                    Reason = "Requested refund after class postponement.",
-                    EffectiveDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                    EnrollmentID = request.EnrollmentId,
-                    PaymentID = payment.FirstOrDefault()?.Id
-                };
-
-                var academicRequest = await _academicRequestService.SubmitRequestAsync(createReq);
-
-               
-
-                var refundHtml = _templateBuilder.BuildRefundConfirmationEmail(
-                    request.StudentName,
-                    request.CourseName,
-                    payment.FirstOrDefault()?.Amount ?? 0,
-                    enrollment?.FirstPaymentMethod ?? "Bank Transfer",
-                    DateTime.UtcNow,
-                    DateTime.UtcNow
-                );
-
-                await _mailService.SendEmailAsync(
-                    request.StudentEmail,
-                    $"[CETS] Refund Request Received – {request.CourseName}",
-                    refundHtml
-                );
-
-                return Ok(new
-                {
-                    message = "Refund request created & email sent.",
-                    academicRequestId = academicRequest.Id
-                });
+                return $"{redirectBaseUrl}?{query}";
             }
 
-            // ===================== WAIT =====================
-            if (request.Decision.Equals("wait", StringComparison.OrdinalIgnoreCase))
+            // 2. Validate Request
+            if (request.EnrollmentId == Guid.Empty || string.IsNullOrWhiteSpace(request.Decision))
             {
-                await _enrollmentService.UpdateDecisionStatusAsync(
-                    request.EnrollmentId,
-                    EmailDecisionStatus.Waiting
-                );
-
-                var htmlBody = _templateBuilder.BuildContinueWaitingEmail(
-                    request.StudentName,
-                    request.CourseName,
-                    request.PlannedStartDate
-                );
-
-                await _mailService.SendEmailAsync(
-                    request.StudentEmail,
-                    $"[CETS] Confirmation – You are waiting for {request.CourseName}",
-                    htmlBody
-                );
-
-                return Ok(new { message = "Waiting confirmation email sent." });
+                return Redirect(BuildRedirectUrl("error", "", "invalid_request"));
             }
 
-            return BadRequest("Invalid decision. Use 'refund' or 'wait'.");
+            try
+            {
+                // 3. Kiểm tra trạng thái hiện tại (Tránh click 2 lần)
+                var checkStatus = await _enrollmentService.GetDecisionStatusAsync(request.EnrollmentId);
+
+                if (checkStatus == EmailDecisionStatus.Refund)
+                    return Redirect(BuildRedirectUrl("error", "", "already_refunded"));
+
+                if (checkStatus == EmailDecisionStatus.Waiting)
+                    return Redirect(BuildRedirectUrl("error", "", "already_waiting"));
+
+                // ===================== CASE 1: REFUND =====================
+                if (request.Decision.Equals("refund", StringComparison.OrdinalIgnoreCase))
+                {
+                    // A. Cập nhật trạng thái Enrollment
+                    await _enrollmentService.UpdateDecisionStatusAsync(
+                        request.EnrollmentId,
+                        EmailDecisionStatus.Refund
+                    );
+
+                    // B. Tạo Academic Request (Yêu cầu hoàn tiền)
+                    var requestType = await _lookUpService.GetByCodeAsync("AcademicRequestType", "Refund");
+                    var priority = await _lookUpService.GetByCodeAsync("Priorty", "High");
+                    var enrollment = await _enrollmentService.GetEnrollmentForRefund(request.EnrollmentId);
+                    var payment = await _paymentService.GetPaymentsByInvoiceIdAsync(enrollment!.InvoiceId);
+
+                    var createReq = new CreateAcademicRequest
+                    {
+                        StudentID = request.StudentId,
+                        RequestTypeID = requestType.LookUpId,
+                        PriorityID = priority.LookUpId,
+                        Reason = "Requested refund after class postponement (Auto-generated).",
+                        EffectiveDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                        EnrollmentID = request.EnrollmentId,
+                        PaymentID = payment.FirstOrDefault()?.Id
+                    };
+
+                    await _academicRequestService.SubmitRequestAsync(createReq);
+
+                    // C. Gửi mail xác nhận
+                    var refundHtml = _templateBuilder.BuildRefundConfirmationEmail(
+                        request.StudentName,
+                        request.CourseName,
+                        payment.FirstOrDefault()?.Amount ?? 0,
+                        enrollment?.FirstPaymentMethod ?? "Bank Transfer",
+                        DateTime.UtcNow,
+                        DateTime.UtcNow
+                    );
+
+                    await _mailService.SendEmailAsync(
+                        request.StudentEmail,
+                        $"[CETS] Refund Request Received – {request.CourseName}",
+                        refundHtml
+                    );
+
+                    // D. Chuyển hướng về trang Thành công (Refund)
+                    return Redirect(BuildRedirectUrl("success", "refund", "", request.CourseName));
+                }
+
+                // ===================== CASE 2: WAIT =====================
+                if (request.Decision.Equals("wait", StringComparison.OrdinalIgnoreCase))
+                {
+                    // A. Cập nhật trạng thái
+                    await _enrollmentService.UpdateDecisionStatusAsync(
+                        request.EnrollmentId,
+                        EmailDecisionStatus.Waiting
+                    );
+
+                    // B. Gửi mail xác nhận
+                    var htmlBody = _templateBuilder.BuildContinueWaitingEmail(
+                        request.StudentName,
+                        request.CourseName,
+                        request.PlannedStartDate
+                    );
+
+                    await _mailService.SendEmailAsync(
+                        request.StudentEmail,
+                        $"[CETS] Confirmation – You are waiting for {request.CourseName}",
+                        htmlBody
+                    );
+
+                    // C. Chuyển hướng về trang Thành công (Wait)
+                    return Redirect(BuildRedirectUrl("success", "wait", "", request.CourseName));
+                }
+
+                return Redirect(BuildRedirectUrl("error", "", "invalid_decision"));
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                return Redirect(BuildRedirectUrl("error", "", "server_error"));
+            }
         }
     }
 }
