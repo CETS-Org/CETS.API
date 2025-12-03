@@ -162,7 +162,7 @@ namespace CETS.API.Web.Controllers.COM
 
                     // B. Tạo Academic Request (Yêu cầu hoàn tiền)
                     var requestType = await _lookUpService.GetByCodeAsync("AcademicRequestType", "Refund");
-                    var priority = await _lookUpService.GetByCodeAsync("Priorty", "High");
+                    var priority = await _lookUpService.GetByCodeAsync("Priority", "High");
                     var enrollment = await _enrollmentService.GetEnrollmentForRefund(request.EnrollmentId);
                     var payment = await _paymentService.GetPaymentsByInvoiceIdAsync(enrollment!.InvoiceId);
 
