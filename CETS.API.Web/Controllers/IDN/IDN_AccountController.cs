@@ -165,6 +165,17 @@ namespace CETS.API.Web.Controllers.IDN
             return NotFound(false);
         }
 
+        [HttpGet("checkPhoneExist/{phoneNumber}")]
+        public async Task<IActionResult> CheckPhoneExist(string phoneNumber)
+        {
+            var result = await _accountService.CheckPhoneExist(phoneNumber);
+            if (result)
+            {
+                return Ok(true);
+            }
+            return NotFound(false);
+        }
+
         [HttpGet("checkCIDExist/{cid}")]
         public async Task<IActionResult> CheckCIDExist(string cid)
         {
