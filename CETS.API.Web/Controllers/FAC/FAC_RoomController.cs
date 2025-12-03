@@ -1,5 +1,6 @@
 using Application.Interfaces.FAC;
 using DTOs.FAC.FAC_Room.Requests;
+using DTOs.FAC.FAC_Room.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CETS.API.Web.Controllers.FAC
@@ -134,6 +135,30 @@ namespace CETS.API.Web.Controllers.FAC
         {
             await _service.CancelSlotBookingAsync(meetingId);
             return Ok(new { Message = "Booking cancelled" });
+        }
+
+        [HttpPost("available-rooms")]
+        public async Task<ActionResult<IEnumerable<RoomOptionDto>>> GetAvailableRooms(
+          [FromBody] GetAvailableRoomsRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var rooms = await _service  .GetAvailableRoomsAsync(request);
+                return Ok(rooms);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // TODO: log ex
+                Console.WriteLine(ex);
+                return StatusCode(500, new { message = "Error while fetching available rooms." });
+            }
         }
 
     }
