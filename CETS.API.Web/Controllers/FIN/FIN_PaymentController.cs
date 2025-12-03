@@ -348,8 +348,8 @@ namespace CETS.API.Web.Controllers.FIN
             // Create payment data
             var paymentData = new PaymentData(
                 orderCode: orderCode,
-                amount: (int)paymentAmount,
-                description: $"Payment for CETS invoice {invoice.InvoiceNumber}",
+                amount: 10000,
+                description: $"Payment for CETS invoice",
                 items: items,
                 returnUrl: _configuration["PayOS:ReturnUrl"] ?? "https://localhost:8000/payment/success",
                 cancelUrl: _configuration["PayOS:CancelUrl"] ?? "https://localhost:8000/payment/cancel"
