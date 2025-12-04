@@ -52,4 +52,9 @@
 	  </None>
 	</ItemGroup>
 
+
+	<ItemGroup>
+	  <None Include="appsettings.Development.json" />
+	</ItemGroup>
+
 </Project>
