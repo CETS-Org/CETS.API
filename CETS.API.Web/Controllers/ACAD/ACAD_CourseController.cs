@@ -77,6 +77,7 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
+
         /// <summary>
         /// Get course by ID (basic information)
         /// </summary>

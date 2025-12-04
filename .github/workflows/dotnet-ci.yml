@@ -19,6 +19,19 @@ env:
   SOLUTION: CETS.API.sln
   CORE_REPO: CETS-Org/CETS.Core
 
+permissions:
+  contents: read
+
+concurrency:
+  group: dotnet-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: 1
+  SOLUTION: CETS.API.sln
+  CORE_REPO: CETS-Org/CETS.Core
+
 jobs:
   build:
     runs-on: ubuntu-latest

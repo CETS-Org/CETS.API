@@ -294,19 +294,16 @@ namespace CETS.API.Web.Controllers.ACAD
             try
             {
                 var result = await _submissionService.BulkUpdateSubmissionsAsync(request);
-
                 // Return 207 Multi-Status if there are partial failures
                 if (result.Data.FailedCount > 0 && result.Data.UpdatedCount > 0)
                 {
                     return StatusCode(207, result);
                 }
-
                 // Return 200 OK if all succeeded
                 if (result.Data.FailedCount == 0)
                 {
                     return Ok(result);
                 }
-
                 // Return 400 Bad Request if all failed
                 return BadRequest(result);
             }
