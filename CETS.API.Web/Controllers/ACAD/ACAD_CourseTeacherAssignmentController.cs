@@ -85,7 +85,7 @@ namespace CETS.API.Web.Controllers.ACAD
             {
                 return BadRequest(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 // TODO: log ex
                 Console.WriteLine(ex);

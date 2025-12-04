@@ -28,6 +28,7 @@ using Domain.Data;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Interfaces.ACAD;
+using Domain.Interfaces.Analytics;
 using Domain.Interfaces.COM;
 using Domain.Interfaces.CORE;
 using Domain.Interfaces.EVT;
@@ -110,7 +111,133 @@ namespace WebAPI
             });
 
 
+            // Configure R2 File Storage
+            builder.Services.Configure<CloudflareR2Settings>(builder.Configuration.GetSection("CloudflareR2"));
+
+
             builder.Services.AddScoped<IMessageService, MessageService>();
+
+            builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
+            builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
+            builder.Services.AddScoped<IIDN_TeacherService, IDN_TeacherService>();
+            builder.Services.AddScoped<IIDN_TeacherCredentialService, IDN_TeacherCredentialService>();
+            builder.Services.AddScoped<IIDN_RoleService, IDN_RoleService>();
+            builder.Services.AddScoped<IIDN_AccountRoleService, IDN_AccountRoleService>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped<ICORE_LookUpService, CORE_LookUpService>();
+            builder.Services.AddScoped<ICORE_LookUpTypeService, CORE_LookUpTypeService>();
+            builder.Services.AddScoped<IFIN_InvoiceService, FIN_InvoiceService>();
+            builder.Services.AddScoped<IFIN_InvoiceItemService, FIN_InvoiceItemService>();
+            builder.Services.AddScoped<IFIN_PaymentService, FIN_PaymentService>();
+            builder.Services.AddScoped<IFIN_PaymentRefundService, FIN_PaymentRefundService>();
+            builder.Services.AddScoped<IFIN_PaymentWebhookService, FIN_PaymentWebhookService>();
+            builder.Services.AddScoped<IFIN_PromotionService, FIN_PromotionService>();
+            builder.Services.AddScoped<IEVT_EventService, EVT_EventService>();
+            builder.Services.AddScoped<IEVT_EventFeedbackService, EVT_EventFeedbackService>();
+            builder.Services.AddScoped<IEVT_EventRegistrationService, EVT_EventRegistrationService>();
+            builder.Services.AddScoped<IFAC_RoomService, FAC_RoomService>();
+            builder.Services.AddScoped<IHR_ContractService, HR_ContractService>();
+            builder.Services.AddScoped<IHR_TeacherAvailabilityService, HR_TeacherAvailabilityService>();
+            builder.Services.AddScoped<IRPT_ReportService, RPT_ReportService>();
+            builder.Services.AddScoped<ICOM_NotificationService, COM_NotificationService>();
+            builder.Services.AddScoped<ICOM_FeedbackService, COM_FeedbackService>();
+            builder.Services.AddScoped<ICOM_FeedbackRecordService, COM_FeedbackRecordService>();
+            builder.Services.AddScoped<ICOM_ConversationService, COM_ConversationService>();
+            builder.Services.AddScoped<IACAD_CourseService, ACAD_CourseService>();
+            builder.Services.AddScoped<IACAD_CourseBenefitService, ACAD_CourseBenefitService>();
+            builder.Services.AddScoped<IACAD_CourseRequirementService, ACAD_CourseRequirementService>();
+            builder.Services.AddScoped<IACAD_CourseSkillService, ACAD_CourseSkillService>();
+            builder.Services.AddScoped<IACAD_CourseCategoryService, ACAD_CourseCategoryService>();
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();  
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
+            builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
+            builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
+            builder.Services.AddScoped<IACAD_SubmissionService, ACAD_SubmissionService>();
+            builder.Services.AddScoped<IACAD_LearningMaterialService, ACAD_LearningMaterialService>();
+            builder.Services.AddScoped<IACAD_CourseScheduleService, ACAD_CourseScheduleService>();
+            builder.Services.AddScoped<IACAD_CoursePackageService, ACAD_CoursePackageService>();
+            builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IACAD_ClassReservationService, ACAD_ClassReservationService>();
+            builder.Services.AddScoped<IACAD_ReservationItemService, ACAD_ReservationItemService>();
+            builder.Services.AddScoped<IACAD_ClassMeetingsService, ACAD_ClassMeetingsService>();
+            builder.Services.AddScoped<IACAD_AssignmentService, AssignmentService>();
+            builder.Services.AddScoped<IACAD_PlacementTestService, ACAD_PlacementTestService>();
+            builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
+            builder.Services.AddScoped<IACAD_AcademicRequestService, ACAD_AcademicRequestService>();
+            builder.Services.AddScoped<IACAD_SyllabusService, ACAD_SyllabusService>();
+            builder.Services.AddScoped<IACAD_CourseWishlistService, ACAD_CourseWishlistService>();
+            
+            // Analytics Services
+            builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+            builder.Services.AddScoped<IClassAnalyticsService, ClassAnalyticsService>();
+
+
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IIDN_AccountRepository, IDN_AccountRepository>();
+            builder.Services.AddScoped<IIDN_StudentRepository, IDN_StudentRepository>();
+            builder.Services.AddScoped<IIDN_TeacherRepository, IDN_TeacherRepository>();
+            builder.Services.AddScoped<IIDN_TeacherCredentialRepository, IDN_TeacherCredentialRepository>();
+            builder.Services.AddScoped<IIDN_RoleRepository, IDN_RoleRepository>();
+            builder.Services.AddScoped<IIDN_AccountRoleRepository, IDN_AccountRoleRepository>();
+            builder.Services.AddScoped<ICORE_LookUpRepository, CORE_LookUpRepository>();
+            builder.Services.AddScoped<ICORE_LookUpTypeRepository, CORE_LookUpTypeRepository>();
+            builder.Services.AddScoped<IFIN_InvoiceRepository, FIN_InvoiceRepository>();
+            builder.Services.AddScoped<IFIN_InvoiceItemRepository, FIN_InvoiceItemRepository>();
+            builder.Services.AddScoped<IFIN_PaymentRepository, FIN_PaymentRepository>();
+            builder.Services.AddScoped<IFIN_PaymentRefundRepository, FIN_PaymentRefundRepository>();
+            builder.Services.AddScoped<IFIN_PaymentWebhookRepository, FIN_PaymentWebhookRepository>();
+            builder.Services.AddScoped<IFIN_PromotionRepository, FIN_PromotionRepository>();
+            builder.Services.AddScoped<IEVT_EventRepository, EVT_EventRepository>();
+            builder.Services.AddScoped<IEVT_EventFeedbackRepository, EVT_EventFeedbackRepository>();
+            builder.Services.AddScoped<IEVT_EventRegistrationRepository, EVT_EventRegistrationRepository>();
+            builder.Services.AddScoped<IFAC_RoomRepository, FAC_RoomRepository>();
+            builder.Services.AddScoped<IHR_ContractRepository, HR_ContractRepository>();
+            builder.Services.AddScoped<IHR_TeacherAvailabilityRepository, HR_TeacherAvailabilityRepository>();
+            builder.Services.AddScoped<IRPT_ReportRepository, RPT_ReportRepository>();
+            builder.Services.AddScoped<ICOM_NotificationRepository, COM_NotificationRepository>();
+            builder.Services.AddScoped<ICOM_FeedbackRepository, COM_FeedbackRepository>();
+            builder.Services.AddScoped<ICOM_FeedbackRecordRepository, COM_FeedbackRecordRepository>();
+            builder.Services.AddScoped<ICOM_ConversationRepository, COM_ConversationRepository>();
+            builder.Services.AddScoped<IACAD_CourseRepository, ACAD_CourseRepository>();
+            builder.Services.AddScoped<IACAD_CourseBenefitRepository, ACAD_CourseBenefitRepository>();
+            builder.Services.AddScoped<IACAD_CourseRequirementRepository, ACAD_CourseRequirementRepository>();
+            builder.Services.AddScoped<IACAD_CourseSkillRepository, ACAD_CourseSkillRepository>();
+            builder.Services.AddScoped<IACAD_CourseCategoryRepository, ACAD_CourseCategoryRepository>();
+            builder.Services.AddScoped<IACAD_EnrollmentRepository, ACAD_EnrollmentRepository>();
+            builder.Services.AddScoped<IACAD_CourseTeacherAssignmentRepository, ACAD_CourseTeacherAssignmentRepository>();
+            builder.Services.AddScoped<IACAD_AttendanceRepository, ACAD_AttendanceRepository>();
+            builder.Services.AddScoped<IACAD_SubmissionRepository, ACAD_SubmissionRepository>();
+            builder.Services.AddScoped<IACAD_LearningMaterialRepository, ACAD_LearningMaterialRepository>();
+            builder.Services.AddScoped<IFileStorageService, R2FileStorageService>();
+            builder.Services.AddScoped<IACAD_ClassMeetingRepository, ACAD_ClassMeetingRepository>();
+            builder.Services.AddScoped<IACAD_CourseScheduleRepository, ACAD_CourseScheduleRepository>();
+            builder.Services.AddScoped<IACAD_CoursePackageRepository, ACAD_CoursePackageRepository>();
+            builder.Services.AddScoped<IACAD_CoursePackageItemRepository, ACAD_CoursePackageItemRepository>();
+            builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
+            builder.Services.AddScoped<IACAD_ClassReservationRepository, ACAD_ClassReservationRepository>();
+            
+
+            builder.Services.AddScoped<IACAD_AssignmentRepository, ACAD_AssignmentRepository>();
+            builder.Services.AddScoped<IACAD_SubmissionRepository, ACAD_SubmissionRepository>();
+            builder.Services.AddScoped<IACAD_AssignmentService, AssignmentService>();
+            builder.Services.AddScoped<IACAD_ClassService, ACAD_ClassService>();
+            builder.Services.AddScoped<IACAD_AssignmentRepository, ACAD_AssignmentRepository>();
+            builder.Services.AddScoped<IACAD_PlacementTestRepository, ACAD_PlacementTestRepository>();
+            builder.Services.AddScoped<IACAD_PlacementQuestionRepository, ACAD_PlacementQuestionRepository>();
+            builder.Services.AddScoped<IACAD_ClassRepository, ACAD_ClassRepository>();
+            builder.Services.AddScoped<IACAD_AcademicRequestRepository, ACAD_AcademicRequestRepository>();
+            builder.Services.AddScoped<IACAD_AcademicRequestHistoryRepository, ACAD_AcademicRequestHistoryRepository>();
+            builder.Services.AddScoped<IACAD_SyllabusRepository, ACAD_SyllabusRepository>();
+            builder.Services.AddScoped<IACAD_SyllabusItemRepository, ACAD_SyllabusItemRepository>();
+            builder.Services.AddScoped<IACAD_CourseWishlistRepository, ACAD_CourseWishlistRepository>();
+            builder.Services.AddScoped<IWeeklyFeedbackRepository, WeeklyFeedbackRepository>();
+            builder.Services.AddScoped<IWeeklyFeedbackService, WeeklyFeedbackService>();
+
+            // Analytics Repositories
+            builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+            builder.Services.AddScoped<IClassAnalyticsRepository, ClassAnalyticsRepository>();
 
             builder.Services.AddScoped<IIDN_AccountService, IDN_AccountService>();
             builder.Services.AddScoped<IIDN_StudentService, IDN_StudentService>();
@@ -169,8 +296,10 @@ namespace WebAPI
             builder.Services.AddSingleton<EmailTemplateBuilder>();
 
             // Analytics Services
-
-
+            builder.Services.AddScoped<IACAD_EnrollmentService, ACAD_EnrollmentService>();
+            builder.Services.AddScoped<IACAD_CourseTeacherAssignmentService, ACAD_CourseTeacherAssignmentService>();
+            builder.Services.AddScoped<IACAD_AttendanceService, AttendanceService>();
+            builder.Services.AddScoped<IACAD_SubmissionService, ACAD_SubmissionService>();
 
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -228,6 +357,13 @@ namespace WebAPI
             builder.Services.AddScoped<IACAD_CourseWishlistRepository, ACAD_CourseWishlistRepository>();
             builder.Services.AddScoped<IWeeklyFeedbackRepository, WeeklyFeedbackRepository>();
             builder.Services.AddScoped<IWeeklyFeedbackService, WeeklyFeedbackService>();
+            builder.Services.AddScoped<IACAD_CourseScheduleRepository, ACAD_CourseScheduleRepository>();
+            builder.Services.AddScoped<IACAD_CoursePackageRepository, ACAD_CoursePackageRepository>();
+            builder.Services.AddScoped<IACAD_CoursePackageItemRepository, ACAD_CoursePackageItemRepository>();
+
+            builder.Services.AddScoped<IACAD_ReservationItemRepository, ACAD_ReservationItemRepository>();
+            builder.Services.AddScoped<IACAD_ClassReservationRepository, ACAD_ClassReservationRepository>();
+            
 
             
             // Dashboard Analytics Service
@@ -235,9 +371,22 @@ namespace WebAPI
 
             builder.Services.AddScoped<IdGenerator>();
 
-
+            builder.Services.AddScoped<IMessageService, MessageService>();
 
             // Configure CORS
+            var allowedOrigins = builder.Configuration
+              .GetSection("AllowedCorsOrigins")
+              .Get<string[]>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("ApiCors", p => p
+                    .WithOrigins(allowedOrigins!)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+            });
+
             var allowedOrigins = builder.Configuration
               .GetSection("AllowedCorsOrigins")
               .Get<string[]>();
