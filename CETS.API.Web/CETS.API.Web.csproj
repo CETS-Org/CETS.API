@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="MassTransit" Version="8.5.1" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.3.2" />
+    <PackageReference Include="MongoDB.Driver" Version="3.5.1" />
+    <PackageReference Include="payOS" Version="1.0.9" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\CETS.Core\DTOs\DTOs.csproj" />
+		<ProjectReference Include="..\..\CETS.Core\Infrastructure\Infrastructure.csproj" />
+		<ProjectReference Include="..\..\CETS.Core\Utils\Utils.csproj" />
+		<ProjectReference Include="..\..\CETS.Core\Application\Application.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Controllers\CORE\" />
+	  <Folder Include="Controllers\EVT\" />
+	  <Folder Include="Controllers\FAC\" />
+	  <Folder Include="Controllers\FIN\" />
+	  <Folder Include="Controllers\HR\" />
+	  <Folder Include="Controllers\RPT\" />
+	</ItemGroup>
+
+	<!-- Copy Email Templates from Infrastructure project to output directory -->
+	<ItemGroup>
+		<None Include="..\..\CETS.Core\Infrastructure\Implementations\Common\Email\EmailTemplates\Templates\*.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Link>EmailTemplates\Templates\%(Filename)%(Extension)</Link>
+		</None>
+	  <None Update="EmailTemplates\Templates\ClassPostpone.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="EmailTemplates\Templates\ContinueWaitingForClass.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="EmailTemplates\Templates\RefundConfirmation.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>
