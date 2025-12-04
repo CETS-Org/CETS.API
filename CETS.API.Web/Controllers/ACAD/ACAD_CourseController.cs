@@ -79,24 +79,6 @@ namespace CETS.API.Web.Controllers.ACAD
 
 
         /// <summary>
-        /// Get all courses with detailed information
-        /// </summary>
-        [HttpGet("detail")]
-        public async Task<ActionResult<IEnumerable<CourseDetailResponse>>> GetAllCoursesDetailsAsync()
-        {
-            try
-            {
-                var courses = await _courseService.GetAllCoursesDetailsAsync();
-                return Ok(courses);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving all detailed courses");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        /// <summary>
         /// Get course by ID (basic information)
         /// </summary>
         [HttpGet("{id}")]
