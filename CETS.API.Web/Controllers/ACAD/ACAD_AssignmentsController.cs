@@ -80,8 +80,8 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-     
-       
+
+
 
         [HttpGet("class-meeting/{classMeetingId}/student/{studentId}/assignments")]
         public async Task<IActionResult> GetAssignmentsAndSubmissions(Guid classMeetingId, Guid studentId)
@@ -136,10 +136,12 @@ namespace CETS.API.Web.Controllers.ACAD
                     return NotFound("Assignment not found");
 
                 var downloadUrl = await _AssignmentService.GetDownloadUrlAsync(id);
-                
-                return Ok(new { 
+
+                return Ok(new
+                {
                     downloadUrl,
-                    assignmentInfo = new {
+                    assignmentInfo = new
+                    {
                         id = assignment.Id,
                         title = assignment.Title,
                         dueDate = assignment.DueAt,
@@ -162,8 +164,8 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-    
-      
+
+
         [HttpPut("update/{id}")]
         public async Task<ActionResult<AssignmentResponse>> UpdateAssignment(Guid id, [FromBody] UpdateAssignmentRequest request)
         {
@@ -171,7 +173,7 @@ namespace CETS.API.Web.Controllers.ACAD
             {
                 // Set the ID from route parameter to ensure consistency
                 request.Id = id;
-                
+
                 var result = await _AssignmentService.UpdateAssignmentAsync(request);
                 if (result == null)
                     return NotFound("Assignment not found");
@@ -193,17 +195,14 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-        [HttpDelete("delete/{id}")]
+
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAssignment(Guid id)
         {
             try
             {
                 await _AssignmentService.DeleteAssignmentAsync(id);
-                return Ok(new
-                {
-                    success = true,
-                    message = "Assignment deleted successfully"
-                });
+                return NoContent();
             }
             catch (KeyNotFoundException)
             {
@@ -216,7 +215,7 @@ namespace CETS.API.Web.Controllers.ACAD
             }
         }
 
-          /// <summary>
+        /// <summary>
         /// Get presigned URL for question data (used when taking test, viewing details, or editing)
         /// </summary>
         [HttpGet("{id}/question-data-url")]
@@ -251,19 +250,14 @@ namespace CETS.API.Web.Controllers.ACAD
                 var (uploadUrl, filePath) = await _fileStorageService.GetPresignedPutUrlAsync("assignments/questions", fileName, "application/json");
                 return Ok(new
                 {
-                    success = false,
-                    message = "Assignment not found"
+                    uploadUrl = uploadUrl,
+                    filePath = filePath
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting assignment {Id}", id);
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "Internal server error",
-                    error = ex.Message
-                });
+                _logger.LogError(ex, "Error getting presigned URL for question JSON upload");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -272,7 +266,7 @@ namespace CETS.API.Web.Controllers.ACAD
         {
             string contentType = "audio/mpeg";
             var (url, filePath) = await _fileStorageService.GetPresignedPutUrlAsync("assignments/audio", fileName, contentType);
-     
+
             return Ok(new
             {
                 uploadUrl = url,
