@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Utils.Authorization;
 
 namespace CETS.API.Web.Controllers.ACAD
 {
@@ -28,6 +30,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// </summary>
         [EnableQuery]
         [HttpGet("list")]
+        [AllowAnonymous] // Public endpoint - anyone can view courses
         public async Task<IActionResult> GetAllCoursesForListAsync()
         {
             try
@@ -44,6 +47,7 @@ namespace CETS.API.Web.Controllers.ACAD
 
         [EnableQuery]
         [HttpGet]
+        [AllowAnonymous] // Public endpoint - anyone can view courses
         public async Task<IActionResult> GetAllCoursesAsync()
         {
             try
@@ -63,6 +67,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// Get all courses with detailed information
         /// </summary>
         [HttpGet("detail")]
+        [AllowAnonymous] // Public endpoint - anyone can view course details
         public async Task<ActionResult<IEnumerable<CourseDetailResponse>>> GetAllCoursesDetailsAsync()
         {
             try
@@ -82,6 +87,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// Get course by ID (basic information)
         /// </summary>
         [HttpGet("{id}")]
+        [AllowAnonymous] // Public endpoint - anyone can view course
         public async Task<ActionResult<CourseResponse>> GetCourseByIdAsync(Guid id)
         {
             try
@@ -103,6 +109,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// Get course detail by ID (with full information)
         /// </summary>
         [HttpGet("detail/{id}")]
+        [AllowAnonymous] // Public endpoint - anyone can view course details
         public async Task<ActionResult<CourseDetailResponse>> GetCourseDetailAsync(Guid id)
         {
             try
@@ -124,6 +131,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// Create a new course with all related details (benefits, requirements, skills, schedules)
         /// </summary>
         [HttpPost]
+        [Authorize(Policy = "StaffOnly")] // Only staff can create courses
         public async Task<ActionResult<Guid>> CreateCourseAsync([FromBody] CreateCourseRequest request)
         {
             try
@@ -142,6 +150,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// Get presigned URL for uploading course image directly to R2
         /// </summary>
         [HttpPost("image-upload-url")]
+        [Authorize(Policy = "StaffOnly")] // Only staff can upload course images
         public async Task<ActionResult<CourseImageUploadResponse>> GetImageUploadUrlAsync([FromBody] ImageUploadRequest request)
         {
             try
@@ -161,6 +170,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// Update an existing course
         /// </summary>
         [HttpPut("{id}")]
+        [Authorize(Policy = "StaffOnly")] // Only staff can update courses
         public async Task<IActionResult> UpdateCourseAsync(Guid id, [FromBody] UpdateCourseRequest request)
         {
             try

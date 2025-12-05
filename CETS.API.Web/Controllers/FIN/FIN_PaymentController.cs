@@ -11,11 +11,14 @@ using System.Text;
 using System.Text.Json;
 using Application.Interfaces.ACAD;
 using DTOs.FIN.FIN_Invoice.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Utils.Authorization;
 
 namespace CETS.API.Web.Controllers.FIN
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // All payment endpoints require authentication
     public class FIN_PaymentController : ControllerBase
     {
         private readonly IFIN_PaymentService _service;
@@ -36,6 +39,7 @@ namespace CETS.API.Web.Controllers.FIN
         }
 
         [HttpGet]
+        [AuthorizeRoles("AccountantStaff", "Admin")] // Only accountants can view all payments
         public async Task<IActionResult> GetAllAsync()
         {
             var items = await _service.GetAllAsync();
@@ -43,6 +47,7 @@ namespace CETS.API.Web.Controllers.FIN
         }
 
         [HttpGet("{id:guid}")]
+        [AuthorizeRoles("Student", "AccountantStaff", "Admin")] // Student can view own, accountants view all
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var item = await _service.GetByIdAsync(id);
@@ -51,6 +56,7 @@ namespace CETS.API.Web.Controllers.FIN
         }
 
         [HttpPost]
+        [AuthorizeRoles("Student", "AccountantStaff", "Admin")] // Students make payments, accountants can create manually
         public async Task<IActionResult> CreateAsync([FromBody] CreatePaymentRequest request)
         {
             var created = await _service.CreateAsync(request);
@@ -58,6 +64,7 @@ namespace CETS.API.Web.Controllers.FIN
         }
 
         [HttpPut("{id:guid}")]
+        [AuthorizeRoles("AccountantStaff", "Admin")] // Only accountants can update payment records
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdatePaymentRequest request)
         {
             var updated = await _service.UpdateAsync(id, request);
@@ -65,6 +72,7 @@ namespace CETS.API.Web.Controllers.FIN
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Policy = "AdminOnly")] // Only admin can delete payment records
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _service.DeleteAsync(id);
@@ -72,6 +80,7 @@ namespace CETS.API.Web.Controllers.FIN
         }
 
         [HttpGet("history/{studentId:guid}")]
+        [AuthorizeRoles("Student", "AccountantStaff", "Admin")] // Students view own history, staff view all
         public async Task<IActionResult> GetPaymentHistoryAsync(Guid studentId)
         {
             try
