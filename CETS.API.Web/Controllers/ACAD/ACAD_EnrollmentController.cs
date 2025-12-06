@@ -5,11 +5,14 @@ using DTOs.ACAD.ACAD_Enrollment.Responses;
 using DTOs.IDN.IDN_Student.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Utils.Authorization;
 
 namespace CETS.API.Web.Controllers.ACAD
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ACAD_EnrollmentController : ControllerBase
     {
         private readonly ILogger<ACAD_EnrollmentController> _logger;
@@ -24,6 +27,7 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
         [HttpGet("CoursesByStudent/{studentId}")]
+        [AuthorizeRoles("Student", "Teacher", "Admin", "AcademicStaff")]
         public async Task<IActionResult> GetStudentCoursesEnrollment(Guid studentId)
         {
             var courses = await _enrollmentService.GetStudentCoursesEnrollmentAsync(studentId);
@@ -66,6 +70,7 @@ namespace CETS.API.Web.Controllers.ACAD
 
 
         [HttpGet("waiting-students")]
+        [AuthorizeRoles("Teacher", "Admin", "AcademicStaff")]
         [ProducesResponseType(typeof(WaitingStudentSearchResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<WaitingStudentSearchResult>> GetWaitingStudents(
@@ -98,6 +103,7 @@ namespace CETS.API.Web.Controllers.ACAD
         /// <param name="request">Request containing list of enrollment final grade updates</param>
         /// <returns>Result with updated count and details for each enrollment</returns>
         [HttpPut("bulk-update-final-grades")]
+        [AuthorizeRoles("Teacher", "Admin", "AcademicStaff")]
         public async Task<IActionResult> BulkUpdateFinalGrades([FromBody] BulkUpdateFinalGradesRequest request)
         {
             try
