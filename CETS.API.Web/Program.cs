@@ -66,11 +66,16 @@ using System.Net;
 using System.Reflection.Emit;
 using System.Text;
 using Utils.Helpers;
+using Utils.Extensions;
+using Utils.Middleware;
+using Utils.Authorization;
 using Domain.Settings;
 using Infrastructure.Implementations.Common.MongoDB;
 using Application.Interfaces.Common.Email;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Infrastructure.Implementations.Common.Email.EmailTemplates;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
 
 namespace WebAPI
 {
@@ -93,7 +98,54 @@ namespace WebAPI
                     .Select().Filter().Expand().Count().OrderBy().SetMaxTop(100));
             ;
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            
+            // Configure Swagger with JWT Authentication
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "CETS API",
+                    Version = "v1",
+                    Description = "CETS - Education Training System API with JWT Authentication",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "CETS Development Team",
+                        Email = "support@cets.com"
+                    }
+                });
+
+                // Define the JWT Bearer security scheme
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' followed by a space and your JWT token.\n\nExample: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                });
+
+                // Require JWT Bearer token for all endpoints by default
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+
+                // Optional: Include XML comments if you have them
+                // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                // options.IncludeXmlComments(xmlPath);
+            });
             builder.Services.AddDbContext<AppDbContext>(opts =>
                 opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDb"))
                  .EnableSensitiveDataLogging()
@@ -246,10 +298,54 @@ namespace WebAPI
                     .WithOrigins(allowedOrigins!)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowCredentials());
+                    .AllowCredentials()
+                    .WithExposedHeaders("X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"));
             });
 
+            // Configure Security Middleware
+            var securitySettings = builder.Configuration.GetSection("Security");
+            
+            // Configure Rate Limiting
+            if (securitySettings.GetValue<bool>("EnableRateLimiting", true))
+            {
+                builder.Services.AddRateLimiting(options =>
+                {
+                    var rateLimitConfig = builder.Configuration.GetSection("RateLimiting");
+                    options.Enabled = rateLimitConfig.GetValue<bool>("Enabled", true);
+                    
+                    var defaultPolicy = rateLimitConfig.GetSection("DefaultPolicy");
+                    options.DefaultPolicy = new RateLimitPolicy
+                    {
+                        MaxRequests = defaultPolicy.GetValue<int>("MaxRequests", 100),
+                        WindowSeconds = defaultPolicy.GetValue<int>("WindowSeconds", 60)
+                    };
 
+                    // Configure endpoint-specific policies
+                    var endpointPolicies = rateLimitConfig.GetSection("EndpointPolicies");
+                    foreach (var policy in endpointPolicies.GetChildren())
+                    {
+                        options.EndpointPolicies[policy.Key] = new RateLimitPolicy
+                        {
+                            MaxRequests = policy.GetValue<int>("MaxRequests", 100),
+                            WindowSeconds = policy.GetValue<int>("WindowSeconds", 60)
+                        };
+                    }
+                });
+            }
+
+            // Configure Request Validation
+            if (securitySettings.GetValue<bool>("EnableRequestValidation", true))
+            {
+                builder.Services.AddRequestValidation(options =>
+                {
+                    var validationConfig = builder.Configuration.GetSection("RequestValidation");
+                    options.Enabled = validationConfig.GetValue<bool>("Enabled", true);
+                    options.MaxRequestBodySize = validationConfig.GetValue<long>("MaxRequestBodySize", 10485760);
+                    options.ValidateQueryString = validationConfig.GetValue<bool>("ValidateQueryString", true);
+                    options.ValidateHeaders = validationConfig.GetValue<bool>("ValidateHeaders", true);
+                    options.RequireUserAgent = validationConfig.GetValue<bool>("RequireUserAgent", false);
+                });
+            }
 
             // Configure Authentication
             builder.Services.AddHttpContextAccessor();
@@ -263,33 +359,30 @@ namespace WebAPI
                    ValidateIssuer = true,
                    ValidateAudience = true,
                    ValidateIssuerSigningKey = true,
+                   ValidateLifetime = true,
                    ValidIssuer = jwt["Issuer"],
                    ValidAudience = jwt["Audience"],
-                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]))
+                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"])),
+                   ClockSkew = TimeSpan.Zero
                };
            });
 
-            // Configure RabbitMQ with MassTransit
-            var rabbitMqSettings = builder.Configuration.GetSection("RabbitMq");
-
-            if (builder.Configuration.GetValue("Features:UseRabbitMq", false))
+            // Configure Authorization Policies
+            builder.Services.AddAuthorization(options =>
             {
-                builder.Services.AddMassTransit(x =>
-                {
-                    x.UsingRabbitMq((context, cfg) =>
-                    {
-                        cfg.Host(
-                            rabbitMqSettings["Host"],
-                            rabbitMqSettings["VirtualHost"],
-                            h =>
-                            {
-                                h.Username(rabbitMqSettings["Username"]);
-                                h.Password(rabbitMqSettings["Password"]);
-                            });
-                    });
-                });
-            }
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("AcademicStaffOnly", policy => policy.RequireRole("AcademicStaff"));
+                options.AddPolicy("AccountantStaffOnly", policy => policy.RequireRole("AccountantStaff"));
+                options.AddPolicy("TeacherOnly", policy => policy.RequireRole("Teacher"));
+                options.AddPolicy("StudentOnly", policy => policy.RequireRole("Student"));
+                options.AddPolicy("StaffOnly", policy => policy.RequireRole("Admin", "AcademicStaff", "AccountantStaff"));
+                options.AddPolicy("TeacherOrStaff", policy => policy.RequireRole("Teacher", "Admin", "AcademicStaff", "AccountantStaff"));
+            });
 
+            // Register Authorization Handlers
+            builder.Services.AddSingleton<IAuthorizationHandler, RoleRequirementHandler>();
+
+           
             builder.Services.Configure<MongoNotificationOptions>(
                 builder.Configuration.GetSection(MongoNotificationOptions.SectionName));
             builder.Services.PostConfigure<MongoNotificationOptions>(options =>
@@ -381,10 +474,28 @@ namespace WebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Apply Security Middleware (order matters!)
+            if (securitySettings.GetValue<bool>("EnableSecurityHeaders", true))
+            {
+                app.UseSecurityHeaders();
+            }
+
             app.UseCors("ApiCors");
             app.UseHttpsRedirection();
+
+            if (securitySettings.GetValue<bool>("EnableRequestValidation", true))
+            {
+                app.UseRequestValidation();
+            }
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            if (securitySettings.GetValue<bool>("EnableRateLimiting", true))
+            {
+                app.UseRateLimiting();
+            }
 
             app.MapControllers();
 

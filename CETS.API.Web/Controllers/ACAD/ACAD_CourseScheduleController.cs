@@ -61,6 +61,13 @@ namespace CETS.API.Web.Controllers.ACAD
             return Ok(new { IsAvailable = isAvailable });
         }
 
+        [HttpGet("weekly-schedule")]
+        public async Task<IActionResult> GetWeeklyScheduleAsync()
+        {
+            var weeklySchedule = await _courseScheduleService.GetWeeklyScheduleAsync();
+            return Ok(weeklySchedule);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCourseScheduleRequest request)
         {

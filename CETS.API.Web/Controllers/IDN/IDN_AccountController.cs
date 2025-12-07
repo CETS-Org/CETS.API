@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using System.Web;
+using Utils.Authorization;
 
 namespace CETS.API.Web.Controllers.IDN
 {
@@ -33,6 +34,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpGet("statuses")]
+        [Authorize(Policy = "StaffOnly")]
         public async Task<IActionResult> GetAccountStatusesAsync()
         {
             var statuses = await _accountService.GetAccountStatusesAsync();
@@ -41,6 +43,7 @@ namespace CETS.API.Web.Controllers.IDN
 
         [EnableQuery]
         [HttpGet]
+        [Authorize(Policy = "StaffOnly")]
         public async Task<IActionResult> GetAllAccountsAsync([FromQuery] AccountFilterRequest filter)
         {
             var accounts = await _accountService.GetAllAccountsAsync(filter);
@@ -48,6 +51,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpGet("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> GetAccountByIdAsync(Guid id)
         {
             var account = await _accountService.GetAccountByIdAsync(id);
@@ -59,6 +63,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpGet("email")]
+        [Authorize]
         public async Task<IActionResult> GetAccountByEmailAsync([FromQuery] string email)
         {
             var account = await _accountService.GetAccountByEmailAsync(email);
@@ -70,6 +75,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPost]
+        [Authorize(Policy = "StaffOnly")]
         public async Task<IActionResult> CreateAccountAsync([FromBody] CreateAccountRequest dto)
         {
             try
@@ -85,6 +91,7 @@ namespace CETS.API.Web.Controllers.IDN
 
 
         [HttpPut("{id:guid}")]
+        [Authorize(Policy = "StaffOnly")]
         public async Task<IActionResult> UpdateAccountAsync(Guid id, [FromBody] UpdateAccountRequest dto)
         {
             var updatedAccount = await _accountService.UpdateAccountAsync(id, dto);
@@ -111,6 +118,7 @@ namespace CETS.API.Web.Controllers.IDN
 
 
         [HttpPatch("deactivate/{id:guid}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeactivateAccountAsync(Guid id)
         {
             var deactivatedAccount = await _accountService.DeactivateAccountAsync(id);
@@ -122,6 +130,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPatch("activate/{id:guid}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> ActivateAccountAsync(Guid id)
         {
             var activatedAccount = await _accountService.ActivateAccountAsync(id);
@@ -133,6 +142,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteAccountAsync(Guid id)
         {
             var result = await _accountService.SoftDeleteAccountAsync(id);
@@ -144,6 +154,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPatch("restore/{id:guid}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> RestoreAccountAsync(Guid id)
         {
             var restoredAccount = await _accountService.RestoreAccountAsync(id);
@@ -190,6 +201,7 @@ namespace CETS.API.Web.Controllers.IDN
 
         #region Login
         [HttpPost("login/student")]
+        [AllowAnonymous]
         public async Task<IActionResult> StudentLogin([FromBody] LoginRequest dto)
         {
             var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
@@ -207,6 +219,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPost("login/teacher")]
+        [AllowAnonymous]
         public async Task<IActionResult> TeacherLogin([FromBody] LoginRequest dto)
         {
             var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
@@ -224,6 +237,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPost("login/academicStaff")]
+        [AllowAnonymous]
         public async Task<IActionResult> AcademicStaffLogin([FromBody] LoginRequest dto)
         {
             var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
@@ -241,6 +255,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPost("login/accountantStaff")]
+        [AllowAnonymous]
         public async Task<IActionResult> AccountantStaffLogin([FromBody] LoginRequest dto)
         {
             var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
@@ -257,6 +272,7 @@ namespace CETS.API.Web.Controllers.IDN
             });
         }
         [HttpPost("login/admin")]
+        [AllowAnonymous]
         public async Task<IActionResult> AdminLogin([FromBody] LoginRequest dto)
         {
             var account = await _accountService.ValidateUserCredentialsAsync(dto.Email, dto.Password);
@@ -273,6 +289,7 @@ namespace CETS.API.Web.Controllers.IDN
             });
         }
         [HttpPost("googleLogin")]
+        [AllowAnonymous]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest dto)
         {
             var account = await _accountService.ValidateGoogleAccountAsync(dto);
@@ -292,6 +309,7 @@ namespace CETS.API.Web.Controllers.IDN
 
         #region register
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest dto)
         {
             try
@@ -312,6 +330,7 @@ namespace CETS.API.Web.Controllers.IDN
 
         #region Account Verification
         [HttpPost("verify")]
+        [AllowAnonymous]
         public async Task<IActionResult> VerifyAccountAsync([FromBody] VerifyAccountRequest dto)
         {
             try
@@ -334,6 +353,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpGet("verify-by-link")]
+        [AllowAnonymous]
         public async Task<IActionResult> VerifyAccountByLinkAsync([FromQuery] string email, [FromQuery] string code)
         {
             try
@@ -373,6 +393,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPost("resend-verification")]
+        [AllowAnonymous]
         public async Task<IActionResult> ResendVerificationCodeAsync([FromBody] ResendVerificationRequest dto)
         {
             try
@@ -397,6 +418,7 @@ namespace CETS.API.Web.Controllers.IDN
 
         #region forgot password
         [HttpPost("forgot-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] string email)
         {
             try
@@ -418,6 +440,7 @@ namespace CETS.API.Web.Controllers.IDN
             }
         }
         [HttpPost("verify-otp")]
+        [AllowAnonymous]
         public IActionResult VerifyOtp([FromBody] VerifyOtpRequest request)
         {
             var isValid = _accountService.VerifyOTP(request);
@@ -437,6 +460,7 @@ namespace CETS.API.Web.Controllers.IDN
         }
 
         [HttpPost("reset-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             try

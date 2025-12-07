@@ -22,6 +22,13 @@ namespace CETS.API.Web.Controllers.FIN
 			return Ok(items);
 		}
 
+		[HttpGet("paginated")]
+		public async Task<IActionResult> GetPaginatedAsync([FromQuery] GetPaginatedPaymentWebhookRequest request)
+		{
+			var result = await _service.GetPaginatedAsync(request);
+			return Ok(result);
+		}
+
 		[HttpGet("{id:guid}")]
 		public async Task<IActionResult> GetByIdAsync(Guid id)
 		{
