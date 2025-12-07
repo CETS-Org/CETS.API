@@ -149,4 +149,5 @@ docker-compose.override.yml
 *.vspx
 *.vsmdi
 CETS.API.Web/appsettings.json
-/CETS.API.Gateway
+CETS.API.Gateway/appsettings.json
+CETS.API.Gateway/ocelot.json
