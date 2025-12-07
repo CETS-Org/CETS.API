@@ -467,12 +467,13 @@ namespace WebAPI
 
 
             var app = builder.Build();
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+               
             }
 
             // Apply Security Middleware (order matters!)
