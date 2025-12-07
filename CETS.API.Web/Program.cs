@@ -382,27 +382,7 @@ namespace WebAPI
             // Register Authorization Handlers
             builder.Services.AddSingleton<IAuthorizationHandler, RoleRequirementHandler>();
 
-            // Configure RabbitMQ with MassTransit
-            var rabbitMqSettings = builder.Configuration.GetSection("RabbitMq");
-
-            if (builder.Configuration.GetValue("Features:UseRabbitMq", false))
-            {
-                builder.Services.AddMassTransit(x =>
-                {
-                    x.UsingRabbitMq((context, cfg) =>
-                    {
-                        cfg.Host(
-                            rabbitMqSettings["Host"],
-                            rabbitMqSettings["VirtualHost"],
-                            h =>
-                            {
-                                h.Username(rabbitMqSettings["Username"]);
-                                h.Password(rabbitMqSettings["Password"]);
-                            });
-                    });
-                });
-            }
-
+           
             builder.Services.Configure<MongoNotificationOptions>(
                 builder.Configuration.GetSection(MongoNotificationOptions.SectionName));
             builder.Services.PostConfigure<MongoNotificationOptions>(options =>
