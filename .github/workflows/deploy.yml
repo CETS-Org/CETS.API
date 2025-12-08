@@ -1,0 +1,66 @@
+name: Deploy API & Gateway
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch: {}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout THIS repository (CETS.API) into a subfolder named 'CETS.API'
+    # We do this to preserve the folder structure your Dockerfile expects.
+    - name: Checkout API Repo
+      uses: actions/checkout@v3
+      with:
+        path: CETS.API
+
+    # 2. Checkout the Shared Core Library into a sibling folder
+    - name: Checkout Core Repo
+      run: git clone https://github.com/${{ secrets.CORE_REPO }} CETS.Core
+
+    # 3. Logins
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Docker Login to ACR
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    # 4. Build Images
+    # Note: We run from root ('.'), so the context sees 'CETS.API' and 'CETS.Core' folders
+    - name: Build API Web
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/cets-api-web:latest \
+          -f CETS.API/CETS.API.Web/Dockerfile .
+
+    - name: Build API Gateway
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/cets-api-gateway:latest \
+          -f CETS.API/CETS.API.Gateway/Dockerfile .
+
+    # 5. Push Images
+    - name: Push Images
+      run: |
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/cets-api-web:latest
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/cets-api-gateway:latest
+
+    # 6. Deploy to Azure
+    - name: Deploy API Web
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: cets-api-web
+        images: ${{ secrets.ACR_LOGIN_SERVER }}/cets-api-web:latest
+
+    - name: Deploy API Gateway
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: cets-api-gateway
+        images: ${{ secrets.ACR_LOGIN_SERVER }}/cets-api-gateway:latest
