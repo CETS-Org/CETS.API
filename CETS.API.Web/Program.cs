@@ -464,22 +464,6 @@ namespace WebAPI
             // Register AutoMapper
             builder.Services.AddAutoMapper(typeof(Application.Mappers.CORE.CORE_LookUpProfile));
 
-
-            // --- DEBUG BLOCK START ---
-            Console.WriteLine("---------------- CONFIG DEBUG ----------------");
-            // Print the specific connection string length (don't print the secret value)
-            var sqlConn = builder.Configuration.GetConnectionString("SqlServerDb");
-            Console.WriteLine($"SqlConn ('SqlServerDb') found: {!string.IsNullOrEmpty(sqlConn)}");
-            if (!string.IsNullOrEmpty(sqlConn)) Console.WriteLine($"SqlConn Length: {sqlConn.Length}");
-
-            // Print all keys related to ConnectionStrings
-            foreach (var c in builder.Configuration.AsEnumerable().Where(x => x.Key.Contains("ConnectionString")))
-            {
-                Console.WriteLine($"Key: {c.Key} = '{c.Value}'");
-            }
-            Console.WriteLine("----------------------------------------------");
-            // --- DEBUG BLOCK END ---
-
             var app = builder.Build();
             app.UseSwagger();
             app.UseSwaggerUI();
