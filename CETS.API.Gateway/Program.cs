@@ -8,7 +8,7 @@ using Ocelot.Provider.Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
 
 // Add Ocelot with Cache Manager for rate limiting and Polly for QoS
 builder.Services.AddOcelot()
