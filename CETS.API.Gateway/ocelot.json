@@ -5,8 +5,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7096
+          "Host": "cets-api-web.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/{everything}",
@@ -29,8 +29,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7096
+          "Host": "cets-api-web.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/IDN_Account/login/{everything}",
@@ -52,8 +52,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7096
+          "Host": "cets-api-web.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/IDN_Account/register",
@@ -75,8 +75,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7096
+          "Host": "cets-api-web.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/IDN_Account/verify",
@@ -98,8 +98,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7096
+          "Host": "cets-api-web.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/IDN_Account/forgot-password",
@@ -121,8 +121,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7107
+          "Host": "cets-ai.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/ai",
@@ -137,7 +137,7 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:8000",
+    "BaseUrl": "https://cets-api-gateway.azurewebsites.net",
     "RateLimitOptions": {
       "DisableRateLimitHeaders": false,
       "QuotaExceededMessage": "Rate limit exceeded. Please try again later.",
