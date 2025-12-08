@@ -5,8 +5,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "cets-api-web.azurewebsites.net",
-          "Port": 443
+          "Host": "localhost",
+          "Port": 7096
         }
       ],
       "UpstreamPathTemplate": "/api/{everything}",
@@ -24,14 +24,105 @@
         "TimeoutValue": 30000
       }
     },
-
+    {
+      "DownstreamPathTemplate": "/api/IDN_Account/login/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7096
+        }
+      ],
+      "UpstreamPathTemplate": "/api/IDN_Account/login/{everything}",
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": null,
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 5
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/IDN_Account/register",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7096
+        }
+      ],
+      "UpstreamPathTemplate": "/api/IDN_Account/register",
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": null,
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1h",
+        "PeriodTimespan": 3600,
+        "Limit": 3
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/IDN_Account/verify",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7096
+        }
+      ],
+      "UpstreamPathTemplate": "/api/IDN_Account/verify",
+      "UpstreamHttpMethod": [ "POST", "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": null,
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 10
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/IDN_Account/forgot-password",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7096
+        }
+      ],
+      "UpstreamPathTemplate": "/api/IDN_Account/forgot-password",
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": null,
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1h",
+        "PeriodTimespan": 3600,
+        "Limit": 3
+      }
+    },
     {
       "DownstreamPathTemplate": "/api/ai",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "cets-ai.azurewebsites.net",
-          "Port": 443
+          "Host": "localhost",
+          "Port": 7107
         }
       ],
       "UpstreamPathTemplate": "/api/ai",
@@ -46,7 +137,7 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://cets-api-gateway.azurewebsites.net",
+    "BaseUrl": "https://localhost:8000",
     "RateLimitOptions": {
       "DisableRateLimitHeaders": false,
       "QuotaExceededMessage": "Rate limit exceeded. Please try again later.",

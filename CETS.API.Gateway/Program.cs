@@ -33,11 +33,26 @@ builder.Services.AddCors(options =>
         .WithExposedHeaders("X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"));
 });
 
-// Configure Authentication (JWT)
+// Configure Authentication (JWT) 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // Configure JWT to allow anonymous requests 
+        // Token validation only happens if token is present
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                if (string.IsNullOrEmpty(context.Request.Headers["Authorization"]))
+                {
+                    context.NoResult();
+                    return Task.CompletedTask;
+                }
+                return Task.CompletedTask;
+            }
+        };
+        
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -77,10 +92,15 @@ app.Use(async (context, next) =>
 // Apply CORS before Ocelot middleware
 app.UseCors("GatewayCors");
 
-// Authentication middleware
+// Authentication middleware - validates tokens if present, allows anonymous if not
+// This enables:
+// 1. Public endpoints (login/register) work without tokens
+// 2. Protected endpoints get token validation at gateway level (security layer #1)
+// 3. Invalid/expired tokens are rejected early, reducing backend load
 app.UseAuthentication();
 
 // Use Ocelot with configuration
+// Ocelot routes are configured in ocelot.json to allow anonymous for public endpoints
 await app.UseOcelot();
 
 app.Run();
