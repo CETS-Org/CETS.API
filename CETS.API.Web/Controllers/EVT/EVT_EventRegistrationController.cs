@@ -61,14 +61,14 @@ namespace CETS.API.Web.Controllers.EVT
 		[HttpPost("{id:guid}/checkin")]
 		public async Task<IActionResult> CheckInAsync(Guid id)
 		{
-			var updated = await _service.CheckInAsync(id, DateTime.UtcNow);
+			var updated = await _service.CheckInAsync(id, DateTime.Now);
 			return Ok(updated);
 		}
 
 		[HttpPost("{id:guid}/checkout")]
 		public async Task<IActionResult> CheckOutAsync(Guid id)
 		{
-			var updated = await _service.CheckOutAsync(id, DateTime.UtcNow);
+			var updated = await _service.CheckOutAsync(id, DateTime.Now);
 			return Ok(updated);
 		}
 

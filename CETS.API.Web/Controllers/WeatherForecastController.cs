@@ -167,7 +167,7 @@ namespace WebAPI.Controllers
                     // Chưa xếp lớp => để null hết các field liên quan lớp/buổi
                     FromClassID = null,
                     ToClassID = null,
-                    EffectiveDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                    EffectiveDate = DateOnly.FromDateTime(DateTime.Now),
 
                     FromMeetingDate = null,
                     FromSlotID = null,

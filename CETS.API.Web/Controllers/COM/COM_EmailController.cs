@@ -172,7 +172,7 @@ namespace CETS.API.Web.Controllers.COM
                         RequestTypeID = requestType.LookUpId,
                         PriorityID = priority.LookUpId,
                         Reason = "Requested refund after class postponement (Auto-generated).",
-                        EffectiveDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                        EffectiveDate = DateOnly.FromDateTime(DateTime.Now),
                         EnrollmentID = request.EnrollmentId,
                         PaymentID = payment.FirstOrDefault()?.Id
                     };
@@ -185,8 +185,8 @@ namespace CETS.API.Web.Controllers.COM
                         request.CourseName,
                         payment.FirstOrDefault()?.Amount ?? 0,
                         enrollment?.FirstPaymentMethod ?? "Bank Transfer",
-                        DateTime.UtcNow,
-                        DateTime.UtcNow
+                        DateTime.Now,
+                        DateTime.Now
                     );
 
                     await _mailService.SendEmailAsync(

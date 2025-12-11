@@ -215,7 +215,7 @@ namespace CETS.API.Web.Controllers.Analytics
                     topCourses,
                     dropout,
                     aiRecommendations,
-                    generatedAt = DateTime.UtcNow
+                    generatedAt = DateTime.Now
                 };
 
                 return Ok(result);
