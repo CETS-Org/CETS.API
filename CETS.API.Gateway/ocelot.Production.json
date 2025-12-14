@@ -1,30 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "cets-api-web.azurewebsites.net",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
-      "RateLimitOptions": {
-        "ClientWhitelist": [],
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 100
-      },
-      "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
-        "DurationOfBreak": 30000,
-        "TimeoutValue": 30000
-      }
-    },
-    {
+      "//": "--- 1. SPECIFIC AUTH ROUTES (Higher Priority) ---",
       "DownstreamPathTemplate": "/api/IDN_Account/login/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -35,6 +12,7 @@
       ],
       "UpstreamPathTemplate": "/api/IDN_Account/login/{everything}",
       "UpstreamHttpMethod": [ "POST" ],
+      "Priority": 1,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": null,
         "AllowedScopes": []
@@ -58,6 +36,7 @@
       ],
       "UpstreamPathTemplate": "/api/IDN_Account/register",
       "UpstreamHttpMethod": [ "POST" ],
+      "Priority": 1,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": null,
         "AllowedScopes": []
@@ -81,6 +60,7 @@
       ],
       "UpstreamPathTemplate": "/api/IDN_Account/verify",
       "UpstreamHttpMethod": [ "POST", "GET" ],
+      "Priority": 1,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": null,
         "AllowedScopes": []
@@ -104,6 +84,7 @@
       ],
       "UpstreamPathTemplate": "/api/IDN_Account/forgot-password",
       "UpstreamHttpMethod": [ "POST" ],
+      "Priority": 1,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": null,
         "AllowedScopes": []
@@ -117,22 +98,50 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/ai",
-      "DownstreamScheme": "https",
+      "//": "--- 2. AI ROUTE (Points to Azure VM Bridge) ---",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "cets-ai.azurewebsites.net",
-          "Port": 443
+          "Host": "40.81.26.5",
+          "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/api/ai",
-      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/api/ai/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST" ],
+      "Priority": 1,
       "RateLimitOptions": {
         "ClientWhitelist": [],
         "EnableRateLimiting": true,
         "Period": "1m",
         "PeriodTimespan": 60,
         "Limit": 20
+      }
+    },
+    {
+      "//": "--- 3. CATCH-ALL ROUTE (Lower Priority) ---",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cets-api-web.azurewebsites.net",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/api/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "Priority": 0,
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 30000,
+        "TimeoutValue": 30000
       }
     }
   ],
