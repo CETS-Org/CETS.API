@@ -108,7 +108,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/ai/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST" ],
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ],
       "Priority": 1,
       "RateLimitOptions": {
         "ClientWhitelist": [],
