@@ -27,7 +27,6 @@ namespace CETS.API.Web.Controllers.ACAD
         }
 
         [HttpGet("CoursesByStudent/{studentId}")]
-        [AuthorizeRoles("Student", "Teacher", "Admin", "AcademicStaff")]
         public async Task<IActionResult> GetStudentCoursesEnrollment(Guid studentId)
         {
             var courses = await _enrollmentService.GetStudentCoursesEnrollmentAsync(studentId);
