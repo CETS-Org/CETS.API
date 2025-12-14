@@ -97,7 +97,27 @@
         "Limit": 3
       }
     },
-   
+    {
+      "//": "--- 2. AI ROUTE (Points to Azure VM Bridge) ---",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "40.81.26.5",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/api/ai/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ],
+      "Priority": 1,
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 20
+      }
+    },
     {
       "//": "--- 3. CATCH-ALL ROUTE (Lower Priority) ---",
       "DownstreamPathTemplate": "/api/{everything}",
