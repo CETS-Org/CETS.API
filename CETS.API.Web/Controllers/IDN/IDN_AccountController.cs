@@ -54,12 +54,20 @@ namespace CETS.API.Web.Controllers.IDN
         [Authorize]
         public async Task<IActionResult> GetAccountByIdAsync(Guid id)
         {
-            var account = await _accountService.GetAccountByIdAsync(id);
-            if (account == null)
+            try
             {
-                return NotFound(new { message = $"Account with id = {id} not found" });
+                var account = await _accountService.GetAccountByIdAsync(id);
+                if (account == null)
+                {
+                    return NotFound(new { message = $"Account with id = {id} not found" });
+                }
+                return Ok(account);
             }
-            return Ok(account);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching account with id {AccountId}", id);
+                return StatusCode(500, new { message = "An error occurred while fetching the account." });
+            }
         }
 
         [HttpGet("email")]
