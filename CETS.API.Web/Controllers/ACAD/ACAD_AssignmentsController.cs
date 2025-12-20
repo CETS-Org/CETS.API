@@ -274,5 +274,21 @@ namespace CETS.API.Web.Controllers.ACAD
                 publicUrl = _fileStorageService.GetPublicUrl(filePath)
             });
         }
+
+   
+        [HttpGet("student/{studentId}/upcoming")]
+        public async Task<IActionResult> GetUpcomingAssignmentsForStudent(Guid studentId, [FromQuery] int limit = 5)
+        {
+            try
+            {
+                var assignments = await _AssignmentService.GetUpcomingAssignmentsForStudentAsync(studentId, limit);
+                return Ok(assignments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting upcoming assignments for student {StudentId}", studentId);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
