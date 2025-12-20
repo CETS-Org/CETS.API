@@ -1,5 +1,6 @@
 ﻿using Application.Implementations.IDN;
 using Application.Interfaces.Common.Email;
+using Application.Interfaces.Common.Storage;
 using Application.Interfaces.ExternalServices.Security;
 using Application.Interfaces.IDN;
 using DTOs.IDN.IDN_Account.Requests;
@@ -23,14 +24,16 @@ namespace CETS.API.Web.Controllers.IDN
         private readonly IJwtService _jwtService;
         private readonly IMailService _mailService;
         private readonly IConfiguration _configuration;
+        private readonly IFileStorageService _fileStorageService;
 
-        public IDN_AccountController(ILogger<IDN_AccountController> logger, IIDN_AccountService accountService, IJwtService jwtService, IMailService mailService, IConfiguration configuration)
+        public IDN_AccountController(ILogger<IDN_AccountController> logger,  IIDN_AccountService accountService, IJwtService jwtService, IMailService mailService, IConfiguration configuration, IFileStorageService fileStorageService)
         {
             _logger = logger;
             _accountService = accountService;
             _jwtService = jwtService;
             _mailService = mailService;
             _configuration = configuration;
+            _fileStorageService = fileStorageService;
         }
 
         [HttpGet("statuses")]
@@ -421,6 +424,18 @@ namespace CETS.API.Web.Controllers.IDN
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpGet("avatar/upload-url")]
+        public async Task<IActionResult> GetAvatarUploadUrl(string fileName, string contentType)
+        {
+            var (url, filePath) = await _fileStorageService.GetPresignedPutUrlAsync("account/avatars", fileName, contentType);
+            return Ok(new
+            {
+                uploadUrl = url,
+                filePath = filePath,
+                publicUrl = _fileStorageService.GetPublicUrl(filePath)
+            });
         }
         #endregion
 

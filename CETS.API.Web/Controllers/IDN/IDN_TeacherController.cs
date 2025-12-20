@@ -1,5 +1,7 @@
-﻿using Application.Interfaces.IDN;
+﻿using Application.Interfaces.Common.Storage;
+using Application.Interfaces.IDN;
 using DTOs.IDN.IDN_Teacher.Requests;
+using Infrastructure.Implementations.Common.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +13,14 @@ namespace CETS.API.Web.Controllers.IDN
     {
         private readonly ILogger<IDN_TeacherController> _logger;
         private readonly IIDN_TeacherService _teacherService;
+        private readonly IFileStorageService _fileStorageService;
 
-        public IDN_TeacherController(ILogger<IDN_TeacherController> logger, IIDN_TeacherService teacherService)
+        public IDN_TeacherController(ILogger<IDN_TeacherController> logger, IIDN_TeacherService teacherService, IFileStorageService fileStorageService)
         {
             _logger = logger;
             _teacherService = teacherService;
+            _fileStorageService = fileStorageService;
+
         }
 
         [HttpGet]
@@ -81,7 +86,18 @@ namespace CETS.API.Web.Controllers.IDN
             }
             catch (InvalidOperationException ex)
             {
+                _logger.LogWarning("InvalidOperationException when creating teacher: {Message}", ex.Message);
                 return BadRequest(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning("ArgumentException when creating teacher: {Message}", ex.Message);
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error when creating teacher");
+                return StatusCode(500, new { message = "An error occurred while creating the teacher. Please try again." });
             }
         }
 
@@ -151,5 +167,16 @@ namespace CETS.API.Web.Controllers.IDN
             return Ok(deleted);
         }
 
+        [HttpGet("avatar/upload-url")]
+        public async Task<IActionResult> GetAvatarUploadUrl(string fileName, string contentType)
+        {
+            var (url, filePath) = await _fileStorageService.GetPresignedPutUrlAsync("teacher", fileName, contentType);
+            return Ok(new
+            {
+                uploadUrl = url,
+                filePath = filePath,
+                publicUrl = _fileStorageService.GetPublicUrl(filePath)
+            });
+        }
     }
 }
