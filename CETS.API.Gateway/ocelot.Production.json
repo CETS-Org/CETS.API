@@ -22,7 +22,7 @@
         "EnableRateLimiting": true,
         "Period": "1m",
         "PeriodTimespan": 60,
-        "Limit": 5
+        "Limit": 10
       }
     },
     {
@@ -46,7 +46,7 @@
         "EnableRateLimiting": true,
         "Period": "1h",
         "PeriodTimespan": 3600,
-        "Limit": 3
+        "Limit": 5
       }
     },
     {
@@ -92,9 +92,9 @@
       "RateLimitOptions": {
         "ClientWhitelist": [],
         "EnableRateLimiting": true,
-        "Period": "1h",
+        "Period": "30m",
         "PeriodTimespan": 3600,
-        "Limit": 3
+        "Limit": 10
       }
     },
     {
